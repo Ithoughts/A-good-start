@@ -7,8 +7,14 @@
 //
 
 #import "AppDelegate.h"
+#import "HYLTabBarViewController.h"
+#import "HYLMenuViewController.h"
+
+#import <MMDrawerController.h>
 
 @interface AppDelegate ()
+
+@property (nonatomic, strong) MMDrawerController *drawerController;
 
 @end
 
@@ -17,6 +23,27 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    HYLTabBarViewController *tabBarViewController = [[HYLTabBarViewController alloc] init];
+    [tabBarViewController setRestorationIdentifier:@"HYLTabBarViewControllerRestorationKey"];
+    
+    HYLMenuViewController *leftViewController = [[HYLMenuViewController alloc ] init];
+    UINavigationController *leftNaviController = [[UINavigationController alloc] initWithRootViewController:leftViewController];
+    [leftNaviController setRestorationIdentifier:@"HYLLeftViewControllerRestorationKey"];
+    
+    CGFloat width = [[UIScreen mainScreen] bounds].size.width;
+    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:tabBarViewController leftDrawerViewController:leftNaviController];
+    [self.drawerController setMaximumLeftDrawerWidth:3*width/4.0];
+    
+    self.window.rootViewController = self.drawerController;
+    [self.window makeKeyAndVisible];
+    
+    NSTimeInterval interval = 1.5;
+    [NSThread sleepForTimeInterval:interval];
+    
     return YES;
 }
 
