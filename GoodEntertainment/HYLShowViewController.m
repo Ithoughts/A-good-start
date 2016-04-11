@@ -56,12 +56,12 @@
     
     [manager POST:kShowListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"show: \n%@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"show: %@", reponse);
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }

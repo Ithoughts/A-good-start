@@ -20,6 +20,4 @@ typedef NS_ENUM(NSInteger, HaoYinYueListType) {
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, assign) BOOL isFromHaoYinYueContainer;
 
-//- (void)haoYinYueApiRequest;
-
 @end

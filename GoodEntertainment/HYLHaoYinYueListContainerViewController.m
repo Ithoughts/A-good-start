@@ -11,8 +11,9 @@
 #import "HYLTitlePagerView.h"
 
 #import "UIView+Additions.h"
-#import <MMDrawerBarButtonItem.h>
-#import <UIViewController+MMDrawerController.h>
+
+//#import <MMDrawerBarButtonItem.h>
+//#import <UIViewController+MMDrawerController.h>
 
 #import "HYLMVViewController.h"
 #import "HYLShowViewController.h"
@@ -40,7 +41,8 @@
     
     self.view.backgroundColor = [UIColor orangeColor];
     
-    [self setupLeftMenuButton];
+//    [self setupLeftMenuButton];
+    
     self.navigationItem.titleView = self.pagingTitleView;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
@@ -53,16 +55,16 @@
     [self reloadData];
 }
 
-#pragma mark - 导航栏左侧按钮
-
-- (void)setupLeftMenuButton {
-    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-}
-#pragma mark - Button Handlers
-- (void)leftDrawerButtonPress:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-}
+//#pragma mark - 导航栏左侧按钮
+//
+//- (void)setupLeftMenuButton {
+//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
+//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
+//}
+//#pragma mark - Button Handlers
+//- (void)leftDrawerButtonPress:(id)sender {
+//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+//}
 
 #pragma mark - 注册通知
 - (void)viewWillAppear:(BOOL)animated {

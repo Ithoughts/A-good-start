@@ -7,6 +7,10 @@
 //
 
 #import "HYLMVViewController.h"
+#import "HYLYinYueDetailCommonViewController.h"
+
+#import "AppDelegate.h"
+#import "HYLTabBarController.h"
 
 // 网络请求
 #import <AFNetworking.h>
@@ -78,14 +82,13 @@
     
     [manager POST:kMVListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"MV: \n%@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"MV: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-//        NSLog(@"status: %@", responseDic[@"status"]);
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
@@ -99,28 +102,17 @@
                 
                 BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:dic];
                 [_dataArray addObject:model];
-
-//                NSLog(@"title: %@", model.title);
-//                NSLog(@"updated_at: %@", model.updated_at);
             }
             
             [_tableView reloadData];
             
         } else {
             
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请求失败"
-//                                                            message:nil
-//                                                           delegate:nil
-//                                                  cancelButtonTitle:@"OK"
-//                                                  otherButtonTitles:nil, nil];
-//            [alert show];
         }
-
-        
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error: %@", error);
     }];
 }
 
@@ -153,6 +145,21 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 220.0f;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    BangDanDetailInfoData *model = _dataArray[indexPath.row];
+    NSString *music_id = [NSString stringWithFormat:@"%ld", model.musicId];
+    
+    HYLYinYueDetailCommonViewController *yinYueDetailVC = [[HYLYinYueDetailCommonViewController alloc] init];
+    yinYueDetailVC.musicID = music_id;
+    
+    AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    
+    HYLTabBarController *tabBarController = delegate.tabBarController;
+    
+    [tabBarController pushToViewController:yinYueDetailVC animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

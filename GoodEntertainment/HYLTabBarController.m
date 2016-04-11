@@ -6,25 +6,29 @@
 //  Copyright © 2016 Xiaowu Yin. All rights reserved.
 //
 
-#import "HYLTabBarViewController.h"
+#import "HYLTabBarController.h"
+
+
 #import "HYLHaoYuLeListContainerViewController.h"
 #import "HYLHaoJingCaiListViewController.h"
 #import "HYLHaoYinYueListContainerViewController.h"
 #import "HYLZhiBoListViewController.h"
 
+
 #define   kTabBarRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
 
-@interface HYLTabBarViewController ()
+
+@interface HYLTabBarController ()
 {
     UINavigationController *_haoYuLeNC;
-    UINavigationController *_haoXiChangNC;
+    UINavigationController *_haoJingCaiNC;
     UINavigationController *_haoYinYueNC;
     UINavigationController *_zhiBoNC;
 }
 
 @end
 
-@implementation HYLTabBarViewController
+@implementation HYLTabBarController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -58,11 +62,11 @@
                                                           image:[[UIImage imageNamed:@"tabBar_haoyule_unselected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                   selectedImage:[UIImage imageNamed:@"tabBar_haoyule_selected.png"]];
     
-    // 好戏场
+    // 好精彩
     HYLHaoJingCaiListViewController *haoXingChangListVC = [[HYLHaoJingCaiListViewController alloc] init];
     
-    _haoXiChangNC = [[UINavigationController alloc] initWithRootViewController:haoXingChangListVC];
-    _haoXiChangNC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"好精彩"
+    _haoJingCaiNC = [[UINavigationController alloc] initWithRootViewController:haoXingChangListVC];
+    _haoJingCaiNC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"好精彩"
                                                              image:[[UIImage imageNamed:@"tabBar_haoxichang_unselected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                      selectedImage:[UIImage imageNamed:@"tabBar_haoxichang_selected.png"]];
     
@@ -82,7 +86,9 @@
                                                         image:[[UIImage imageNamed:@"tabBar_zhibo_unselected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                 selectedImage:[UIImage imageNamed:@"tabBar_zhibo_selected.png"]];
     
-    NSArray *viewControllers = @[_haoYuLeNC, _haoXiChangNC, _haoYinYueNC, _zhiBoNC];
+    
+    // view controller
+    NSArray *viewControllers = @[_haoYuLeNC, _haoJingCaiNC, _haoYinYueNC, _zhiBoNC];
     [self setViewControllers:viewControllers];
 }
 

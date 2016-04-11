@@ -9,9 +9,9 @@
 #import "ViewPagerController.h"
 
 
-#define SCREEN_HEIGHT [[UIScreen mainScreen]bounds].size.height
-#define SCREEN_WIDTH [[UIScreen mainScreen]bounds].size.width
-#define ORIGINAL_MAX_WIDTH 640.0f
+#define         SCREEN_HEIGHT       [[UIScreen mainScreen]bounds].size.height
+#define         SCREEN_WIDTH        [[UIScreen mainScreen]bounds].size.width
+#define         ORIGINAL_MAX_WIDTH  640.0f
 
 
 @interface ViewPagerController () <UIScrollViewDelegate>
@@ -21,7 +21,9 @@
 @property NSMutableArray *contents;
 
 @property NSUInteger tabCount;
+
 @property NSUInteger currentIndex;
+
 @property (getter = isAnimatingToTab, assign) BOOL animatingToTab;
 
 @property (nonatomic) BOOL canLimitBounce;
@@ -60,7 +62,7 @@
     }
 }
 
-- (void)dealloc{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -93,7 +95,9 @@
     _tabCount = [self.dataSource numberOfTabsForViewPager:self];
     
     _contents = [NSMutableArray arrayWithCapacity:_tabCount];
+    
     for (int i = 0; i < _tabCount; i++) {
+        
         [_contents addObject:[NSNull null]];
     }
     
@@ -136,9 +140,13 @@
         UIViewController *viewController;
         
         if ([self.dataSource respondsToSelector:@selector(viewPager:contentViewControllerForTabAtIndex:)]) {
+            
             viewController = [self.dataSource viewPager:self contentViewControllerForTabAtIndex:index];
+            
         } else {
+            
             viewController = [[UIViewController alloc] init];
+            
             viewController.view = [[UIView alloc] init];
         }
         

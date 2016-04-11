@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "HYLTabBarViewController.h"
+#import "HYLTabBarController.h"
+
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) HYLTabBarViewController *tabBarViewController;
 
+// 重要
+@property (strong, nonatomic) HYLTabBarController *tabBarController;
 
 @end
 

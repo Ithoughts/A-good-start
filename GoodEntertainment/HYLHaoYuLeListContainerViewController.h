@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #import "ViewPagerController.h"
 
 #import "HYLTitlePagerView.h"
@@ -17,8 +18,10 @@
 
 @interface HYLHaoYuLeListContainerViewController : ViewPagerController
 
-@property (nonatomic, strong) HYLTuiJieViewController *zhuanFangListVC;
+@property (nonatomic, strong) HYLTuiJieViewController *tuiJieListVC;
+
 @property (nonatomic, strong) HYLTouTiaoViewController *touTiaoListVC;
+
 @property (nonatomic, strong) HYLYuanChuangViewController *yuanChuangListVC;
 
 @property (nonatomic, assign) NSInteger currentIndex;

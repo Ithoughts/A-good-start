@@ -11,7 +11,7 @@
 #import "UIViewController+MMDrawerController.h"
 
 
-#import "HYLTouTiaoDetailViewController.h"
+#import "HYLHaoYuLeCommonDetailViewController.h"
 
 //#import "HYLMyCollectionViewController.h"
 #import "HYLEditProfileViewController.h"
@@ -139,7 +139,7 @@
     if (indexPath.row == 0) {
         
 //        HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
-         HYLTouTiaoDetailViewController *test = [[HYLTouTiaoDetailViewController alloc] init];
+        HYLHaoYuLeCommonDetailViewController *test = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:test];
         
         [self.mm_drawerController setCenterViewController:nav withCloseAnimation:YES completion:nil];

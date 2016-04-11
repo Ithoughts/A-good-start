@@ -19,14 +19,14 @@
 // 获取头条数据
 #define             kTouTiaoURL           [NSString stringWithFormat:@"%@/api/video/headline", kBaseURL]
 
-// 获取专访列表
-#define             kZhuanFangURL         [NSString stringWithFormat:@"%@/api/video/interview", kBaseURL]
+// 获取推介列表
+#define             kTuiJieURL         [NSString stringWithFormat:@"%@/api/video/interview", kBaseURL]
 
 // 获取原创列表
 #define             kYuanChuangURL        [NSString stringWithFormat:@"%@/api/video/original", kBaseURL]
 
-// 获取新片列表
-#define             kXiChangURL           [NSString stringWithFormat:@"%@/api/video/new", kBaseURL]
+// 获取好精彩列表
+#define             kJingCaiURL           [NSString stringWithFormat:@"%@/api/video/new", kBaseURL]
 
 // 获取直播列表
 #define             kZhiBoURL             [NSString stringWithFormat:@"%@/api/video/live", kBaseURL]
@@ -36,7 +36,6 @@
 
 // 获取视频详情
 #define             kShiPinDetailURL      [NSString stringWithFormat:@"%@/api/video/detail", kBaseURL]
-
 
 // 发送验证码
 #define             kSendCaptchaURL       [NSString stringWithFormat:@"%@/api/user/send_captcha", kBaseURL]

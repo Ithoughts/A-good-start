@@ -7,8 +7,9 @@
 //
 
 #import "HYLZhiBoListViewController.h"
-#import <MMDrawerBarButtonItem.h>
-#import <UIViewController+MMDrawerController.h>
+#import "HYLZhiBoInformationViewController.h"
+//#import <MMDrawerBarButtonItem.h>
+//#import <UIViewController+MMDrawerController.h>
 
 #import "HYLZhiBoCell.h"
 #import "HYLZhiBoListModel.h"
@@ -50,7 +51,7 @@
     [self setupNavigationBar];
     
     // left bar Button Item
-    [self setupLeftMenuButton];
+//    [self setupLeftMenuButton];
     
     // title view
     [self setupTitleView];
@@ -77,14 +78,14 @@
 
 #pragma mark - 导航栏左侧按钮
 
--(void)setupLeftMenuButton {
-    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-}
-#pragma mark - Button Handlers
--(void)leftDrawerButtonPress:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-}
+//-(void)setupLeftMenuButton {
+//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
+//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
+//}
+//#pragma mark - Button Handlers
+//-(void)leftDrawerButtonPress:(id)sender {
+//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+//}
 
 - (void)prepareTableView
 {
@@ -193,6 +194,18 @@
 {
     return 220.0f;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //
+    HYLZhiBoListModel *model = _dataArray[indexPath.row];
+    NSInteger videoId = model.videoId;
+    
+    HYLZhiBoInformationViewController *zhiBoInforVC = [[HYLZhiBoInformationViewController alloc] init];
+    zhiBoInforVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    [self.navigationController pushViewController:zhiBoInforVC animated:YES];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

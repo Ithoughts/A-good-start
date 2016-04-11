@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HYLTabBarViewController : UITabBarController <UITabBarControllerDelegate>
+@interface HYLTabBarController : UITabBarController <UITabBarControllerDelegate>
 
 - (void)setupTabBarItems;
 - (void)pushToViewController:(UIViewController *)viewController animated:(BOOL)animated;

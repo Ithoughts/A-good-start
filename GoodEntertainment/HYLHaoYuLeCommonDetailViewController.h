@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HYLTouTiaoDetailViewController : UIViewController
+@interface HYLHaoYuLeCommonDetailViewController : UIViewController
 
 @property (nonatomic, copy) NSString *videoId;
 

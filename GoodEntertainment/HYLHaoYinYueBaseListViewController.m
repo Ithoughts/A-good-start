@@ -24,10 +24,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)haoYinYueApiRequest
-{
-    
-}
 /*
 #pragma mark - Navigation
 

@@ -8,18 +8,27 @@
 
 #import "HYLYuanChuangViewController.h"
 
+// view
+#import "HYLZhiBoCell.h"
+
+// model
+#import "HYLZhiBoListModel.h"
+
+// 详情页
+#import "HYLHaoYuLeCommonDetailViewController.h"
+
+// 重要
+#import "HYLTabBarController.h"
+#import "AppDelegate.h"
+
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 #import <AFNetworking.h>
 #import "HaoYuLeNetworkInterface.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
-#import "HYLZhiBoCell.h"
-#import "HYLZhiBoListModel.h"
-
 @interface HYLYuanChuangViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
-    UITableView *_tableView;
     NSMutableArray *_dataArray;
 }
 
@@ -31,9 +40,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
     self.view.backgroundColor = [UIColor whiteColor];
+    
     self.page = 1;
+    
     [self hylYuanChuangApiRequest];
+    
     [self prepareYuanChuangTableView];
 }
 #pragma mark - 表格视图
@@ -46,8 +59,7 @@
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
     _tableView.tableFooterView = [[UIView alloc] init];
-    _tableView.showsHorizontalScrollIndicator = NO;
-    _tableView.showsVerticalScrollIndicator = YES;
+
     [self.view addSubview:_tableView];
 }
 
@@ -62,7 +74,7 @@
     
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:[NSString stringWithFormat:@"%ld",self.page] forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", self.page] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -77,7 +89,6 @@
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-//        NSLog(@"status: %@", responseDic[@"status"]);
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
@@ -93,21 +104,17 @@
                 [_dataArray addObject:model];
             }
             
+            
+            // 刷新表格
             [_tableView reloadData];
             
         } else {
             
-//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请求失败"
-//                                                                        message:nil
-//                                                                       delegate:nil
-//                                                              cancelButtonTitle:@"OK"
-//                                                              otherButtonTitles:nil, nil];
-//                        [alert show];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
@@ -120,7 +127,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"ZhuanFangCell";
+    static NSString *CellIdentifier = @"YuanChuangCell";
     
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
     
@@ -141,6 +148,23 @@
 {
     return 220.0f;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    //
+    HYLZhiBoListModel *model = _dataArray[indexPath.row];
+    NSInteger videoId = model.videoId;
+    
+    //
+    HYLHaoYuLeCommonDetailViewController *touTiaoDetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
+    touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    
+    HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
+    [tabBarController pushToViewController:touTiaoDetailVC animated:YES];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

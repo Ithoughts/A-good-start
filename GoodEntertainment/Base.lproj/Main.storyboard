@@ -21,6 +21,44 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="459" y="-965"/>
+        </scene>
+        <!--Hao Yu Le Common Detail View Controller-->
+        <scene sceneID="mpl-Hz-vXn">
+            <objects>
+                <viewController storyboardIdentifier="HYLTouTiaoDetailViewController" id="XLu-fk-e9q" customClass="HYLHaoYuLeCommonDetailViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ITY-fV-TL2"/>
+                        <viewControllerLayoutGuide type="bottom" id="SSK-Eo-JFU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="zEU-X9-HZl">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="T3D-IE-NLE">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="XLu-fk-e9q" id="8BS-Wj-eOe"/>
+                                    <outlet property="delegate" destination="XLu-fk-e9q" id="Txx-HY-9xT"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="T3D-IE-NLE" firstAttribute="leading" secondItem="zEU-X9-HZl" secondAttribute="leading" id="KZb-vy-yhB"/>
+                            <constraint firstAttribute="trailing" secondItem="T3D-IE-NLE" secondAttribute="trailing" id="OZa-Vy-vu3"/>
+                            <constraint firstItem="T3D-IE-NLE" firstAttribute="top" secondItem="zEU-X9-HZl" secondAttribute="top" id="S29-mD-fHD"/>
+                            <constraint firstItem="SSK-Eo-JFU" firstAttribute="top" secondItem="T3D-IE-NLE" secondAttribute="bottom" id="pyH-aH-MEu"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="T3D-IE-NLE" id="Q4h-6E-SI6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Ey-2A-5ri" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1138" y="-965"/>
         </scene>
     </scenes>
 </document>

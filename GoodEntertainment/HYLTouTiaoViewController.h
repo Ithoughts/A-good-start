@@ -6,9 +6,11 @@
 //  Copyright © 2016 Xiaowu Yin. All rights reserved.
 //
 
-#import "HYLHaoYuLeListBaseViewController.h"
+#import <UIKit/UIKit.h>
 
-@interface HYLTouTiaoViewController : HYLHaoYuLeListBaseViewController
+@interface HYLTouTiaoViewController : UIViewController
 
+@property (nonatomic, assign) NSInteger page;
+@property (nonatomic, strong) UITableView *tableView;
 
 @end

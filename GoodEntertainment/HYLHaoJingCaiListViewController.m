@@ -7,8 +7,10 @@
 //
 
 #import "HYLHaoJingCaiListViewController.h"
-#import <MMDrawerBarButtonItem.h>
-#import <UIViewController+MMDrawerController.h>
+
+#import "HYLJingCaiDetailedInfoViewController.h"
+//#import <MMDrawerBarButtonItem.h>
+//#import <UIViewController+MMDrawerController.h>
 
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
@@ -45,7 +47,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
     
     // left bar Button Item
-    [self setupLeftMenuButton];
+//    [self setupLeftMenuButton];
     
     // title view
     [self setupTitleView];
@@ -65,15 +67,15 @@
 }
 
 #pragma mark - 导航栏左侧按钮
-
--(void)setupLeftMenuButton {
-    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-}
-#pragma mark - Button Handlers
--(void)leftDrawerButtonPress:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-}
+//
+//-(void)setupLeftMenuButton {
+//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
+//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
+//}
+//#pragma mark - Button Handlers
+//-(void)leftDrawerButtonPress:(id)sender {
+//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+//}
 
 #pragma mark - 表格视图
 
@@ -106,17 +108,16 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
-    [manager POST:kXiChangURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    [manager POST:kJingCaiURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"好精彩: \n%@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"好精彩: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-//        NSLog(@"status: %@", responseDic[@"status"]);
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
@@ -136,17 +137,11 @@
         
         } else {
         
-//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请求失败"
-//                                                                        message:nil
-//                                                                       delegate:nil
-//                                                              cancelButtonTitle:@"OK"
-//                                                              otherButtonTitles:nil, nil];
-//                        [alert show];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error:%@", error);
         
     }];
 }
@@ -181,6 +176,24 @@
     return 220.0f;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    //
+    HYLZhiBoListModel *model = _dataArray[indexPath.row];
+    NSInteger videoId = model.videoId;
+    
+   
+//    touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+//    
+//    HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
+//    [tabBarController pushToViewController:touTiaoDetailVC animated:YES];
+    
+    HYLJingCaiDetailedInfoViewController *jingCaiDetailedVC = [[HYLJingCaiDetailedInfoViewController alloc] init];
+    jingCaiDetailedVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    [self.navigationController pushViewController:jingCaiDetailedVC animated:YES];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

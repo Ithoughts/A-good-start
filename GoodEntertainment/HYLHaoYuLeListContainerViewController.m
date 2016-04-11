@@ -11,9 +11,9 @@
 //
 #import "UIView+Additions.h"
 
-//
-#import <MMDrawerBarButtonItem.h>
-#import <UIViewController+MMDrawerController.h>
+
+//#import <MMDrawerBarButtonItem.h>
+//#import <UIViewController+MMDrawerController.h>
 
 // 左侧视图控制器
 #import "HYLMyCollectionViewController.h"
@@ -22,7 +22,7 @@
 #import "HYLSignInViewController.h"
 
 // test
-#import "HYLTouTiaoDetailViewController.h"
+#import "HYLHaoYuLeCommonDetailViewController.h"
 
 // md5 加密
 #import <CommonCrypto/CommonDigest.h>
@@ -63,7 +63,7 @@
     self.manualLoadData = YES;
     self.currentIndex = 0;
     
-    [self setupLeftMenuButton];
+//    [self setupLeftMenuButton];
     
     self.navigationItem.titleView = self.pagingTitleView;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -89,8 +89,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DidTapStatusBar" object:nil];
 }
 - (void)statusBarTappedAction:(NSNotification*)notification {
-    if (self.currentIndex == 0 && self.zhuanFangListVC) {
-        [self.zhuanFangListVC.tableView setContentOffset:CGPointZero animated:YES];
+    if (self.currentIndex == 0 && self.tuiJieListVC) {
+        [self.tuiJieListVC.tableView setContentOffset:CGPointZero animated:YES];
     } else if (self.currentIndex == 1 && self.touTiaoListVC) {
         [self.touTiaoListVC.tableView setContentOffset:CGPointZero animated:YES];
     } else if (self.currentIndex == 2 && self.yuanChuangListVC) {
@@ -100,8 +100,8 @@
 
 #pragma mark - 导航栏左侧按钮
 
--(void)setupLeftMenuButton
-{
+//-(void)setupLeftMenuButton
+//{
 //    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //    leftButton.frame = CGRectMake(0, 0, 35, 40);
 //    [leftButton setImage:[UIImage imageNamed:@"navi_left_item"] forState:UIControlStateNormal];
@@ -110,14 +110,13 @@
 //    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
 //    self.navigationItem.leftBarButtonItem = leftBarButtonItem;
     
-    
-    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-}
+//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
+//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
+//}
 
--(void)leftDrawerButtonPress:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-}
+//-(void)leftDrawerButtonPress:(id)sender {
+//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+//}
 
 - (void)leftBarButtonItemTouch:(UIButton *)sender
 {
@@ -192,7 +191,7 @@
 - (void)prepareTopestViewFooterView
 {
     _footerBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 200, _topestView.frame.size.width, _topestView.frame.size.height-200)];
-    _footerBackgroundImageView.image = [UIImage imageNamed:@"personalPageBg"];
+//    _footerBackgroundImageView.image = [UIImage imageNamed:@"personalPageBg"];
     _footerBackgroundImageView.userInteractionEnabled = YES;
     [_topestView addSubview:_footerBackgroundImageView];
     
@@ -277,7 +276,7 @@
 //            HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
 //            [self.navigationController pushViewController:collectionVC animated:YES];
             
-            HYLTouTiaoDetailViewController *test = [[HYLTouTiaoDetailViewController alloc] init];
+            HYLHaoYuLeCommonDetailViewController *test = [[HYLHaoYuLeCommonDetailViewController alloc] init];
             [self.navigationController pushViewController:test animated:YES];
         }
             break;
@@ -319,6 +318,7 @@
 }
 
 #pragma mark - ViewPagerDataSource
+
 - (NSUInteger)numberOfTabsForViewPager:(ViewPagerController *)viewPager
 {
     return 3;
@@ -327,7 +327,7 @@
 - (UIViewController *)viewPager:(ViewPagerController *)viewPager contentViewControllerForTabAtIndex:(NSUInteger)index
 {
     if (index == 0) {
-        return [self createZhuanFangVC];
+        return [self createTuiJieVC];
         
     } else if (index == 1) {
         return [self createTouTiaoVC];
@@ -338,20 +338,20 @@
 }
 
 #pragma mark - 创建 3个 控制器
-- (UIViewController *)createZhuanFangVC
+- (UIViewController *)createTuiJieVC
 {
-    self.zhuanFangListVC = [[HYLTuiJieViewController alloc] init];
-    self.zhuanFangListVC.haoYuLeListType = HaoYuLeListTypeZhuanFang;
-    self.zhuanFangListVC.isFromHaoYuLeContainer = YES;
+    self.tuiJieListVC = [[HYLTuiJieViewController alloc] init];
+//    self.zhuanFangListVC.haoYuLeListType = HaoYuLeListTypeZhuanFang;
+//    self.zhuanFangListVC.isFromHaoYuLeContainer = YES;
     
-    return self.zhuanFangListVC;
+    return self.tuiJieListVC;
 }
 
 - (UIViewController *)createTouTiaoVC
 {
     self.touTiaoListVC = [[HYLTouTiaoViewController alloc] init];
-    self.touTiaoListVC.haoYuLeListType = HaoYuLeListTypeTouTiao;
-    self.touTiaoListVC.isFromHaoYuLeContainer = YES;
+//    self.touTiaoListVC.haoYuLeListType = HaoYuLeListTypeTouTiao;
+//    self.touTiaoListVC.isFromHaoYuLeContainer = YES;
 
     return self.touTiaoListVC;
 }
@@ -359,8 +359,8 @@
 - (UIViewController *)createYuanChuangVC
 {
     self.yuanChuangListVC = [[HYLYuanChuangViewController alloc] init];
-    self.yuanChuangListVC.haoYuLeListType = HaoYuLeListTypeYuanChuang;
-    self.yuanChuangListVC.isFromHaoYuLeContainer = YES;
+//    self.yuanChuangListVC.haoYuLeListType = HaoYuLeListTypeYuanChuang;
+//    self.yuanChuangListVC.isFromHaoYuLeContainer = YES;
     
     return self.yuanChuangListVC;
 }
@@ -394,9 +394,13 @@
     }
     
     if (index > self.currentIndex) {
+        
         direction = UIPageViewControllerNavigationDirectionForward;
+        
     } else {
+        
         direction = UIPageViewControllerNavigationDirectionReverse;
+        
     }
     
     UIViewController *viewController = [self viewControllerAtIndex:index];
