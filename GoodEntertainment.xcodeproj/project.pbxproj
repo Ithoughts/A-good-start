@@ -41,6 +41,7 @@
 		D1DC6F3B1CAA1F820093D735 /* HYLMVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3A1CAA1F820093D735 /* HYLMVViewController.m */; };
 		D1DC6F3E1CAA1F910093D735 /* HYLBangDanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3D1CAA1F910093D735 /* HYLBangDanViewController.m */; };
 		D1DC6F411CAA23850093D735 /* HYLBangDanModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F401CAA23850093D735 /* HYLBangDanModel.m */; };
+		D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */; };
 		D1F44C8B1C8D7EAD00B6AA0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8A1C8D7EAD00B6AA0C /* main.m */; };
 		D1F44C8E1C8D7EAD00B6AA0C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8D1C8D7EAD00B6AA0C /* AppDelegate.m */; };
 		D1F44C911C8D7EAD00B6AA0C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C901C8D7EAD00B6AA0C /* ViewController.m */; };
@@ -120,6 +121,8 @@
 		D1DC6F3D1CAA1F910093D735 /* HYLBangDanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLBangDanViewController.m; sourceTree = "<group>"; };
 		D1DC6F3F1CAA23850093D735 /* HYLBangDanModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLBangDanModel.h; sourceTree = "<group>"; };
 		D1DC6F401CAA23850093D735 /* HYLBangDanModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLBangDanModel.m; sourceTree = "<group>"; };
+		D1E93BA01CBB96D100069DE9 /* HYLVideoCommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLVideoCommentCell.h; sourceTree = "<group>"; };
+		D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLVideoCommentCell.m; sourceTree = "<group>"; };
 		D1F44C861C8D7EAD00B6AA0C /* GoodEntertainment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoodEntertainment.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1F44C8A1C8D7EAD00B6AA0C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D1F44C8C1C8D7EAD00B6AA0C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -297,6 +300,8 @@
 				D1BE0C531C8EB04500C79A5D /* HYLHaoJingCaiListViewController.m */,
 				D19264C51CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.h */,
 				D19264C61CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m */,
+				D1E93BA01CBB96D100069DE9 /* HYLVideoCommentCell.h */,
+				D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */,
 			);
 			name = HaoJingCai;
 			sourceTree = "<group>";
@@ -570,6 +575,7 @@
 				D1BE0C511C8EB02100C79A5D /* HYLHaoYuLeListContainerViewController.m in Sources */,
 				D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */,
 				D1BE0C541C8EB04500C79A5D /* HYLHaoJingCaiListViewController.m in Sources */,
+				D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */,
 				D13F95D01CA267A500F8B069 /* HYLTuiJieViewController.m in Sources */,
 				D1BE0C571C8EB06700C79A5D /* HYLHaoYinYueListContainerViewController.m in Sources */,
 				D1F44C8B1C8D7EAD00B6AA0C /* main.m in Sources */,

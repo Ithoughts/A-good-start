@@ -40,6 +40,9 @@
 // 发送验证码
 #define             kSendCaptchaURL       [NSString stringWithFormat:@"%@/api/user/send_captcha", kBaseURL]
 
+//获取视频评论
+#define             kGetVideoCommentURL       [NSString stringWithFormat:@"%@/api/comment/video", kBaseURL]
+
 
                                     /********** 音乐相关： ***********/
 
