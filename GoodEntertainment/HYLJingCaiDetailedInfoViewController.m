@@ -42,7 +42,6 @@
     //
     UITableView *_commentTableView;
     
-    
     //
     UILabel *_titleLabel;
     UILabel *_playLabel;
@@ -64,18 +63,20 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.view.backgroundColor = [UIColor whiteColor];
-    
     _screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    [self HYLDetailInfoApiRequest];
-    [self getVideoCommentsRequest];
     
-    [self prepareView];
+    // 隐藏工具栏
+//    [self.tabBarController.tabBar setHidden:YES];
+    
+    [self HYLJingCaiDetailInfoApiRequest];
+    [self getJingCaiVideoCommentsRequest];
+    
+    [self prepareJingCaiView];
 }
 
-- (void)prepareView
+- (void)prepareJingCaiView
 {
     // 视频截图
     _videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 220)];
@@ -84,7 +85,7 @@
     _videoImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_videoImageView];
     
-    // 视频播放按钮
+    // 视频播放
     UIImage *image = [UIImage imageNamed:@"playBtn"];
     _playVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _playVideoButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
@@ -93,7 +94,8 @@
     [_playVideoButton addTarget:self action:@selector(playVideo:) forControlEvents:UIControlEventTouchUpInside];
     [_videoImageView addSubview:_playVideoButton];
     
-    [self createButtons];
+    //
+    [self createTwoButtons];
     
     //
     [self.view addSubview:[self createVideoDecriptionView]];
@@ -101,35 +103,28 @@
 
 #pragma mark - 创建按钮
 
-- (void)createButtons
+- (void)createTwoButtons
 {
     //
     _videoDescriptionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _videoDescriptionButton.frame = CGRectMake(0, _videoImageView.frame.origin.y + _videoImageView.frame.size.height, _screenWidth * 0.5, 30);
     [_videoDescriptionButton setTitle:@"影片描述" forState:UIControlStateNormal];
-    [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [_videoDescriptionButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
+    [_videoDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
     _videoDescriptionButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     _videoDescriptionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    
     _videoDescriptionButton.tag = 1000;
-    
-    [_videoDescriptionButton addTarget:self action:@selector(buttonTap:) forControlEvents:UIControlEventTouchUpInside];
+    [_videoDescriptionButton addTarget:self action:@selector(twoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_videoDescriptionButton];
-    
     
     //
     _commentButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _commentButton.frame = CGRectMake(_screenWidth * 0.5, _videoImageView.frame.origin.y + _videoImageView.frame.size.height, _screenWidth * 0.5, 30);
     [_commentButton setTitle:@"评论" forState:UIControlStateNormal];
     [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [_commentButton setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
     _commentButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     _commentButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    
     _commentButton.tag = 1001;
-    
-    [_commentButton addTarget:self action:@selector(buttonTap:) forControlEvents:UIControlEventTouchUpInside];
+    [_commentButton addTarget:self action:@selector(twoButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_commentButton];
     
     //
@@ -139,31 +134,34 @@
     
     //
     _indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0, _videoDescriptionButton.frame.origin.y + _videoDescriptionButton.frame.size.height + 0.5, _screenWidth * 0.5, 1)];
-    _indicatorView.backgroundColor = [UIColor orangeColor];
+    _indicatorView.backgroundColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f];
     [self.view addSubview:_indicatorView];
 }
 
-#pragma mark - 分段响应
+#pragma mark - 分段
 
-- (void)buttonTap:(UIButton *)sender
+- (void)twoButtonAction:(UIButton *)sender
 {
     switch (sender.tag) {
         case 1000:
         {
-            NSLog(@"影视描述");
+//            NSLog(@"影视描述");
 
             [self changeIndicatorViewOriginX:0];
+            [_videoDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+            [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             
             // 添加到当前视图
             [self.view addSubview:[self createVideoDecriptionView]];
-            
         }
             break;
         case 1001:
         {
-            NSLog(@"评论");
+//            NSLog(@"评论");
             
             [self changeIndicatorViewOriginX:_screenWidth * 0.5];
+            [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+            [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
             
             // 添加到当前视图
             [self.view addSubview:[self createCommentTableView]];
@@ -211,10 +209,9 @@
         _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
         [headerView addSubview:_collectButton];
         
-        _commentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"comment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
-        [headerView addSubview:_commentButton];
+        _videoDecripCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"comment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
+        [headerView addSubview:_videoDecripCommentButton];
     
-        
         //
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, _shareButton.frame.origin.y + _shareButton.frame.size.height, _screenWidth, 1)];
         line.backgroundColor = [UIColor lightGrayColor];
@@ -234,9 +231,9 @@
                                                          documentAttributes:nil
                                                                       error:nil];
         _decriptionLabel.attributedText = attributeHtml;
-        _decriptionLabel.font = [UIFont systemFontOfSize:11.0f];
+        _decriptionLabel.font = [UIFont systemFontOfSize:12.0f];
         _decriptionLabel.numberOfLines = 0;
-        _decriptionLabel.textColor = [UIColor blackColor];
+        _decriptionLabel.textColor = [UIColor lightGrayColor];
         
         CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
         
@@ -257,7 +254,7 @@
     return _decriptionTableView;
 }
 
-#pragma mark - 创建评论视图
+#pragma mark - 创建评论列表
 
 - (UITableView *)createCommentTableView
 {
@@ -283,32 +280,32 @@
     button.titleLabel.font = [UIFont systemFontOfSize:15.0f];
     button.imageEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
     button.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f );
-    [button addTarget:self action:@selector(buttonsTap:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(threeButtonsAction:) forControlEvents:UIControlEventTouchUpInside];
     
     return button;
 }
 
-#pragma mark - buttonsTap:
+#pragma mark - 分享、收藏、评论
 
-- (void)buttonsTap:(UIButton *)sender
+- (void)threeButtonsAction:(UIButton *)sender
 {
     switch (sender.tag) {
         case 100:
         {
-            NSLog(@"分享");
+            NSLog(@"好精彩分享");
         }
             break;
             
         case 101:
         {
-            NSLog(@"收藏");
+            NSLog(@"好精彩收藏");
         }
             break;
             
             
         case 102:
         {
-            NSLog(@"评论");
+            NSLog(@"好精彩评论");
         }
             break;
             
@@ -326,7 +323,7 @@
 
 #pragma mark - 网络请求
 
-- (void)HYLDetailInfoApiRequest
+- (void)HYLJingCaiDetailInfoApiRequest
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
@@ -342,9 +339,9 @@
     
     [manager POST:kShiPinDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"好精彩详情: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"好精彩详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -359,7 +356,7 @@
             HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dataDic];
             [_dataArray addObject:model];
             
-//            // 视频数据
+            // 视频数据
 //            NSDictionary *videoInfoDic = dataDic[@"video_info"];
             
             // 视频地址
@@ -368,21 +365,20 @@
             // 视频截图
             [_videoImageView sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] completed:nil];
             
-            
         } else {
             
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        //        NSLog(@"error: %@", error);
+//        NSLog(@"error: %@", error);
         
     }];
 }
 
-#pragma mark - 获取评论
+#pragma mark - 获取视频评论
 
-- (void)getVideoCommentsRequest
+- (void)getJingCaiVideoCommentsRequest
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
@@ -425,7 +421,7 @@
     [controller play];
 }
 
-#pragma mark - 
+#pragma mark -  UITableViewDelegate, UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

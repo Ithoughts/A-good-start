@@ -48,11 +48,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    // 显示工具栏
+//    [self.tabBarController.tabBar setHidden:NO];
+    
     _page = 1;
     
     [self hylMVApiRequest];
     [self prepareMVTableView];
 }
+
+
+#pragma mark - MV 表视图
+
 - (void)prepareMVTableView
 {
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
@@ -65,6 +72,8 @@
     _tableView.showsVerticalScrollIndicator = YES;
     [self.view addSubview:_tableView];
 }
+
+#pragma mark - 网络请求
 
 - (void)hylMVApiRequest
 {
@@ -82,13 +91,11 @@
     
     [manager POST:kMVListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"MV: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"MV: %@", reponse);
         
         NSError *error = nil;
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
-                                                                    options:NSJSONReadingMutableLeaves
-                                                                      error:&error];
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             

@@ -19,6 +19,7 @@
 		D14749AC1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */; };
 		D149E7871C8EDB37006D17A5 /* HYLMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */; };
 		D15749341CB75F330095E524 /* HYLZhiBoInformationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */; };
+		D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */; };
 		D177B9781CAA55B4003EEB32 /* HYLZhiBoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */; };
 		D177B97B1CAA61C9003EEB32 /* HYLZhiBoListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B97A1CAA61C9003EEB32 /* HYLZhiBoListModel.m */; };
 		D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */; };
@@ -77,6 +78,8 @@
 		D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLMenuViewController.m; sourceTree = "<group>"; };
 		D15749321CB75F330095E524 /* HYLZhiBoInformationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoInformationViewController.h; sourceTree = "<group>"; };
 		D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoInformationViewController.m; sourceTree = "<group>"; };
+		D165ED2F1CC0BE6300C35F41 /* HYLSingerMVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSingerMVCell.h; sourceTree = "<group>"; };
+		D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLSingerMVCell.m; sourceTree = "<group>"; };
 		D177B9761CAA55B4003EEB32 /* HYLZhiBoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoCell.h; sourceTree = "<group>"; };
 		D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoCell.m; sourceTree = "<group>"; };
 		D177B9791CAA61C9003EEB32 /* HYLZhiBoListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoListModel.h; sourceTree = "<group>"; };
@@ -194,6 +197,8 @@
 			children = (
 				D14749AA1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.h */,
 				D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */,
+				D165ED2F1CC0BE6300C35F41 /* HYLSingerMVCell.h */,
+				D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */,
 			);
 			name = YinYueDetailViewController;
 			sourceTree = "<group>";
@@ -411,6 +416,7 @@
 		D1F44C881C8D7EAD00B6AA0C /* GoodEntertainment */ = {
 			isa = PBXGroup;
 			children = (
+				D1C262271C9968A9000ABA63 /* NetworkInterface */,
 				D15749311CB75C9D0095E524 /* TabBarController */,
 				D102A4A41CB39F4900E14C2C /* MenuViewController */,
 				D166C17D1C9950DE00E20F0A /* LeftViewContainer */,
@@ -419,7 +425,6 @@
 				D19C98491C8FFC7300BDAEC8 /* HaoYinYue */,
 				D19C984A1C8FFC8500BDAEC8 /* ZhiBo */,
 				D1DC6F431CAA23B40093D735 /* BaseModel */,
-				D1C262271C9968A9000ABA63 /* NetworkInterface */,
 				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
 				D166C17C1C99505B00E20F0A /* TitleView */,
 				D1F44C8C1C8D7EAD00B6AA0C /* AppDelegate.h */,
@@ -588,6 +593,7 @@
 				D126D55C1C914613000CD6D8 /* HYLEditProfileViewController.m in Sources */,
 				D126D55F1C915A02000CD6D8 /* HYLSettingViewController.m in Sources */,
 				D149E7871C8EDB37006D17A5 /* HYLMenuViewController.m in Sources */,
+				D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */,
 				D1BE0C601C8EBE3100C79A5D /* UIView+Additions.m in Sources */,
 				D1BE0C5D1C8EBCB300C79A5D /* HYLTitlePagerView.m in Sources */,
 				D1BDA0C11C9816ED00D4F9A9 /* HYLGetTimestamp.m in Sources */,

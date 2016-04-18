@@ -9,6 +9,10 @@
 #import "HYLHaoJingCaiListViewController.h"
 
 #import "HYLJingCaiDetailedInfoViewController.h"
+
+#import "AppDelegate.h"
+#import "HYLTabBarController.h"
+
 //#import <MMDrawerBarButtonItem.h>
 //#import <UIViewController+MMDrawerController.h>
 
@@ -39,10 +43,9 @@
     
     _page = 1;
     [self hylHaoJingCaiApiRequest];
-    
-    self.view.backgroundColor = [UIColor whiteColor];
 
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    
     // navigation bar
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
     
@@ -67,7 +70,7 @@
 }
 
 #pragma mark - 导航栏左侧按钮
-//
+
 //-(void)setupLeftMenuButton {
 //    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
 //    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
@@ -184,15 +187,13 @@
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
     NSInteger videoId = model.videoId;
     
-   
-//    touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
-//    
-//    HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
-//    [tabBarController pushToViewController:touTiaoDetailVC animated:YES];
-    
     HYLJingCaiDetailedInfoViewController *jingCaiDetailedVC = [[HYLJingCaiDetailedInfoViewController alloc] init];
     jingCaiDetailedVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
-    [self.navigationController pushViewController:jingCaiDetailedVC animated:YES];
+    
+    HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
+    
+    [tabBarController pushToViewController:jingCaiDetailedVC animated:YES];
+//    [tabBarController presentViewController:jingCaiDetailedVC animated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -46,10 +46,10 @@
 
                                     /********** 音乐相关： ***********/
 
-// 获取MV列表
+// 获取 MV 列表
 #define             kMVListURL            [NSString stringWithFormat:@"%@/api/music/mv", kBaseURL]
 
-// 获取show列表
+// 获取 show 列表
 #define             kShowListURL          [NSString stringWithFormat:@"%@/api/music/show", kBaseURL]
 
 // 获取榜单列表
@@ -64,6 +64,8 @@
 // 发表音乐评论
 #define             kMakeCommentURL       [NSString stringWithFormat:@"%@/api/music/comment/music", kBaseURL]  // 本接口需要用户认证
 
+// 根据艺人ID获取音乐列表
+#define             kSingerMVURL       [NSString stringWithFormat:@"%@/api/music/artist", kBaseURL]
 
 
                                   /********** 用户相关： ***********/

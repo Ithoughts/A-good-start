@@ -73,6 +73,7 @@
 }
 
 #pragma mark - 注册通知
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -100,19 +101,20 @@
 
 #pragma mark - 导航栏左侧按钮
 
-//-(void)setupLeftMenuButton
-//{
-//    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    leftButton.frame = CGRectMake(0, 0, 35, 40);
-//    [leftButton setImage:[UIImage imageNamed:@"navi_left_item"] forState:UIControlStateNormal];
-//    [leftButton addTarget:self action:@selector(leftBarButtonItemTouch:) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
-//    self.navigationItem.leftBarButtonItem = leftBarButtonItem;
+-(void)setupLeftMenuButton
+{
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, 35, 40);
+    [leftButton setImage:[UIImage imageNamed:@"navi_left_item"] forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(leftBarButtonItemTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    self.navigationItem.leftBarButtonItem = leftBarButtonItem;
     
 //    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
 //    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-//}
+    
+}
 
 //-(void)leftDrawerButtonPress:(id)sender {
 //    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
@@ -155,10 +157,10 @@
     
     // 脚视图
     [self prepareTopestViewFooterView];
-
 }
 
 #pragma mark - 头视图
+
 - (void)prepareTopestViewHeaderView
 {
     CGFloat topestViewWidth = _topestView.frame.size.width;

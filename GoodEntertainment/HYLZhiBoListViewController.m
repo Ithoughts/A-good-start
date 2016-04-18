@@ -42,7 +42,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.view.backgroundColor = [UIColor whiteColor];
+    // 显示工具栏
+    [self.tabBarController.tabBar setHidden:NO];
     
     _page = 1;
     [self hylZhiBoApiRequest];

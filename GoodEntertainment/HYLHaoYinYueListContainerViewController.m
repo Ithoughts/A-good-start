@@ -106,36 +106,29 @@
 }
 - (UIViewController *)createShowVC {
     self.showListVC = [[HYLShowViewController alloc] init];
-    self.showListVC.haoYinYueListType = HaoYinYueListTypeShow;
-    self.showListVC.view.backgroundColor = [UIColor redColor];
-    self.showListVC.isFromHaoYinYueContainer = YES;
     
     return self.showListVC;
 }
 
 - (UIViewController *)createMVVC {
     self.mvListVC = [[HYLMVViewController alloc] init];
-    self.mvListVC.view.backgroundColor = [UIColor whiteColor];
-    self.mvListVC.haoYinYueListType = HaoYinYueListTypeMV;
-    self.mvListVC.isFromHaoYinYueContainer = YES;
     
     return self.mvListVC;
 }
 
 - (UIViewController *)createBangDanVC {
     self.bangDanListVC = [[HYLBangDanViewController alloc] init];
-    self.bangDanListVC.view.backgroundColor = [UIColor blueColor];
-    self.bangDanListVC.haoYinYueListType = HaoYinYueListTypeBangDan;
-    self.bangDanListVC.isFromHaoYinYueContainer = YES;
     
     return self.bangDanListVC;
 }
 
-- (void)viewPager:(ViewPagerController *)viewPager didChangeTabToIndex:(NSUInteger)index {
+- (void)viewPager:(ViewPagerController *)viewPager didChangeTabToIndex:(NSUInteger)index
+{
     self.currentIndex = index;
 }
 
-- (HYLTitlePagerView *)pagingTitleView {
+- (HYLTitlePagerView *)pagingTitleView
+{
     if (!_pagingTitleView) {
         self.pagingTitleView = [[HYLTitlePagerView alloc] init];
         self.pagingTitleView.frame = CGRectMake(0, 0, 0, 40);
@@ -150,7 +143,7 @@
 }
 
 - (void)didTouchBWTitle:(NSUInteger)index {
-    //  NSInteger index;
+
     UIPageViewControllerNavigationDirection direction;
     
     if (self.currentIndex == index) {
