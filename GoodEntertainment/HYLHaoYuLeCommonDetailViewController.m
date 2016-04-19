@@ -60,7 +60,7 @@
     // 隐藏工具栏
 //    [self.tabBarController.tabBar setHidden:YES];
     
-    _screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
     // 网络请求

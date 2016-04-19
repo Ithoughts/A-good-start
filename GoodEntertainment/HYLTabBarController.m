@@ -7,16 +7,14 @@
 //
 
 #import "HYLTabBarController.h"
-
+#import "AppDelegate.h"
 
 #import "HYLHaoYuLeListContainerViewController.h"
 #import "HYLHaoJingCaiListViewController.h"
 #import "HYLHaoYinYueListContainerViewController.h"
 #import "HYLZhiBoListViewController.h"
 
-
 #define   kTabBarRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
-
 
 @interface HYLTabBarController ()
 {
@@ -33,6 +31,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    AppDelegate *appDelegate =(AppDelegate *)[UIApplication sharedApplication].delegate;
+    
+    appDelegate.tabBarController = self;
     
     self.delegate = self;
     
@@ -89,6 +91,7 @@
     
     // view controller
     NSArray *viewControllers = @[_haoYuLeNC, _haoJingCaiNC, _haoYinYueNC, _zhiBoNC];
+    
     [self setViewControllers:viewControllers];
 }
 

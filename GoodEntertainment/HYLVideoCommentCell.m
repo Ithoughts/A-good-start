@@ -61,7 +61,6 @@
     _createdTimeLabel.textAlignment = NSTextAlignmentLeft;
     [self.contentView addSubview:_createdTimeLabel];
     
-    
     //
     _commentLabel = [[UILabel alloc] initWithFrame:CGRectMake(_avatar.frame.origin.x + _avatar.frame.size.width + 5, _createdTimeLabel.frame.origin.y + 25, 180, 30)];
     _commentLabel.text = @"好，好，好";
@@ -69,7 +68,6 @@
     _commentLabel.textColor = [UIColor lightGrayColor];
     _commentLabel.textAlignment = NSTextAlignmentLeft;
     [self.contentView addSubview:_commentLabel];
-    
     
     //
     _honorCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(screenWidth - 45, _avatar.frame.origin.y - 2, 30, 30)];

@@ -30,7 +30,6 @@
     UIButton *_playVideoButton;
     NSString *_video_url;
     
-    
     //
     UIButton *_videoDescriptionButton;
     UIButton *_commentButton;
@@ -183,9 +182,11 @@
 
 - (UITableView *)createVideoDecriptionView
 {
-    _decriptionTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, 300)];
+    _decriptionTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
     _decriptionTableView.dataSource = self;
     _decriptionTableView.delegate = self;
+    _decriptionTableView.showsVerticalScrollIndicator = NO;
+    _decriptionTableView.showsHorizontalScrollIndicator = NO;
     
     _decriptionTableView.tableHeaderView = ({
         
@@ -263,9 +264,11 @@
 
 - (UITableView *)createCommentTableView
 {
-    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, 300) style:UITableViewStylePlain];
+    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5)) style:UITableViewStylePlain];
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
+    _commentTableView.showsVerticalScrollIndicator = NO;
+    _commentTableView.showsHorizontalScrollIndicator = NO;
     _commentTableView.tableFooterView = [[UIView alloc] init];
     
     return _commentTableView;

@@ -8,6 +8,11 @@
 
 #import "HYLZhiBoListViewController.h"
 #import "HYLZhiBoInformationViewController.h"
+
+
+#import "AppDelegate.h"
+#import "HYLTabBarController.h"
+
 //#import <MMDrawerBarButtonItem.h>
 //#import <UIViewController+MMDrawerController.h>
 
@@ -203,8 +208,14 @@
     NSInteger videoId = model.videoId;
     
     HYLZhiBoInformationViewController *zhiBoInforVC = [[HYLZhiBoInformationViewController alloc] init];
+    
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    HYLTabBarController *tabBarController = appDelegate.tabBarController;
+    
+    zhiBoInforVC.hidesBottomBarWhenPushed = YES;
+    
     zhiBoInforVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
-    [self.navigationController pushViewController:zhiBoInforVC animated:YES];
+    [tabBarController pushToViewController:zhiBoInforVC animated:NO];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -167,11 +167,12 @@
     HYLYinYueDetailCommonViewController *yinYueDetailVC = [[HYLYinYueDetailCommonViewController alloc] init];
     yinYueDetailVC.musicID = music_id;
     
-    AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    yinYueDetailVC.hidesBottomBarWhenPushed = YES;
     
+    AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     HYLTabBarController *tabBarController = delegate.tabBarController;
     
-    [tabBarController pushToViewController:yinYueDetailVC animated:YES];
+    [tabBarController pushToViewController:yinYueDetailVC animated:NO];
 }
 
 /*

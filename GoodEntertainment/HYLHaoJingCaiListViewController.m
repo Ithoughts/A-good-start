@@ -190,10 +190,13 @@
     HYLJingCaiDetailedInfoViewController *jingCaiDetailedVC = [[HYLJingCaiDetailedInfoViewController alloc] init];
     jingCaiDetailedVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
     
+    jingCaiDetailedVC.hidesBottomBarWhenPushed = YES;
+    
     HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
     
-    [tabBarController pushToViewController:jingCaiDetailedVC animated:YES];
-//    [tabBarController presentViewController:jingCaiDetailedVC animated:YES completion:nil];
+    [tabBarController pushToViewController:jingCaiDetailedVC animated:NO];
+    
+//    [self.navigationController pushViewController:jingCaiDetailedVC animated:NO];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -160,9 +160,10 @@
     //
     HYLHaoYuLeCommonDetailViewController *touTiaoDetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
     touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    touTiaoDetailVC.hidesBottomBarWhenPushed = YES;
     
     HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
-    [tabBarController pushToViewController:touTiaoDetailVC animated:YES];
+    [tabBarController pushToViewController:touTiaoDetailVC animated:NO];
 }
 
 - (void)didReceiveMemoryWarning {
