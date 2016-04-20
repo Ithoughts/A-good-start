@@ -48,8 +48,10 @@
     self = [super init];
     
     if (self) {
+        
         _artist = [[NSMutableArray alloc] init];
     }
+    
     return self;
 }
 - (void)setValue:(id)value forKey:(NSString *)key
@@ -87,6 +89,7 @@
 
 
 
+
 //
 @implementation VideoInfo
 
@@ -99,6 +102,7 @@
     }
 }
 @end
+
 
 
 
@@ -126,8 +130,10 @@
 @end
 
 
+
 //
 @implementation Pivot
+
 
 @end
 

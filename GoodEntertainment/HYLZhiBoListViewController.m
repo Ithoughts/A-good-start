@@ -208,13 +208,13 @@
     NSInteger videoId = model.videoId;
     
     HYLZhiBoInformationViewController *zhiBoInforVC = [[HYLZhiBoInformationViewController alloc] init];
+    zhiBoInforVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    zhiBoInforVC.zhiBoTitle = model.title;
+    zhiBoInforVC.hidesBottomBarWhenPushed = YES;
     
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     HYLTabBarController *tabBarController = appDelegate.tabBarController;
     
-    zhiBoInforVC.hidesBottomBarWhenPushed = YES;
-    
-    zhiBoInforVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
     [tabBarController pushToViewController:zhiBoInforVC animated:NO];
 }
 

@@ -158,6 +158,7 @@
     
     HYLYinYueDetailCommonViewController *yinYueDetailVC = [[HYLYinYueDetailCommonViewController alloc] init];
     yinYueDetailVC.musicID = music_id;
+    yinYueDetailVC.musicTitle = model.title;
     yinYueDetailVC.hidesBottomBarWhenPushed = YES;
     
     AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];

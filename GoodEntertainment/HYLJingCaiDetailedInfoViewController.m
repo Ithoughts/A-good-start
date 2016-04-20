@@ -66,15 +66,48 @@
     _screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    
-    // 隐藏工具栏
-//    [self.tabBarController.tabBar setHidden:YES];
-    
     [self HYLJingCaiDetailInfoApiRequest];
     [self getJingCaiVideoCommentsRequest];
     
+    [self prepareJingCaiNavigationBar];
     [self prepareJingCaiView];
 }
+
+#pragma mark - 导航栏
+
+- (void)prepareJingCaiNavigationBar
+{
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.font = [UIFont systemFontOfSize:18.0f];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = self.jingCaiTitle;
+    
+    UINavigationItem *navItem = self.navigationItem;
+    navItem.titleView = titleLabel;
+    
+    //
+    UIImage *image = [UIImage imageNamed:@"backIcon"];
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+    [leftButton setImage:image forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    navItem.leftBarButtonItem = left;
+}
+
+#pragma mark - 返回
+
+- (void)goBack:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark - 视图
 
 - (void)prepareJingCaiView
 {
@@ -145,8 +178,6 @@
     switch (sender.tag) {
         case 1000:
         {
-//            NSLog(@"影视描述");
-
             [self changeIndicatorViewOriginX:0];
             [_videoDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
             [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
@@ -157,8 +188,6 @@
             break;
         case 1001:
         {
-//            NSLog(@"评论");
-            
             [self changeIndicatorViewOriginX:_screenWidth * 0.5];
             [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
@@ -245,14 +274,11 @@
         [_decriptionLabel sizeThatFits:htmlRect.size];
         
         [headerView addSubview:_decriptionLabel];
-
+        
         headerView;
-    
     });
     
-    
     _decriptionTableView.tableFooterView = [[UIView alloc] init];
-    
     
     return _decriptionTableView;
 }
@@ -294,22 +320,22 @@
 - (void)threeButtonsAction:(UIButton *)sender
 {
     switch (sender.tag) {
-        case 130:
+        case 100:
         {
-            NSLog(@"好精彩分享");
+//            NSLog(@"分享");
         }
             break;
             
         case 101:
         {
-            NSLog(@"好精彩收藏");
+//            NSLog(@"收藏");
         }
             break;
             
             
         case 102:
         {
-            NSLog(@"好精彩评论");
+//            NSLog(@"评论");
         }
             break;
             
@@ -399,9 +425,9 @@
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"好精彩评论: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"好精彩评论: %@", reponse);
         
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -452,6 +478,7 @@
         if (!cell) {
             
             cell = [[HYLVideoCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     }
     

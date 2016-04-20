@@ -48,9 +48,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    // 显示工具栏
-//    [self.tabBarController.tabBar setHidden:NO];
-    
     _page = 1;
     
     [self hylShowApiRequest];
@@ -94,8 +91,8 @@
     
     [manager POST:kBangDanListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"show: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"show: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
@@ -166,6 +163,7 @@
     
     HYLYinYueDetailCommonViewController *yinYueDetailVC = [[HYLYinYueDetailCommonViewController alloc] init];
     yinYueDetailVC.musicID = music_id;
+    yinYueDetailVC.musicTitle = model.title;
     
     yinYueDetailVC.hidesBottomBarWhenPushed = YES;
     

@@ -67,7 +67,7 @@
     [self HYLDetailInfoApiRequest];
     
     // 创建导航栏
-//    [self prepareNavigationBar];
+    [self prepareNavigationBar];
     
     // 创建表格
     [self prepareCommonTableView];
@@ -75,51 +75,46 @@
 
 #pragma mark - 创建导航栏
 
-//- (void)prepareNavigationBar
-//{
-//    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-//    UINavigationController *naviController = appDelegate.tabBarController.selectedViewController;
-//    
-//    // bar
-//    [naviController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
-//    [naviController.navigationBar setTintColor:[UIColor whiteColor]];
-//    
-//    // left bar button item
-//    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    leftButton.frame = CGRectMake(0, 0, 40, 30);
-//    [leftButton setImage:[UIImage imageNamed:@"backIcon"] forState:UIControlStateNormal];
-//    [leftButton addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
-//    naviController.navigationItem.leftBarButtonItem = left;
-//    
-//    
-//    // right bar button item
-//    UIBarButtonItem *rightButtonItem1 = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"comment"]
-//                                                                         style:UIBarButtonItemStylePlain
-//                                                                        target:self
-//                                                                        action:@selector(comment:)];
-//    
-//    UIBarButtonItem *rightButtonItem2 = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"]
-//                                                                         style:UIBarButtonItemStylePlain
-//                                                                        target:self
-//                                                                        action:@selector(share:)];
-//    NSArray *itemArray = @[rightButtonItem1, rightButtonItem2];
-//    
-//    naviController.navigationItem.rightBarButtonItems = itemArray;
-//}
+- (void)prepareNavigationBar
+{
+    // bar
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    
+    
+    UINavigationItem *navItem = self.navigationItem;
+    
+    // left bar button item
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, 40, 30);
+    [leftButton setImage:[UIImage imageNamed:@"backIcon"] forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(backTo:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    navItem.leftBarButtonItem = left;
+    
+    
+    // right bar button item
+    UIBarButtonItem *rightButtonItem1 = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"comment"]
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(comment:)];
+    
+    UIBarButtonItem *rightButtonItem2 = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"]
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(share:)];
+    NSArray *itemArray = @[rightButtonItem2, rightButtonItem1];
+    
+    navItem.rightBarButtonItems = itemArray;
+}
 
 #pragma mark - 返回
 
 - (void)backTo:(UIButton *)sender
 {
-    NSLog(@"back to ");
+    [self.navigationController popViewControllerAnimated:YES];
 }
-
-//- (void)backTo
-//{
-//    NSLog(@"返回");
-//}
 
 #pragma mark - 评论
 
@@ -128,22 +123,12 @@
     NSLog(@"comment");
 }
 
-//- (void)comment:(id)sender
-//{
-//    NSLog(@"comment");
-//}
-
 #pragma mark - 分享
 
 - (void)share:(UIButton *)sender
 {
     NSLog(@"share");
 }
-
-//- (void)share:(id)sender
-//{
-//    NSLog(@"share");
-//}
 
 #pragma mark - 创建 界面
 

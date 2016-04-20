@@ -11,5 +11,6 @@
 @interface HYLYinYueDetailCommonViewController : UIViewController
 
 @property (nonatomic, copy) NSString *musicID;
+@property (nonatomic, copy) NSString *musicTitle;
 
 @end

@@ -11,5 +11,6 @@
 @interface HYLZhiBoInformationViewController : UIViewController
 
 @property (nonatomic, copy) NSString *videoId;
+@property (nonatomic, copy) NSString *zhiBoTitle;
 
 @end

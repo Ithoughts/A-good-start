@@ -113,9 +113,9 @@
     
     [manager POST:kJingCaiURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"好精彩: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"好精彩: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -189,6 +189,7 @@
     
     HYLJingCaiDetailedInfoViewController *jingCaiDetailedVC = [[HYLJingCaiDetailedInfoViewController alloc] init];
     jingCaiDetailedVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    jingCaiDetailedVC.title = model.title;
     
     jingCaiDetailedVC.hidesBottomBarWhenPushed = YES;
     

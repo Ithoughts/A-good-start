@@ -40,23 +40,23 @@
 
 @property (nonatomic, assign) NSInteger musicId;
 
-@property (nonatomic, copy) NSString *comment_count;
-
-@property (nonatomic, copy) NSString *author;
-
-@property (nonatomic, copy) NSString *created_at;
+@property (nonatomic, copy) NSString *music_category_id;
 
 @property (nonatomic, copy) NSString *title;
 
-@property (nonatomic, copy) NSString *view_count;
+@property (nonatomic, copy) NSString *video_info_id;
+
+@property (nonatomic, copy) NSString *author;
 
 @property (nonatomic, copy) NSString *summary;
 
+@property (nonatomic, copy) NSString *view_count;
+
+@property (nonatomic, copy) NSString *comment_count;
+
 @property (nonatomic, copy) NSString *like_count;
 
-@property (nonatomic, copy) NSString *music_category_id;
-
-@property (nonatomic, copy) NSString *video_info_id;
+@property (nonatomic, copy) NSString *created_at;
 
 @property (nonatomic, copy) NSString *updated_at;
 

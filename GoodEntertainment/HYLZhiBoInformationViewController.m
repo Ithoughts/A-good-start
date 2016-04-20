@@ -74,8 +74,46 @@
     [self getZhiBoVideoCommentsRequest];
     
     //
+    [self prepareZhiBoNavigationBar];
+    
+    //
     [self prepareZhiBoView];
 }
+
+#pragma mark - 导航栏
+
+- (void)prepareZhiBoNavigationBar
+{
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.font = [UIFont systemFontOfSize:18.0f];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = self.zhiBoTitle;
+    
+    UINavigationItem *navItem = self.navigationItem;
+    navItem.titleView = titleLabel;
+    
+    //
+    UIImage *image = [UIImage imageNamed:@"backIcon"];
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+    [leftButton setImage:image forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    navItem.leftBarButtonItem = left;
+}
+
+#pragma mark - 返回
+
+- (void)goBack:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 
 #pragma mark - 视图
 
@@ -182,7 +220,7 @@
 
 - (UITableView *)createVideoDecriptionView
 {
-    _decriptionTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _decriptionTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5))];
     _decriptionTableView.dataSource = self;
     _decriptionTableView.delegate = self;
     _decriptionTableView.showsVerticalScrollIndicator = NO;
@@ -190,7 +228,7 @@
     
     _decriptionTableView.tableHeaderView = ({
         
-        UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, 390)];
+        UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, 390)];
         headerView.userInteractionEnabled = YES;
         
         //
@@ -218,7 +256,6 @@
         
         _videoDecripCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"comment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
         [headerView addSubview:_videoDecripCommentButton];
-        
         
         //
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, _shareButton.frame.origin.y + _shareButton.frame.size.height, _screenWidth, 1)];
@@ -264,7 +301,7 @@
 
 - (UITableView *)createCommentTableView
 {
-    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5)) style:UITableViewStylePlain];
+    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5)) style:UITableViewStylePlain];
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
     _commentTableView.showsVerticalScrollIndicator = NO;
@@ -299,20 +336,20 @@
     switch (sender.tag) {
         case 100:
         {
-            NSLog(@"直播分享");
+//            NSLog(@"分享");
         }
             break;
             
         case 101:
         {
-            NSLog(@"直播收藏");
+//            NSLog(@"收藏");
         }
             break;
             
             
         case 102:
         {
-            NSLog(@"直播评论");
+//            NSLog(@"评论");
         }
             break;
             
@@ -404,9 +441,9 @@
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"直播评论: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"直播评论: %@", reponse);
         
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -455,7 +492,9 @@
         cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (!cell) {
+            
             cell = [[HYLVideoCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     }
     

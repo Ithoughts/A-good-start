@@ -70,15 +70,47 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-    _screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
+    [self HYLMusicInfoApiRequest];
     
-    [self HYLDetailInfoApiRequest];
-    
-    
+    [self prepareYinYueNavigationBar];
     [self prepareMVView];
+}
+
+#pragma mark - 导航栏
+
+- (void)prepareYinYueNavigationBar
+{
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.font = [UIFont systemFontOfSize:18.0f];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = self.musicTitle;
+    
+    UINavigationItem *navItem = self.navigationItem;
+    navItem.titleView = titleLabel;
+    
+    //
+    UIImage *image = [UIImage imageNamed:@"backIcon"];
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+    [leftButton setImage:image forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    navItem.leftBarButtonItem = left;
+}
+
+#pragma mark - 返回
+
+- (void)goBack:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - 视图
@@ -104,7 +136,7 @@
     //
     [self createThreeButtons];
     
-    //
+    // 描述表
     [self.view addSubview:[self createMVDecriptionView]];
 }
 
@@ -204,7 +236,7 @@
             break;
     }
 }
-#pragma mark - 影片描述视图
+#pragma mark - 影片简介 表
 
 - (UITableView *)createMVDecriptionView
 {
@@ -256,7 +288,7 @@
         [headerView addSubview:line];
         
         //
-        _decriptionLabel = [[UILabel alloc] init];
+        _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, line.frame.origin.y + line.frame.size.height+5, _screenWidth - 10, 0)];
         
         //
         BangDanDetailInfoData *model = _dataArray[0];
@@ -277,45 +309,44 @@
             
             CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
             
-            _decriptionLabel.frame = CGRectMake(5, line.frame.origin.y + line.frame.size.height, htmlRect.size.width - 10, htmlRect.size.height);
+            _decriptionLabel.frame = CGRectMake(5, line.frame.origin.y + line.frame.size.height, _screenWidth - 10, htmlRect.size.height);
             
             [_decriptionLabel sizeThatFits:htmlRect.size];
             
             [headerView addSubview:_decriptionLabel];
         }
         
-       
-        
         headerView;
     });
     
-    
     _MVDecriptionTable.tableFooterView = [[UIView alloc] init];
-    
     
     return _MVDecriptionTable;
 }
 
-#pragma mark - 创建评论列表
+#pragma mark - 评论 列表
 
 - (UITableView *)createCommentTableView
 {
-    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, 300) style:UITableViewStylePlain];
+    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+5)) style:UITableViewStylePlain];
     _commentTable.dataSource = self;
     _commentTable.delegate = self;
+    _commentTable.showsHorizontalScrollIndicator = NO;
+    _commentTable.showsVerticalScrollIndicator = NO;
     _commentTable.tableFooterView = [[UIView alloc] init];
     
     return _commentTable;
-    
 }
 
-#pragma mark - 创建 MV 艺人 列表
+#pragma mark -  MV艺人 列表
 
 - (UITableView *)createSingerTableView
 {
-    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, 300) style:UITableViewStylePlain];
+    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+5)) style:UITableViewStylePlain];
     _singerTable.dataSource = self;
     _singerTable.delegate = self;
+    _singerTable.showsHorizontalScrollIndicator = NO;
+    _singerTable.showsVerticalScrollIndicator = NO;
     _singerTable.tableFooterView = [[UIView alloc] init];
     
     return _singerTable;
@@ -376,7 +407,7 @@
 
 #pragma mark - 网络请求
 
-- (void)HYLDetailInfoApiRequest
+- (void)HYLMusicInfoApiRequest
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
@@ -392,44 +423,47 @@
     
     [manager POST:kMusicDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"音乐详情: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"音乐详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-        
         _dataArray = [[NSMutableArray alloc] init];
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
-            NSDictionary *music_infoDic = responseDic[@"music"][@"video_info"];
+            NSDictionary *musicDic = responseDic[@"music"];
             
-            BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:responseDic[@"music"]];
+            NSDictionary *music_info = musicDic[@"video_info"] ;
+            
+            BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:musicDic];
             [_dataArray addObject:model];
             
+            NSArray *artistArray = musicDic[@"artist"];
             
-            
-//            Artist *artist = [Artist alloc] initWithDictionary:<#(NSDictionary *)#>
-            
-            _artist_id = responseDic[@"music"][@"artist"][0][@"id"];
+            for (NSDictionary *dic in artistArray) {
+                
+                _artist_id = dic[@"id"];
+            }
             
             // 获取歌曲列表
             [self HYLMusicListApiRequest:_artist_id];
             
             // 音乐地址
-            _music_url = music_infoDic[@"url"];
+            _music_url = music_info[@"url"];
             
             // 音乐截图
-            [_musicImageView sd_setImageWithURL:[NSURL URLWithString:music_infoDic[@"cover_url"]] completed:nil];
+            [_musicImageView sd_setImageWithURL:[NSURL URLWithString:music_info[@"cover_url"]] completed:nil];
 
         } else {
             
         }
         
         [_MVDecriptionTable reloadData];
+        
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -457,16 +491,14 @@
     
     [manager POST:kSingerMVURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"音乐人的音乐列表: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"音乐人的音乐列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-        
-        _dataArray = [[NSMutableArray alloc] init];
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             

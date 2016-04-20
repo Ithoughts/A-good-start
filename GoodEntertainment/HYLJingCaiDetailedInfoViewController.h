@@ -11,5 +11,6 @@
 @interface HYLJingCaiDetailedInfoViewController : UIViewController
 
 @property (nonatomic, copy) NSString *videoId;
+@property (nonatomic, copy) NSString *jingCaiTitle;
 
 @end
