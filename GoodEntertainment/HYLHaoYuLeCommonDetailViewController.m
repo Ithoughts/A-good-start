@@ -18,9 +18,12 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 
 // 视频播放
-#import <MediaPlayer/MediaPlayer.h>
+//#import <MediaPlayer/MediaPlayer.h>
+#import "XLVideoPlayer.h"
 
-@interface HYLHaoYuLeCommonDetailViewController ()<UITableViewDelegate, UITableViewDataSource>
+#import "HYLSendCommentView.h"
+
+@interface HYLHaoYuLeCommonDetailViewController ()<UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, UITextViewDelegate>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
@@ -34,7 +37,7 @@
     NSString *_editor;
     
     UIImageView *_videoImageView;
-    UIButton *_playVideoButton;
+    UIImageView *_playVideoImage;
     UILabel *_videoIntroductionLabel;
     
     NSString *_html;
@@ -45,7 +48,11 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (nonatomic, strong) MPMoviePlayerController *mc;
+//@property (nonatomic, strong) MPMoviePlayerController *mc;
+
+@property (nonatomic, strong) XLVideoPlayer *player;
+
+@property (weak, nonatomic) IBOutlet HYLSendCommentView *commentView;
 
 @end
 
@@ -56,9 +63,6 @@
     // Do any additional setup after loading the view from its nib.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    // 隐藏工具栏
-//    [self.tabBarController.tabBar setHidden:YES];
     
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -71,6 +75,78 @@
     
     // 创建表格
     [self prepareCommonTableView];
+    
+    
+//    _commentView = [[HYLSendCommentView alloc] initWithFrame:CGRectMake(0, _screenHeight - 54, _screenWidth, 54)];
+//    _commentView.sendButton addTarget:self action:@selector(<#selector#>) forControlEvents:<#(UIControlEvents)#>
+//    
+//    
+//    if (self.commentView.hidden == NO) {
+//        
+//        [self.commentView.textField becomeFirstResponder];
+//    }
+    
+    self.commentView.textField.delegate = self;
+    
+//    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+//    [center addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+//    [center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+//    [self.textField addTarget:self action:@selector(endInput:) forControlEvents:UIControlEventEditingDidEndOnExit];
+}
+
+- (XLVideoPlayer *)player {
+    
+    if (!_player) {
+        _player = [[XLVideoPlayer alloc] init];
+        _player.frame = CGRectMake(0, 64, self.view.frame.size.width, 250);
+    }
+    
+    return _player;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [_player destroyPlayer];
+    _player = nil;
+}
+
+//- (void)keyboardWillShow:(id)sender
+//{
+//    self.textField.transform = CGAffineTransformMakeTranslation(0, -[[[sender userInfo] objectForKey: @"UIKeyboardFrameEndUserInfoKey"] CGRectValue].size.height);
+//    if ([[[sender userInfo] objectForKey:@"UIKeyboardAnimationDurationUserInfoKey"] doubleValue] > 0)
+//    {
+//        [UIView animateWithDuration:[[[sender userInfo] objectForKey:@"UIKeyboardAnimationDurationUserInfoKey"] doubleValue] delay:0 options:[[[sender userInfo] objectForKey:@"UIKeyboardAnimationCurveUserInfoKey"] integerValue] << 16 animations:^{
+//            
+//        } completion:nil];
+//    }
+//    
+//}
+//
+//- (void)keyboardWillHide:(id)sender
+//{
+//    self.textField.transform = CGAffineTransformIdentity;
+//    
+//    if ([[[sender userInfo] objectForKey:@"UIKeyboardAnimationDurationUserInfoKey"] doubleValue] > 0)
+//    {
+//        [UIView animateWithDuration:[[[sender userInfo] objectForKey:@"UIKeyboardAnimationDurationUserInfoKey"] doubleValue] delay:0 options:[[[sender userInfo] objectForKey:@"UIKeyboardAnimationCurveUserInfoKey"] integerValue] << 16 animations:^{
+//            
+//        } completion:nil];
+//    }
+//}
+//
+//- (IBAction)endInput:(UITextField *)sender {
+//    
+//    NSLog(@"FFF");
+//    [sender resignFirstResponder];
+//}
+
+#pragma mark - 发表评论
+
+- (void)sendComment:(UIButton *)sender
+{
+    NSLog(@"sender 评论");
 }
 
 #pragma mark - 创建导航栏
@@ -139,33 +215,33 @@
         UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 820.0f)];
         
         // 视频标题
-        _videoTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(_screenWidth * 0.5 - 180 * 0.5, 10, 180, 30)];
+        _videoTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 10, _screenWidth - 10, 30)];
         _videoTitleLabel.text = _videoTitle;
         _videoTitleLabel.textColor = [UIColor blackColor];
-        _videoTitleLabel.textAlignment = NSTextAlignmentCenter;
-        _videoTitleLabel.font = [UIFont systemFontOfSize:16.0f];
+        _videoTitleLabel.textAlignment = NSTextAlignmentLeft;
+        _videoTitleLabel.font = [UIFont systemFontOfSize:20.0f];
         _videoTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-//        [_videoTitleLabel sizeToFit];
+
         [headerView addSubview:_videoTitleLabel];
         
         // 发布时间
-        _createTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, _videoTitleLabel.frame.origin.y + _videoTitleLabel.frame.size.height,  _screenWidth * 3 / 4.0, 30)];
-        _createTimeLabel.text = [NSString stringWithFormat:@"发布于:%@", _createTime];
+        _createTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, _videoTitleLabel.frame.origin.y + _videoTitleLabel.frame.size.height,  _screenWidth*3/4.0 - 10, 30)];
+        _createTimeLabel.text = [NSString stringWithFormat:@"发布于: %@", _createTime];
         _createTimeLabel.textColor = [UIColor lightGrayColor];
         _createTimeLabel.textAlignment = NSTextAlignmentLeft;
-        _createTimeLabel.font = [UIFont systemFontOfSize:13.0f];
+        _createTimeLabel.font = [UIFont systemFontOfSize:14.0f];
         _createTimeLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-//        [_createTimeLabel sizeToFit];
+
         [headerView addSubview:_createTimeLabel];
         
         // 编辑时间
-        _editorLabel = [[UILabel alloc] initWithFrame:CGRectMake(_createTimeLabel.frame.origin.x + _createTimeLabel.frame.size.width - 90, _createTimeLabel.frame.origin.y, _screenWidth * 1 / 4.0 - 10, 30)];
-        _editorLabel.text = [NSString stringWithFormat:@"编辑:%@", _editor];
+        _editorLabel = [[UILabel alloc] initWithFrame:CGRectMake(_screenWidth*0.5 + 10, _createTimeLabel.frame.origin.y, _screenWidth*0.5 - 20, 30)];
+        _editorLabel.text = [NSString stringWithFormat:@"编辑: %@", _editor];
         _editorLabel.textColor = [UIColor lightGrayColor];
         _editorLabel.textAlignment = NSTextAlignmentLeft;
-        _editorLabel.font = [UIFont systemFontOfSize:13.0f];
+        _editorLabel.font = [UIFont systemFontOfSize:14.0f];
         _editorLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-//        [_editorLabel sizeToFit];
+
         [headerView addSubview:_editorLabel];
         
         // 分隔线
@@ -179,15 +255,18 @@
         _videoImageView.userInteractionEnabled = YES;
         _videoImageView.contentMode = UIViewContentModeScaleAspectFill;
         [headerView addSubview:_videoImageView];
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showVideoPlayer:)];
+        [_videoImageView addGestureRecognizer:tap];
 
         // 视频播放按钮
         UIImage *image = [UIImage imageNamed:@"playBtn"];
-        _playVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _playVideoButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
-        _playVideoButton.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
-        [_playVideoButton setImage:image forState:UIControlStateNormal];
-        [_playVideoButton addTarget:self action:@selector(playVideo:) forControlEvents:UIControlEventTouchUpInside];
-        [_videoImageView addSubview:_playVideoButton];
+        _playVideoImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+        _playVideoImage.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
+        _playVideoImage.image = image;
+        _playVideoImage.userInteractionEnabled = YES;
+
+        [_videoImageView addSubview:_playVideoImage];
         
         // 视频简介
         _videoIntroductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, _videoImageView.frame.origin.y + _videoImageView.frame.size.height - 50, _screenWidth - 10, 0)];
@@ -200,24 +279,18 @@
                                                          documentAttributes:nil
                                                                       error:nil];
         _videoIntroductionLabel.attributedText = html;
-        _videoIntroductionLabel.font = [UIFont systemFontOfSize:11.0f];
-        _videoIntroductionLabel.textColor = [UIColor lightGrayColor];
+//        _videoIntroductionLabel.font = [UIFont systemFontOfSize:11.0f];
+//        _videoIntroductionLabel.textColor = [UIColor lightGrayColor];
         
         CGRect htmlRect = [html boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
         
         _videoIntroductionLabel.frame = CGRectMake(_videoImageView.frame.origin.x, _videoImageView.frame.origin.y + _videoImageView.frame.size.height, htmlRect.size.width, htmlRect.size.height);
         
         [headerView addSubview:_videoIntroductionLabel];
-        
-        // 分隔线
-//        UIView *line1View = [[UIView alloc] initWithFrame:CGRectMake(5, _videoIntroductionLabel.frame.origin.y + _videoIntroductionLabel.frame.size.height + 5, _screenWidth - 10, 1)];
-//        line1View.backgroundColor = [UIColor lightGrayColor];
-//        [headerView addSubview:line1View];
+
         
         headerView;
     });
-
-//    self.tableView.tableFooterView = [[UIView alloc] init];
     
     self.tableView.tableFooterView = ({
     
@@ -237,16 +310,24 @@
 
 #pragma mark - 播放视频
 
-- (void)playVideo:(UIButton *)sender
+- (void)showVideoPlayer:(UITapGestureRecognizer *)tapGesture
 {
-    NSURL *url = [NSURL URLWithString:_video_url];
-    MPMoviePlayerController *controller = [[MPMoviePlayerController alloc] initWithContentURL:url];
-    controller.movieSourceType = MPMovieSourceTypeStreaming;
-    self.mc = controller;
+    [_player destroyPlayer];
+    _player = nil;
     
-    controller.view.frame = self.view.bounds;
-    [self.view addSubview:controller.view];
-    [controller play];
+    UIView *view = tapGesture.view;
+    
+    _player = [[XLVideoPlayer alloc] init];
+    _player.videoUrl = _video_url;
+    _player.frame = view.bounds;
+    
+    [view addSubview:_player];
+    
+    _player.completedPlayingBlock = ^(XLVideoPlayer *player) {
+        [player destroyPlayer];
+        _player = nil;
+    };
+
 }
 
 #pragma mark - 网络请求
@@ -267,9 +348,9 @@
     
     [manager POST:kShiPinDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"详情: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -301,7 +382,7 @@
                                                                           error:nil];
             _videoIntroductionLabel.attributedText = html;
             _videoIntroductionLabel.font = [UIFont systemFontOfSize:11.0f];
-            _videoIntroductionLabel.textColor = [UIColor blackColor];
+//            _videoIntroductionLabel.textColor = [UIColor blackColor];
             
             CGRect htmlRect = [html boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
             
@@ -349,8 +430,10 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
+        
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
     }
     
     cell.textLabel.text = [NSString stringWithFormat:@"test:%ld", indexPath.row];
@@ -362,6 +445,17 @@
 {
     return 54.0f;
 }
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if ([scrollView isEqual:self.tableView]) {
+        
+        [_player playerScrollIsSupportSmallWindowPlay:YES];
+    }
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

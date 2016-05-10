@@ -14,14 +14,16 @@
 #import "HYLHaoYinYueListContainerViewController.h"
 #import "HYLZhiBoListViewController.h"
 
+
 #define   kTabBarRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
+
 
 @interface HYLTabBarController ()
 {
-    UINavigationController *_haoYuLeNC;
-    UINavigationController *_haoJingCaiNC;
-    UINavigationController *_haoYinYueNC;
-    UINavigationController *_zhiBoNC;
+    UINavigationController *_haoYuLeNC;    // 好娱乐
+    UINavigationController *_haoJingCaiNC; // 好精彩
+    UINavigationController *_haoYinYueNC;  // 好音乐
+    UINavigationController *_zhiBoNC;      // 直播
 }
 
 @end
@@ -32,11 +34,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    AppDelegate *appDelegate =(AppDelegate *)[UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     
     appDelegate.tabBarController = self;
-    
-    self.delegate = self;
     
     [self setupTabBarStyle];
     [self setupTabBarItems];
@@ -46,9 +46,10 @@
 
 - (void)setupTabBarStyle
 {
-    [self setDelegate:self];
+    self.delegate = self;
     
     self.tabBar.tintColor = kTabBarRGB(255, 199, 3);
+    
     [self.tabBar setBackgroundImage:[UIImage imageNamed:@"tabBar_background"]];
 }
 
@@ -89,13 +90,13 @@
                                                 selectedImage:[UIImage imageNamed:@"tabBar_zhibo_selected.png"]];
     
     
-    // view controller
+    // view controllers
     NSArray *viewControllers = @[_haoYuLeNC, _haoJingCaiNC, _haoYinYueNC, _zhiBoNC];
     
-    [self setViewControllers:viewControllers];
+    self.viewControllers = viewControllers;
 }
 
-#pragma mark - Delegate - UITabBarControllerDelegate
+#pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
@@ -108,6 +109,8 @@
     
     return YES;
 }
+
+#pragma mark - Custom define
 
 - (void)pushToViewController:(UIViewController *)viewController animated:(BOOL)animated
 {

@@ -48,12 +48,6 @@
 
 @implementation HYLHaoYuLeListContainerViewController
 
-
-//#pragma mark - Button Handlers
-//-(void)leftDrawerButtonPress:(id)sender {
-//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-//}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -110,16 +104,7 @@
     
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
     self.navigationItem.leftBarButtonItem = leftBarButtonItem;
-    
-//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-    
 }
-
-//-(void)leftDrawerButtonPress:(id)sender {
-//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-//}
-
 - (void)leftBarButtonItemTouch:(UIButton *)sender
 {
 //    NSLog(@"创建左侧视图");
@@ -145,7 +130,6 @@
     tap.delegate = self;
     [_topestView addGestureRecognizer:tap];
     [self.view addSubview:_topestView];
-    
 }
 
 #pragma mark - 创建左侧内容
@@ -192,26 +176,24 @@
 #pragma mark - 脚视图
 - (void)prepareTopestViewFooterView
 {
-    _footerBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 200, _topestView.frame.size.width, _topestView.frame.size.height-200)];
-//    _footerBackgroundImageView.image = [UIImage imageNamed:@"personalPageBg"];
+    _footerBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 210, _topestView.frame.size.width, _topestView.frame.size.height-200)];
     _footerBackgroundImageView.userInteractionEnabled = YES;
     [_topestView addSubview:_footerBackgroundImageView];
     
-//    _collectionButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, 5, 120, 30)
-//                                                 tag:100
-//                                               image:[UIImage imageNamed:@"myCollectionIcon"]
-//                                               title:@"我的收藏"];
-    
-    _collectionButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, 5, 120, 30)
+    //
+    _collectionButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, 10, 120, 30)
                                                  tag:100
-                                               image:nil
-                                               title:nil];
+                                               image:[UIImage imageNamed:@"myCollectionIcon"]
+                                               title:@"我的收藏"];
     
     [_footerBackgroundImageView addSubview:_collectionButton];
     
+    
+    //
     [self createLineViewWithCGRECT:CGRectMake(0, _collectionButton.frame.size.height + _collectionButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
     
     
+    //
     _edictButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _collectionButton.frame.origin.y + _collectionButton.frame.size.height + 5 + 5, 120, 30)
                     
                                                  tag:101
@@ -220,10 +202,13 @@
     
     [_footerBackgroundImageView addSubview:_edictButton];
     
-     [self createLineViewWithCGRECT:CGRectMake(0, _edictButton.frame.size.height + _edictButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
+    
+    //
+    [self createLineViewWithCGRECT:CGRectMake(0, _edictButton.frame.size.height + _edictButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
     
     
     
+    //
     _settingButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _edictButton.frame.origin.y + _edictButton.frame.size.height + 5 + 5, 120, 30)
                                               tag:102
                                             image:[UIImage imageNamed:@"settingIcon"]
@@ -231,10 +216,12 @@
     
     [_footerBackgroundImageView addSubview:_settingButton];
     
-     [self createLineViewWithCGRECT:CGRectMake(0, _settingButton.frame.size.height + _settingButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
+    
+    //
+    [self createLineViewWithCGRECT:CGRectMake(0, _settingButton.frame.size.height + _settingButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
     
     
-    
+    //
     _logoutButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _settingButton.frame.origin.y + _settingButton.frame.size.height + 5 + 5, 120, 30)
                                              tag:103
                                            image:[UIImage imageNamed:@"logoutIcon"]
@@ -242,6 +229,8 @@
     
     [_footerBackgroundImageView addSubview:_logoutButton];
     
+    
+    //
     [self createLineViewWithCGRECT:CGRectMake(0, _logoutButton.frame.size.height + _logoutButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
 }
 
@@ -275,32 +264,32 @@
     switch (sender.tag) {
         case 100:
         {
-//            HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
-//            [self.navigationController pushViewController:collectionVC animated:YES];
-            
-            HYLHaoYuLeCommonDetailViewController *test = [[HYLHaoYuLeCommonDetailViewController alloc] init];
-            [self.navigationController pushViewController:test animated:YES];
+            HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
+            collectionVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:collectionVC animated:NO];
         }
             break;
         case 101:
         {
             HYLEditProfileViewController *editProfileVC = [[HYLEditProfileViewController alloc] init];
-            [self.navigationController pushViewController:editProfileVC animated:YES];
-        
+            editProfileVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:editProfileVC animated:NO];
         }
             break;
         case 102:
         {
             HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
-            [self.navigationController pushViewController:setUpVC animated:YES];
+            setUpVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:setUpVC animated:NO];
 
         }
             break;
         case 103:
         {
             HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
+            signInVC.hidesBottomBarWhenPushed = YES;
 
-            [self.navigationController pushViewController:signInVC animated:YES];
+            [self.navigationController pushViewController:signInVC animated:NO];
         }
             break;
             

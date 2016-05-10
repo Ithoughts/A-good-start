@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -21,7 +21,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="459" y="-965"/>
+            <point key="canvasLocation" x="411" y="-874"/>
         </scene>
         <!--Hao Yu Le Common Detail View Controller-->
         <scene sceneID="mpl-Hz-vXn">
@@ -36,29 +36,62 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="T3D-IE-NLE">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="570"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="XLu-fk-e9q" id="8BS-Wj-eOe"/>
                                     <outlet property="delegate" destination="XLu-fk-e9q" id="Txx-HY-9xT"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="APG-fN-ROr" customClass="HYLSendCommentView">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <color key="backgroundColor" red="0.99160593748092651" green="0.0079045491293072701" blue="0.11603889614343643" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="APG-fN-ROr" firstAttribute="top" secondItem="T3D-IE-NLE" secondAttribute="bottom" id="CEr-oW-w7f"/>
+                            <constraint firstItem="APG-fN-ROr" firstAttribute="leading" secondItem="zEU-X9-HZl" secondAttribute="leading" id="GHx-QX-arI"/>
                             <constraint firstItem="T3D-IE-NLE" firstAttribute="leading" secondItem="zEU-X9-HZl" secondAttribute="leading" id="KZb-vy-yhB"/>
+                            <constraint firstItem="SSK-Eo-JFU" firstAttribute="top" secondItem="APG-fN-ROr" secondAttribute="bottom" id="MjD-ia-L3y"/>
                             <constraint firstAttribute="trailing" secondItem="T3D-IE-NLE" secondAttribute="trailing" id="OZa-Vy-vu3"/>
                             <constraint firstItem="T3D-IE-NLE" firstAttribute="top" secondItem="zEU-X9-HZl" secondAttribute="top" id="S29-mD-fHD"/>
-                            <constraint firstItem="SSK-Eo-JFU" firstAttribute="top" secondItem="T3D-IE-NLE" secondAttribute="bottom" id="pyH-aH-MEu"/>
+                            <constraint firstAttribute="trailing" secondItem="APG-fN-ROr" secondAttribute="trailing" id="hGc-RU-djh"/>
+                            <constraint firstItem="SSK-Eo-JFU" firstAttribute="top" secondItem="T3D-IE-NLE" secondAttribute="bottom" constant="30" id="pyH-aH-MEu">
+                                <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                            </constraint>
                         </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="APG-fN-ROr"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="CEr-oW-w7f"/>
+                                <exclude reference="GHx-QX-arI"/>
+                                <exclude reference="hGc-RU-djh"/>
+                                <exclude reference="MjD-ia-L3y"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="APG-fN-ROr"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="CEr-oW-w7f"/>
+                                <include reference="GHx-QX-arI"/>
+                                <include reference="hGc-RU-djh"/>
+                                <include reference="MjD-ia-L3y"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
+                        <outlet property="commentView" destination="APG-fN-ROr" id="ymf-gF-1b7"/>
                         <outlet property="tableView" destination="T3D-IE-NLE" id="Q4h-6E-SI6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Ey-2A-5ri" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1138" y="-965"/>
+            <point key="canvasLocation" x="820.5" y="-1577.25"/>
         </scene>
     </scenes>
 </document>

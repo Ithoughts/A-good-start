@@ -18,6 +18,16 @@
 		D13F95D31CA267B500F8B069 /* HYLYuanChuangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D13F95D21CA267B500F8B069 /* HYLYuanChuangViewController.m */; };
 		D14749AC1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */; };
 		D149E7871C8EDB37006D17A5 /* HYLMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */; };
+		D14BFB611CE0326800936D74 /* TLAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB601CE0326800936D74 /* TLAttributedLabel.m */; };
+		D14BFB641CE0327700936D74 /* TLAttributedLink.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB631CE0327700936D74 /* TLAttributedLink.m */; };
+		D14BFB671CE0328600936D74 /* TLAttributedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB661CE0328600936D74 /* TLAttributedImage.m */; };
+		D14BFB6A1CE0329600936D74 /* TLAttributedLabelUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB691CE0329600936D74 /* TLAttributedLabelUtils.m */; };
+		D14BFB6D1CE032A700936D74 /* TLAttributedLabelConst.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB6C1CE032A700936D74 /* TLAttributedLabelConst.m */; };
+		D14BFB701CE032B700936D74 /* NSMutableAttributedString+Link.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB6F1CE032B700936D74 /* NSMutableAttributedString+Link.m */; };
+		D14BFB731CE032C500936D74 /* NSMutableAttributedString+Picture.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB721CE032C500936D74 /* NSMutableAttributedString+Picture.m */; };
+		D14BFB761CE032DD00936D74 /* NSMutableAttributedString+Config.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB751CE032DD00936D74 /* NSMutableAttributedString+Config.m */; };
+		D14BFB791CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB781CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m */; };
+		D14BFB7C1CE0330600936D74 /* UIImageView+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB7B1CE0330600936D74 /* UIImageView+GIF.m */; };
 		D15749341CB75F330095E524 /* HYLZhiBoInformationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */; };
 		D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */; };
 		D177B9781CAA55B4003EEB32 /* HYLZhiBoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */; };
@@ -38,6 +48,10 @@
 		D1BEA4C81CB505CC000150E2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1BEA4C71CB505CC000150E2 /* MediaPlayer.framework */; };
 		D1C613471C96946600C32974 /* HYLForgetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C613461C96946600C32974 /* HYLForgetPasswordViewController.m */; };
 		D1C6134A1C96A80E00C32974 /* HYLRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */; };
+		D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */; };
+		D1D7C2F01CE1948F00D8F818 /* XLVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */; };
+		D1D7C2F41CE1C2EB00D8F818 /* HYLSendCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */; };
+		D1D7C2F71CE1C5DC00D8F818 /* UIViewExt.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */; };
 		D1DC6F381CAA1F730093D735 /* HYLShowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F371CAA1F730093D735 /* HYLShowViewController.m */; };
 		D1DC6F3B1CAA1F820093D735 /* HYLMVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3A1CAA1F820093D735 /* HYLMVViewController.m */; };
 		D1DC6F3E1CAA1F910093D735 /* HYLBangDanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3D1CAA1F910093D735 /* HYLBangDanViewController.m */; };
@@ -76,6 +90,26 @@
 		D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLYinYueDetailCommonViewController.m; sourceTree = "<group>"; };
 		D149E7851C8EDB37006D17A5 /* HYLMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLMenuViewController.h; sourceTree = "<group>"; };
 		D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLMenuViewController.m; sourceTree = "<group>"; };
+		D14BFB5F1CE0326800936D74 /* TLAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedLabel.h; sourceTree = "<group>"; };
+		D14BFB601CE0326800936D74 /* TLAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLAttributedLabel.m; sourceTree = "<group>"; };
+		D14BFB621CE0327700936D74 /* TLAttributedLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedLink.h; sourceTree = "<group>"; };
+		D14BFB631CE0327700936D74 /* TLAttributedLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLAttributedLink.m; sourceTree = "<group>"; };
+		D14BFB651CE0328600936D74 /* TLAttributedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedImage.h; sourceTree = "<group>"; };
+		D14BFB661CE0328600936D74 /* TLAttributedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLAttributedImage.m; sourceTree = "<group>"; };
+		D14BFB681CE0329600936D74 /* TLAttributedLabelUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedLabelUtils.h; sourceTree = "<group>"; };
+		D14BFB691CE0329600936D74 /* TLAttributedLabelUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLAttributedLabelUtils.m; sourceTree = "<group>"; };
+		D14BFB6B1CE032A700936D74 /* TLAttributedLabelConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedLabelConst.h; sourceTree = "<group>"; };
+		D14BFB6C1CE032A700936D74 /* TLAttributedLabelConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLAttributedLabelConst.m; sourceTree = "<group>"; };
+		D14BFB6E1CE032B700936D74 /* NSMutableAttributedString+Link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+Link.h"; sourceTree = "<group>"; };
+		D14BFB6F1CE032B700936D74 /* NSMutableAttributedString+Link.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+Link.m"; sourceTree = "<group>"; };
+		D14BFB711CE032C500936D74 /* NSMutableAttributedString+Picture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+Picture.h"; sourceTree = "<group>"; };
+		D14BFB721CE032C500936D74 /* NSMutableAttributedString+Picture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+Picture.m"; sourceTree = "<group>"; };
+		D14BFB741CE032DD00936D74 /* NSMutableAttributedString+Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+Config.h"; sourceTree = "<group>"; };
+		D14BFB751CE032DD00936D74 /* NSMutableAttributedString+Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+Config.m"; sourceTree = "<group>"; };
+		D14BFB771CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+CTFrameRef.h"; sourceTree = "<group>"; };
+		D14BFB781CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+CTFrameRef.m"; sourceTree = "<group>"; };
+		D14BFB7A1CE0330600936D74 /* UIImageView+GIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+GIF.h"; sourceTree = "<group>"; };
+		D14BFB7B1CE0330600936D74 /* UIImageView+GIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+GIF.m"; sourceTree = "<group>"; };
 		D15749321CB75F330095E524 /* HYLZhiBoInformationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoInformationViewController.h; sourceTree = "<group>"; };
 		D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoInformationViewController.m; sourceTree = "<group>"; };
 		D165ED2F1CC0BE6300C35F41 /* HYLSingerMVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSingerMVCell.h; sourceTree = "<group>"; };
@@ -116,6 +150,14 @@
 		D1C613461C96946600C32974 /* HYLForgetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLForgetPasswordViewController.m; sourceTree = "<group>"; };
 		D1C613481C96A80E00C32974 /* HYLRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLRegisterViewController.h; sourceTree = "<group>"; };
 		D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLRegisterViewController.m; sourceTree = "<group>"; };
+		D1D7C2EB1CE1948F00D8F818 /* XLSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSlider.h; sourceTree = "<group>"; };
+		D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSlider.m; sourceTree = "<group>"; };
+		D1D7C2ED1CE1948F00D8F818 /* XLVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLVideoPlayer.h; sourceTree = "<group>"; };
+		D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLVideoPlayer.m; sourceTree = "<group>"; };
+		D1D7C2F21CE1C2EA00D8F818 /* HYLSendCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSendCommentView.h; sourceTree = "<group>"; };
+		D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLSendCommentView.m; sourceTree = "<group>"; };
+		D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewExt.h; sourceTree = "<group>"; };
+		D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewExt.m; sourceTree = "<group>"; };
 		D1DC6F361CAA1F730093D735 /* HYLShowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLShowViewController.h; sourceTree = "<group>"; };
 		D1DC6F371CAA1F730093D735 /* HYLShowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLShowViewController.m; sourceTree = "<group>"; };
 		D1DC6F391CAA1F820093D735 /* HYLMVViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLMVViewController.h; sourceTree = "<group>"; };
@@ -201,6 +243,33 @@
 				D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */,
 			);
 			name = YinYueDetailViewController;
+			sourceTree = "<group>";
+		};
+		D14BFB7D1CE0331C00936D74 /* TLAttributedLabel */ = {
+			isa = PBXGroup;
+			children = (
+				D14BFB5F1CE0326800936D74 /* TLAttributedLabel.h */,
+				D14BFB601CE0326800936D74 /* TLAttributedLabel.m */,
+				D14BFB621CE0327700936D74 /* TLAttributedLink.h */,
+				D14BFB631CE0327700936D74 /* TLAttributedLink.m */,
+				D14BFB651CE0328600936D74 /* TLAttributedImage.h */,
+				D14BFB661CE0328600936D74 /* TLAttributedImage.m */,
+				D14BFB681CE0329600936D74 /* TLAttributedLabelUtils.h */,
+				D14BFB691CE0329600936D74 /* TLAttributedLabelUtils.m */,
+				D14BFB6B1CE032A700936D74 /* TLAttributedLabelConst.h */,
+				D14BFB6C1CE032A700936D74 /* TLAttributedLabelConst.m */,
+				D14BFB6E1CE032B700936D74 /* NSMutableAttributedString+Link.h */,
+				D14BFB6F1CE032B700936D74 /* NSMutableAttributedString+Link.m */,
+				D14BFB711CE032C500936D74 /* NSMutableAttributedString+Picture.h */,
+				D14BFB721CE032C500936D74 /* NSMutableAttributedString+Picture.m */,
+				D14BFB741CE032DD00936D74 /* NSMutableAttributedString+Config.h */,
+				D14BFB751CE032DD00936D74 /* NSMutableAttributedString+Config.m */,
+				D14BFB771CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.h */,
+				D14BFB781CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m */,
+				D14BFB7A1CE0330600936D74 /* UIImageView+GIF.h */,
+				D14BFB7B1CE0330600936D74 /* UIImageView+GIF.m */,
+			);
+			name = TLAttributedLabel;
 			sourceTree = "<group>";
 		};
 		D15749311CB75C9D0095E524 /* TabBarController */ = {
@@ -363,6 +432,25 @@
 			name = NetworkInterface;
 			sourceTree = "<group>";
 		};
+		D1D7C2EA1CE1948F00D8F818 /* Slider */ = {
+			isa = PBXGroup;
+			children = (
+				D1D7C2EB1CE1948F00D8F818 /* XLSlider.h */,
+				D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */,
+			);
+			path = Slider;
+			sourceTree = "<group>";
+		};
+		D1D7C2F11CE194A100D8F818 /* VideoPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				D1D7C2EA1CE1948F00D8F818 /* Slider */,
+				D1D7C2ED1CE1948F00D8F818 /* XLVideoPlayer.h */,
+				D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */,
+			);
+			name = VideoPlayer;
+			sourceTree = "<group>";
+		};
 		D1DC6F421CAA238C0093D735 /* HaoYinYueModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -416,6 +504,12 @@
 		D1F44C881C8D7EAD00B6AA0C /* GoodEntertainment */ = {
 			isa = PBXGroup;
 			children = (
+				D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */,
+				D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */,
+				D1D7C2F21CE1C2EA00D8F818 /* HYLSendCommentView.h */,
+				D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */,
+				D1D7C2F11CE194A100D8F818 /* VideoPlayer */,
+				D14BFB7D1CE0331C00936D74 /* TLAttributedLabel */,
 				D1C262271C9968A9000ABA63 /* NetworkInterface */,
 				D15749311CB75C9D0095E524 /* TabBarController */,
 				D102A4A41CB39F4900E14C2C /* MenuViewController */,
@@ -492,6 +586,7 @@
 				TargetAttributes = {
 					D1F44C851C8D7EAD00B6AA0C = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = E6NG2WDXZU;
 					};
 				};
 			};
@@ -566,6 +661,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1DC6F3E1CAA1F910093D735 /* HYLBangDanViewController.m in Sources */,
+				D1D7C2F01CE1948F00D8F818 /* XLVideoPlayer.m in Sources */,
 				D1BE0C4E1C8EAE3400C79A5D /* HYLTabBarController.m in Sources */,
 				D177B97B1CAA61C9003EEB32 /* HYLZhiBoListModel.m in Sources */,
 				D1F44C911C8D7EAD00B6AA0C /* ViewController.m in Sources */,
@@ -577,11 +673,17 @@
 				D19C984D1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.m in Sources */,
 				D1C613471C96946600C32974 /* HYLForgetPasswordViewController.m in Sources */,
 				D1BDA0C91C98192300D4F9A9 /* HYLGetSignature.m in Sources */,
+				D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */,
 				D1BE0C511C8EB02100C79A5D /* HYLHaoYuLeListContainerViewController.m in Sources */,
 				D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */,
+				D1D7C2F71CE1C5DC00D8F818 /* UIViewExt.m in Sources */,
+				D14BFB7C1CE0330600936D74 /* UIImageView+GIF.m in Sources */,
+				D14BFB6A1CE0329600936D74 /* TLAttributedLabelUtils.m in Sources */,
 				D1BE0C541C8EB04500C79A5D /* HYLHaoJingCaiListViewController.m in Sources */,
 				D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */,
+				D14BFB791CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m in Sources */,
 				D13F95D01CA267A500F8B069 /* HYLTuiJieViewController.m in Sources */,
+				D14BFB6D1CE032A700936D74 /* TLAttributedLabelConst.m in Sources */,
 				D1BE0C571C8EB06700C79A5D /* HYLHaoYinYueListContainerViewController.m in Sources */,
 				D1F44C8B1C8D7EAD00B6AA0C /* main.m in Sources */,
 				D1DC6F3B1CAA1F820093D735 /* HYLMVViewController.m in Sources */,
@@ -593,14 +695,21 @@
 				D126D55C1C914613000CD6D8 /* HYLEditProfileViewController.m in Sources */,
 				D126D55F1C915A02000CD6D8 /* HYLSettingViewController.m in Sources */,
 				D149E7871C8EDB37006D17A5 /* HYLMenuViewController.m in Sources */,
+				D14BFB761CE032DD00936D74 /* NSMutableAttributedString+Config.m in Sources */,
 				D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */,
 				D1BE0C601C8EBE3100C79A5D /* UIView+Additions.m in Sources */,
+				D14BFB611CE0326800936D74 /* TLAttributedLabel.m in Sources */,
 				D1BE0C5D1C8EBCB300C79A5D /* HYLTitlePagerView.m in Sources */,
 				D1BDA0C11C9816ED00D4F9A9 /* HYLGetTimestamp.m in Sources */,
+				D14BFB731CE032C500936D74 /* NSMutableAttributedString+Picture.m in Sources */,
+				D14BFB671CE0328600936D74 /* TLAttributedImage.m in Sources */,
 				D14749AC1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m in Sources */,
 				D13EDE1D1CA90CC200BE4887 /* HYLJSONModel.m in Sources */,
+				D1D7C2F41CE1C2EB00D8F818 /* HYLSendCommentView.m in Sources */,
 				D1DC6F381CAA1F730093D735 /* HYLShowViewController.m in Sources */,
 				D19264C71CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m in Sources */,
+				D14BFB701CE032B700936D74 /* NSMutableAttributedString+Link.m in Sources */,
+				D14BFB641CE0327700936D74 /* TLAttributedLink.m in Sources */,
 				D177B9781CAA55B4003EEB32 /* HYLZhiBoCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -713,10 +822,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.fansye.www.GoodEntertainment;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fansye.www.happy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -726,10 +839,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.fansye.www.GoodEntertainment;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fansye.www.happy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

@@ -17,6 +17,7 @@
 {
     // api_key
     NSString *key = @"6d87a19f011653459575ceb722db3b69";
+    
     // 时间戳、api_key 拼接
     NSString *spliceString = [NSString stringWithFormat:@"time=%@&key=%@", timestamp, key];
     

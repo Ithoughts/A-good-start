@@ -82,20 +82,9 @@
     self.navigationItem.titleView = titleLabel;
 }
 
-#pragma mark - 导航栏左侧按钮
-
-//-(void)setupLeftMenuButton {
-//    MMDrawerBarButtonItem * leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(leftDrawerButtonPress:)];
-//    [self.navigationItem setLeftBarButtonItem:leftDrawerButton animated:YES];
-//}
-//#pragma mark - Button Handlers
-//-(void)leftDrawerButtonPress:(id)sender {
-//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-//}
-
 - (void)prepareTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;

@@ -36,10 +36,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // view
-//    self.view.backgroundColor = [UIColor colorWithRed:58/255.0f green:57/255.0f blue:55/255.0f alpha:1.0f];
-    
+
     self.loginBgView = [[UIImageView alloc]  initWithFrame:[[UIScreen mainScreen] bounds]];
     
     self.loginBgView.image = [UIImage imageNamed:@"loginBG"];
@@ -71,7 +68,7 @@
     UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"shutdownIcon"]
                                                                            style:UIBarButtonItemStylePlain
                                                                           target:self
-                                                                          action:@selector(shutdown)];
+                                                                          action:@selector(shutdown:)];
     self.navigationItem.rightBarButtonItem = rightBarButtonItem;
     
     [self prepareSignInView];
@@ -85,7 +82,7 @@
     
     //
     UIImage *userImage = [UIImage imageNamed:@"userIcon"];
-    self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 153, 19, 21)];
+    self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 153, userImage.size.width, userImage.size.height)];
     self.userImageView.image = userImage;
     [self.loginBgView addSubview:self.userImageView];
     
@@ -114,7 +111,7 @@
     
     //
     UIImage *passwordImage = [UIImage imageNamed:@"passwordIcon"];
-    self.passwordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 10 + 3, 20, 25)];
+    self.passwordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 10 + 3, passwordImage.size.width, passwordImage.size.height)];
     self.passwordImageView.image = passwordImage;
     [self.loginBgView addSubview:self.passwordImageView];
     
@@ -237,21 +234,25 @@
 #pragma mark - 忘记密码 响应
 - (void)forgetPasswordButtonTapped:(UIButton *)sender
 {
+    NSLog(@"忘记密码");
+    
+    
     HYLForgetPasswordViewController *forgetPasswordViewController = [[HYLForgetPasswordViewController alloc] init];
-    [self.navigationController pushViewController:forgetPasswordViewController animated:YES];
+    [self.navigationController pushViewController:forgetPasswordViewController animated:NO];
 }
-#pragma mark - 注册账号响应
+#pragma mark - 注册账号 响应
 - (void)registerButtonTapped:(UIButton *)sender
 {
+    NSLog(@"注册账号");
+    
     HYLRegisterViewController *registerViewController = [[HYLRegisterViewController alloc] init];
-    [self.navigationController pushViewController:registerViewController animated:YES];
+    [self.navigationController pushViewController:registerViewController animated:NO];
 }
 
 #pragma mark - 关闭登录界面
-- (void)shutdown
+- (void)shutdown:(UIButton *)sender
 {
-//    [self.navigationController popViewControllerAnimated:YES];
-     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITextFieldDelegate

@@ -38,8 +38,7 @@
 
 - (void)goBack
 {
-//    [self.navigationController popViewControllerAnimated:YES];
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

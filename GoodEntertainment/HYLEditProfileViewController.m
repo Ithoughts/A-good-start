@@ -23,6 +23,7 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
+    self.tabBarController.tabBar.hidden = YES;
     
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -61,7 +62,7 @@
     replaceAvatarLabel.textAlignment = NSTextAlignmentCenter;
     [headerView addSubview:replaceAvatarLabel];
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight - 75 - 64) style: UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight) style: UITableViewStylePlain];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.tableHeaderView = headerView;
@@ -223,8 +224,8 @@
 
 - (void)back
 {
-//    [self.navigationController popViewControllerAnimated:YES];
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
+//    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
 }
 
 #pragma mark - 确定按钮

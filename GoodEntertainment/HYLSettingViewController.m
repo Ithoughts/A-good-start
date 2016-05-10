@@ -192,8 +192,7 @@
 #pragma mark - 返回
 - (void)back
 {
-//    [self.navigationController popViewControllerAnimated:YES];
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

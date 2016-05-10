@@ -8,12 +8,12 @@
 
 #import "HYLMenuViewController.h"
 
-#import "UIViewController+MMDrawerController.h"
+//#import "UIViewController+MMDrawerController.h"
 
 
-#import "HYLHaoYuLeCommonDetailViewController.h"
+//#import "HYLHaoYuLeCommonDetailViewController.h"
 
-//#import "HYLMyCollectionViewController.h"
+#import "HYLMyCollectionViewController.h"
 #import "HYLEditProfileViewController.h"
 #import "HYLSettingViewController.h"
 #import "HYLSignInViewController.h"
@@ -39,19 +39,20 @@
     
     self.tableView.tableHeaderView = ({
         
-        // 表头视图
+        // 头视图
         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 220.0f)];
         
         // 头像
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 40, 100, 100)];
+        UIImage *image = [UIImage imageNamed:@"defaultImage"];
+        
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 40, image.size.width, image.size.height)];
         imageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        imageView.image = [UIImage imageNamed:@"defaultImage"];
+        imageView.image = image;
         imageView.clipsToBounds = YES;
         imageView.layer.masksToBounds = YES;
         imageView.layer.cornerRadius = 50.0;
 //        imageView.layer.borderColor = [UIColor whiteColor].CGColor;
 //        imageView.layer.borderWidth = 3.0f;
-
         [view addSubview:imageView];
         
         // 昵称
@@ -65,7 +66,7 @@
         [view addSubview:nicknameLabel];
         
         // 签名
-        UILabel *signatureLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 174, 0, 24)];
+        UILabel *signatureLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 170, 0, 24)];
         signatureLabel.text = @"梦想只需坚持，终有一日会实现!";
         signatureLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:15];
         signatureLabel.backgroundColor = [UIColor clearColor];
@@ -114,6 +115,7 @@
 }
 
 #pragma mark - cell contentview
+
 - (UITableViewCell *)configureCell:(UITableViewCell *)cell WithImage:(NSString *)image title:(NSString *)title
 {
     UIImageView *leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width * 3/4.0 * 0.5 - 40, 12, 24, 24)];
@@ -138,32 +140,37 @@
 {
     if (indexPath.row == 0) {
         
-//        HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
-        HYLHaoYuLeCommonDetailViewController *test = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:test];
+        HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
         
-        [self.mm_drawerController setCenterViewController:nav withCloseAnimation:YES completion:nil];
+        collectionVC.hidesBottomBarWhenPushed = YES;
+       
+        [self.navigationController pushViewController:collectionVC animated:NO];
         
     } else if (indexPath.row == 1) {
         
         HYLEditProfileViewController *editProfileVC = [[HYLEditProfileViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:editProfileVC];
         
-        [self.mm_drawerController setCenterViewController:nav withCloseAnimation:YES completion:nil];
+        editProfileVC.hidesBottomBarWhenPushed = YES;
+        
+        [self.navigationController pushViewController:editProfileVC animated:NO];
     
     } else if (indexPath.row == 2) {
         
         HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:setUpVC];
         
-        [self.mm_drawerController setCenterViewController:nav withCloseAnimation:YES completion:nil];
+        setUpVC.hidesBottomBarWhenPushed = YES;
+        
+        [self.navigationController pushViewController:setUpVC animated:NO];
+        
+
     
     } else if (indexPath.row == 3) {
         
         HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:signInVC];
         
-        [self.mm_drawerController setCenterViewController:nav withCloseAnimation:YES completion:nil];
+        signInVC.hidesBottomBarWhenPushed = YES;
+        
+        [self.navigationController pushViewController:signInVC animated:NO];
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

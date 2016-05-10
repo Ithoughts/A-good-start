@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ViewPagerController.h"
-
 #import "HYLTitlePagerView.h"
 
 #import "HYLTouTiaoViewController.h"
@@ -24,8 +23,8 @@
 
 @property (nonatomic, strong) HYLYuanChuangViewController *yuanChuangListVC;
 
-@property (nonatomic, assign) NSInteger currentIndex;
-
 @property (nonatomic, strong) HYLTitlePagerView *pagingTitleView;
+
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end

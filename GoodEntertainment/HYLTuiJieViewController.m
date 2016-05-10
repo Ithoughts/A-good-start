@@ -32,7 +32,6 @@
     NSMutableArray *_dataArray;
 }
 
-
 @end
 
 @implementation HYLTuiJieViewController
@@ -51,7 +50,7 @@
 
 - (void)prepareTuiJieTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -79,9 +78,9 @@
     
     [manager POST:kTuiJieURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"推介: \n%@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"推介:%@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject

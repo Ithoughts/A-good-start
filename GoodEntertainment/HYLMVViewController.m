@@ -62,7 +62,7 @@
 
 - (void)prepareMVTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;

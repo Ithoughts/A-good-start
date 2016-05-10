@@ -53,7 +53,7 @@
 
 - (void)prepareYuanChuangTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -83,7 +83,7 @@
         
 //        NSString *reponse = [[NSString alloc] initWithData:responseObject
 //                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"原创: \n%@", reponse);
+//        NSLog(@"原创: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
