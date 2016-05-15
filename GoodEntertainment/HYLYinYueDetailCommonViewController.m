@@ -273,13 +273,13 @@
         [headerView addSubview:_playLabel];
         
         //
-        _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"share"] title:@"分享" x:5 tag:100];
+        _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"] title:@"分享" x:5 tag:100];
         [headerView addSubview:_shareButton];
         
         _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
         [headerView addSubview:_collectButton];
         
-        _musicCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"comment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
+        _musicCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaicomment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
         [headerView addSubview:_musicCommentButton];
         
         //
