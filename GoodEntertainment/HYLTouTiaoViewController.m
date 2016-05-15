@@ -105,7 +105,6 @@
                 [_dataArray addObject:model];
             }
             
-            
             // 刷新表格
             [_tableView reloadData];
             

@@ -10,6 +10,7 @@ CGPoint CGRectGetCenter(CGRect rect);
 CGRect  CGRectMoveToCenter(CGRect rect, CGPoint center);
 
 @interface UIView (ViewFrameGeometry)
+
 @property CGPoint origin;
 @property CGSize size;
 
@@ -29,4 +30,5 @@ CGRect  CGRectMoveToCenter(CGRect rect, CGPoint center);
 - (void) moveBy: (CGPoint) delta;
 - (void) scaleBy: (CGFloat) scaleFactor;
 - (void) fitInSize: (CGSize) aSize;
+
 @end

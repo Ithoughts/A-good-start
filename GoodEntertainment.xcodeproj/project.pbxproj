@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		59C7225E079D898BE2BDBD7C /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E0760EB12FDCC02BF111EFC /* libPods.a */; };
+		D11D67591CE31CEC00612F42 /* HYLCommentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */; };
+		D11D675A1CE31CEC00612F42 /* HYLCommentListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D11D67581CE31CEC00612F42 /* HYLCommentListViewController.xib */; };
 		D126D5591C91424C000CD6D8 /* HYLMyCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D5581C91424C000CD6D8 /* HYLMyCollectionViewController.m */; };
 		D126D55C1C914613000CD6D8 /* HYLEditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D55B1C914613000CD6D8 /* HYLEditProfileViewController.m */; };
 		D126D55F1C915A02000CD6D8 /* HYLSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D55E1C915A02000CD6D8 /* HYLSettingViewController.m */; };
@@ -50,7 +52,6 @@
 		D1C6134A1C96A80E00C32974 /* HYLRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */; };
 		D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */; };
 		D1D7C2F01CE1948F00D8F818 /* XLVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */; };
-		D1D7C2F41CE1C2EB00D8F818 /* HYLSendCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */; };
 		D1D7C2F71CE1C5DC00D8F818 /* UIViewExt.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */; };
 		D1DC6F381CAA1F730093D735 /* HYLShowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F371CAA1F730093D735 /* HYLShowViewController.m */; };
 		D1DC6F3B1CAA1F820093D735 /* HYLMVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3A1CAA1F820093D735 /* HYLMVViewController.m */; };
@@ -70,6 +71,9 @@
 		0787ECBD8093D4FCDA756C15 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		4E0760EB12FDCC02BF111EFC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A379C59F2A1FB0EFB902213C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		D11D67561CE31CEC00612F42 /* HYLCommentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentListViewController.h; sourceTree = "<group>"; };
+		D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentListViewController.m; sourceTree = "<group>"; };
+		D11D67581CE31CEC00612F42 /* HYLCommentListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HYLCommentListViewController.xib; sourceTree = "<group>"; };
 		D126D5571C91424C000CD6D8 /* HYLMyCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLMyCollectionViewController.h; sourceTree = "<group>"; };
 		D126D5581C91424C000CD6D8 /* HYLMyCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLMyCollectionViewController.m; sourceTree = "<group>"; };
 		D126D55A1C914613000CD6D8 /* HYLEditProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLEditProfileViewController.h; sourceTree = "<group>"; };
@@ -154,8 +158,6 @@
 		D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSlider.m; sourceTree = "<group>"; };
 		D1D7C2ED1CE1948F00D8F818 /* XLVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLVideoPlayer.h; sourceTree = "<group>"; };
 		D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLVideoPlayer.m; sourceTree = "<group>"; };
-		D1D7C2F21CE1C2EA00D8F818 /* HYLSendCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSendCommentView.h; sourceTree = "<group>"; };
-		D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLSendCommentView.m; sourceTree = "<group>"; };
 		D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewExt.h; sourceTree = "<group>"; };
 		D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewExt.m; sourceTree = "<group>"; };
 		D1DC6F361CAA1F730093D735 /* HYLShowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLShowViewController.h; sourceTree = "<group>"; };
@@ -217,6 +219,9 @@
 			children = (
 				D17C214F1CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.h */,
 				D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */,
+				D11D67561CE31CEC00612F42 /* HYLCommentListViewController.h */,
+				D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */,
+				D11D67581CE31CEC00612F42 /* HYLCommentListViewController.xib */,
 			);
 			name = HaoYuLeDetailedViewController;
 			sourceTree = "<group>";
@@ -506,10 +511,8 @@
 			children = (
 				D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */,
 				D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */,
-				D1D7C2F21CE1C2EA00D8F818 /* HYLSendCommentView.h */,
-				D1D7C2F31CE1C2EA00D8F818 /* HYLSendCommentView.m */,
-				D1D7C2F11CE194A100D8F818 /* VideoPlayer */,
 				D14BFB7D1CE0331C00936D74 /* TLAttributedLabel */,
+				D1D7C2F11CE194A100D8F818 /* VideoPlayer */,
 				D1C262271C9968A9000ABA63 /* NetworkInterface */,
 				D15749311CB75C9D0095E524 /* TabBarController */,
 				D102A4A41CB39F4900E14C2C /* MenuViewController */,
@@ -616,6 +619,7 @@
 				D1F44C991C8D7EAE00B6AA0C /* LaunchScreen.storyboard in Resources */,
 				D1F44CA11C8D80D100B6AA0C /* Images.xcassets in Resources */,
 				D1F44C961C8D7EAE00B6AA0C /* Assets.xcassets in Resources */,
+				D11D675A1CE31CEC00612F42 /* HYLCommentListViewController.xib in Resources */,
 				D1F44C941C8D7EAE00B6AA0C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -697,6 +701,7 @@
 				D149E7871C8EDB37006D17A5 /* HYLMenuViewController.m in Sources */,
 				D14BFB761CE032DD00936D74 /* NSMutableAttributedString+Config.m in Sources */,
 				D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */,
+				D11D67591CE31CEC00612F42 /* HYLCommentListViewController.m in Sources */,
 				D1BE0C601C8EBE3100C79A5D /* UIView+Additions.m in Sources */,
 				D14BFB611CE0326800936D74 /* TLAttributedLabel.m in Sources */,
 				D1BE0C5D1C8EBCB300C79A5D /* HYLTitlePagerView.m in Sources */,
@@ -705,7 +710,6 @@
 				D14BFB671CE0328600936D74 /* TLAttributedImage.m in Sources */,
 				D14749AC1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m in Sources */,
 				D13EDE1D1CA90CC200BE4887 /* HYLJSONModel.m in Sources */,
-				D1D7C2F41CE1C2EB00D8F818 /* HYLSendCommentView.m in Sources */,
 				D1DC6F381CAA1F730093D735 /* HYLShowViewController.m in Sources */,
 				D19264C71CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m in Sources */,
 				D14BFB701CE032B700936D74 /* NSMutableAttributedString+Link.m in Sources */,
