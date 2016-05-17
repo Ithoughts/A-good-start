@@ -68,6 +68,9 @@
                                                 <include reference="td2-UL-h7a"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="sendComment:" destination="XLu-fk-e9q" eventType="touchUpInside" id="5dL-Ce-yuX"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>

@@ -213,20 +213,20 @@
     
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:_userTextField.text forKey:@"mobile"];
+    [dictionary setValue:_userTextField.text     forKey:@"mobile"];
     [dictionary setValue:_passwordTextField.text forKey:@"password"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer             = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kUserLoginURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
         NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"登录返回: \n%@", reponse);
+        NSLog(@"登录返回: %@", reponse);
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:   \n%@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
@@ -235,7 +235,6 @@
 - (void)forgetPasswordButtonTapped:(UIButton *)sender
 {
     NSLog(@"忘记密码");
-    
     
     HYLForgetPasswordViewController *forgetPasswordViewController = [[HYLForgetPasswordViewController alloc] init];
     [self.navigationController pushViewController:forgetPasswordViewController animated:NO];

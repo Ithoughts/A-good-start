@@ -72,7 +72,7 @@
     
     
     // 获取用户信息
-//    [self getUserInfomation];
+    [self getUserInfomation];
     
     // 修改用户信息
 //    [self editUserInfomation];
@@ -332,13 +332,16 @@
     }
     
     if (textField == _settingTextField) {
+        
         _settingImageView.image = [UIImage imageNamed:@"passwordfieldselected"];
         _settingLineView.backgroundColor = kLineViewBGColor(255, 199, 3);
+        
     } else  {
+        
         _settingImageView.image = [UIImage imageNamed:@"passwordIcon"];
         _settingLineView.backgroundColor = [UIColor lightGrayColor];
+        
     }
-    
     
 }
 - (void)textFieldDidEndEditing:(UITextField *)textField

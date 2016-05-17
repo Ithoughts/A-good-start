@@ -8,8 +8,10 @@
 
 #import "AppDelegate.h"
 
-//#import "HYLMenuViewController.h"
-//#import <MMDrawerController.h>
+#import <UMSocial.h>
+#import <UMSocialWechatHandler.h>
+#import <UMSocialQQHandler.h>
+#import <UMSocialSinaSSOHandler.h>
 
 @interface AppDelegate ()
 
@@ -34,22 +36,39 @@
     self.window.rootViewController = _tabBarController;
     [self.window makeKeyAndVisible];
     
-//    [tabBarViewController setRestorationIdentifier:@"HYLTabBarViewControllerRestorationKey"];
+    [UMSocialConfig hiddenNotInstallPlatforms:@[UMShareToQQ,UMShareToQzone,UMShareToWechatSession,UMShareToWechatTimeline]];
     
-//    HYLMenuViewController *leftViewController = [[HYLMenuViewController alloc ] init];
-//    UINavigationController *leftNaviController = [[UINavigationController alloc] initWithRootViewController:leftViewController];
-//    [leftNaviController setRestorationIdentifier:@"HYLLeftViewControllerRestorationKey"];
+    [UMSocialData setAppKey:@"57396808e0f55a0902001ba4"];
     
-//    CGFloat width = [[UIScreen mainScreen] bounds].size.width;
-//    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:tabBarViewController leftDrawerViewController:leftNaviController];
-//    [self.drawerController setMaximumLeftDrawerWidth:3*width/4.0];
+//    [UMSocialData openLog:YES];
     
-//    self.window.rootViewController = self.drawerController;
+    //如果你要支持不同的屏幕方向，需要这样设置，否则在iPhone只支持一个竖屏方向
+    [UMSocialConfig setSupportedInterfaceOrientations:UIInterfaceOrientationMaskAll];
+    
+    //设置微信AppId、appSecret，分享url
+    [UMSocialWechatHandler setWXAppId:@"wx72de4c2154afca8f" appSecret:@"b63f86e9d29a2d2d12b70f6e42569f16" url:@"http://www.umeng.com/social"];
+    //设置手机QQ 的AppId，Appkey，和分享URL，需要#import "UMSocialQQHandler.h"
+//    [UMSocialQQHandler setQQWithAppId:@"100424468" appKey:@"c7394704798a158208a74ab60104f0ba" url:@"http://www.umeng.com/social"];
+    //打开新浪微博的SSO开关，设置新浪微博回调地址，这里必须要和你在新浪微博后台设置的回调地址一致。需要 #import "UMSocialSinaSSOHandler.h"
+//    [UMSocialSinaSSOHandler openNewSinaSSOWithAppKey:@"3921700954"
+//                                              secret:@"04b48b094faeb16683c32669824ebdad"
+//                                         RedirectURL:@"http://sns.whalecloud.com/sina2/callback"];
     
     NSTimeInterval interval = 1.5;
     [NSThread sleepForTimeInterval:interval];
     
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    BOOL result = [UMSocialSnsService handleOpenURL:url];
+    
+    if (result == FALSE) {
+        //调用其他SDK，例如支付宝SDK等
+    }
+    
+    return result;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

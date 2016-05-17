@@ -40,8 +40,11 @@
 // 发送验证码
 #define             kSendCaptchaURL       [NSString stringWithFormat:@"%@/api/user/send_captcha", kBaseURL]
 
-//获取视频评论
+// 获取视频评论
 #define             kGetVideoCommentURL       [NSString stringWithFormat:@"%@/api/comment/video", kBaseURL]
+
+// 发送视频评论
+#define             kSendVideoCommentURL      [NSString stringWithFormat:@"%@/api/comment/send/video", kBaseURL]
 
 
                                     /********** 音乐相关： ***********/
@@ -59,10 +62,10 @@
 #define             kMusicDetailURL       [NSString stringWithFormat:@"%@/api/music/detail", kBaseURL]
 
 // 获取音乐评论
-#define             kMusicCommentsURL     [NSString stringWithFormat:@"%@/api/music/comment", kBaseURL]
+#define             kMusicCommentsURL     [NSString stringWithFormat:@"%@/api/comment/music", kBaseURL]
 
 // 发表音乐评论
-#define             kMakeCommentURL       [NSString stringWithFormat:@"%@/api/music/comment/music", kBaseURL]  // 本接口需要用户认证
+#define             kMakeCommentURL       [NSString stringWithFormat:@"%@/api/comment/send/music", kBaseURL]  // 本接口需要用户认证
 
 // 根据艺人ID获取音乐列表
 #define             kSingerMVURL       [NSString stringWithFormat:@"%@/api/music/artist", kBaseURL]
