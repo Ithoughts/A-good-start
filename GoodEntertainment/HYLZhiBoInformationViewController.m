@@ -19,7 +19,10 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 
 // 视频播放
-#import <MediaPlayer/MediaPlayer.h>
+#import "XLVideoPlayer.h"
+
+#import <UMengSocialCOM/UMSocialSnsService.h>
+#import <UMSocialSnsPlatformManager.h>
 
 @interface HYLZhiBoInformationViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
@@ -27,7 +30,7 @@
     CGFloat _screenHeight;
     
     UIImageView *_videoImageView;
-    UIButton *_playVideoButton;
+//    UIButton *_playVideoButton;
     NSString *_video_url;
     
     //
@@ -36,7 +39,7 @@
     UIView *_indicatorView;
     
     //
-    UITableView *_decriptionTableView;
+    UIScrollView *_decriptionScrollView;
     NSMutableArray *_dataArray;
     
     //
@@ -51,9 +54,23 @@
     UIButton *_collectButton;
     UIButton *_videoDecripCommentButton;
     UILabel *_decriptionLabel;
+    
+    
+    //
+    UIImageView *_playVideoImage;
+    
+    NSString *_cover_url;
+    
+    //
+    UIScrollView *_descripScrollView;
+    
+    //
+    UILabel *_commentTipLabel;
+    UIImageView *_commentTipImageView;
+
 }
 
-@property (nonatomic, strong) MPMoviePlayerController *mc;
+@property (nonatomic, strong) XLVideoPlayer *player;
 
 @end
 
@@ -66,19 +83,50 @@
     _screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    
-    // 隐藏工具栏
-//    [self.tabBarController.tabBar setHidden:YES];
-    
     [self HYLZhiBoDetailInfoApiRequest];
-    [self getZhiBoVideoCommentsRequest];
     
     //
     [self prepareZhiBoNavigationBar];
-    
-    //
-    [self prepareZhiBoView];
 }
+
+- (XLVideoPlayer *)player {
+    
+    if (!_player) {
+        _player = [[XLVideoPlayer alloc] init];
+        _player.frame = CGRectMake(0, 64, self.view.frame.size.width, 250);
+    }
+    
+    return _player;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [_player destroyPlayer];
+    _player = nil;
+}
+
+#pragma mark - 播放视频
+
+- (void)showVideoPlayer:(UITapGestureRecognizer *)tapGesture
+{
+    [_player destroyPlayer];
+    _player = nil;
+    
+    UIView *view = tapGesture.view;
+    
+    _player = [[XLVideoPlayer alloc] init];
+    _player.videoUrl = _video_url;
+    _player.frame = view.bounds;
+    
+    [view addSubview:_player];
+    
+    _player.completedPlayingBlock = ^(XLVideoPlayer *player) {
+        [player destroyPlayer];
+        _player = nil;
+    };
+}
+
 
 #pragma mark - 导航栏
 
@@ -124,22 +172,29 @@
     _videoImageView.clipsToBounds = YES;
     _videoImageView.userInteractionEnabled = YES;
     _videoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [_videoImageView sd_setImageWithURL:[NSURL URLWithString:_cover_url] completed:nil];
     [self.view addSubview:_videoImageView];
     
-    // 视频播放按钮
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showVideoPlayer:)];
+    [_videoImageView addGestureRecognizer:tap];
+    
+    // 视频播放图标
     UIImage *image = [UIImage imageNamed:@"playBtn"];
-    _playVideoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _playVideoButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
-    _playVideoButton.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
-    [_playVideoButton setImage:image forState:UIControlStateNormal];
-    [_playVideoButton addTarget:self action:@selector(playVideo:) forControlEvents:UIControlEventTouchUpInside];
-    [_videoImageView addSubview:_playVideoButton];
+    _playVideoImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+    _playVideoImage.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
+    _playVideoImage.image = image;
+    _playVideoImage.userInteractionEnabled = YES;
+    
+    [_videoImageView addSubview:_playVideoImage];
     
     //
     [self createTwoButtons];
     
+    _descripScrollView = [self createVideoDecriptionView];
+    
     //
-    [self.view addSubview:[self createVideoDecriptionView]];
+    [self.view addSubview:_descripScrollView];
 }
 
 #pragma mark - 按钮
@@ -186,6 +241,16 @@
     switch (sender.tag) {
         case 1000:
         {
+            if (_commentTableView != nil) {
+                
+                [_commentTableView removeFromSuperview];
+            }
+            
+            if (_commentTipImageView != nil && _commentTipLabel != nil) {
+                [_commentTipImageView removeFromSuperview];
+                [_commentTipLabel     removeFromSuperview];
+            }
+
 //            NSLog(@"影视描述");
             
             [self changeIndicatorViewOriginX:0];
@@ -193,7 +258,9 @@
             [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             
             // 添加到当前视图
-            [self.view addSubview:[self createVideoDecriptionView]];
+            // 添加到当前视图
+            _descripScrollView = [self createVideoDecriptionView];
+            [self.view addSubview:_descripScrollView];
             
         }
             break;
@@ -201,12 +268,18 @@
         {
 //            NSLog(@"评论");
             
+            if (_descripScrollView != nil) {
+                
+                [_descripScrollView removeFromSuperview];
+            }
+            
             [self changeIndicatorViewOriginX:_screenWidth * 0.5];
             [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
             [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         
-            // 添加到当前视图
-            [self.view addSubview:[self createCommentTableView]];
+//            // 添加到当前视图
+//            [self.view addSubview:[self createCommentTableView]];
+            [self getZhiBoVideoCommentsRequest];
         }
             break;
             
@@ -218,83 +291,75 @@
 
 #pragma mark - 影片描述视图
 
-- (UITableView *)createVideoDecriptionView
+- (UIScrollView *)createVideoDecriptionView
 {
-    _decriptionTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5))];
-    _decriptionTableView.dataSource = self;
-    _decriptionTableView.delegate = self;
-    _decriptionTableView.showsVerticalScrollIndicator = NO;
-    _decriptionTableView.showsHorizontalScrollIndicator = NO;
+     HYLZhiBoListModel *model = _dataArray[0];
     
-    _decriptionTableView.tableHeaderView = ({
-        
-        UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, 390)];
-        headerView.userInteractionEnabled = YES;
-        
-        //
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 10, 150, 30)];
-        _titleLabel.text = @"好犀利";
-        _titleLabel.textColor = [UIColor blackColor];
-        _titleLabel.textAlignment = NSTextAlignmentLeft;
-        _titleLabel.font = [UIFont systemFontOfSize:16.0f];
-        [headerView addSubview:_titleLabel];
-        
-        //
-        _playLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 35, 150, 30)];
-        _playLabel.text = @"播放: 0";
-        _playLabel.textColor = [UIColor lightGrayColor];
-        _playLabel.textAlignment = NSTextAlignmentLeft;
-        _playLabel.font = [UIFont systemFontOfSize:16.0f];
-        [headerView addSubview:_playLabel];
-        
-        //
-        _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"] title:@"分享" x:5 tag:100];
-        [headerView addSubview:_shareButton];
-        
-        _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
-        [headerView addSubview:_collectButton];
-        
-        _videoDecripCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaicomment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
-        [headerView addSubview:_videoDecripCommentButton];
-        
-        //
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, _shareButton.frame.origin.y + _shareButton.frame.size.height, _screenWidth, 1)];
-        line.backgroundColor = [UIColor lightGrayColor];
-        [headerView addSubview:line];
-        
-        //
-        _decriptionLabel = [[UILabel alloc] init];
-        
-        //
-        HYLZhiBoListModel *model = _dataArray[0];
-        
-        NSString *html = model.summary;
-        NSData *data = [html dataUsingEncoding:NSUnicodeStringEncoding];
-        NSDictionary *options = @{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType};
-        NSAttributedString *attributeHtml = [[NSAttributedString alloc] initWithData:data
-                                                                             options:options
-                                                                  documentAttributes:nil
-                                                                               error:nil];
-        _decriptionLabel.attributedText = attributeHtml;
-        _decriptionLabel.font = [UIFont systemFontOfSize:12.0f];
-        _decriptionLabel.numberOfLines = 0;
-        _decriptionLabel.textColor = [UIColor lightGrayColor];
-        
-        CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-        
-        _decriptionLabel.frame = CGRectMake(5, line.frame.origin.y + line.frame.size.height, htmlRect.size.width - 10, htmlRect.size.height);
-        
-        [_decriptionLabel sizeThatFits:htmlRect.size];
-        
-        [headerView addSubview:_decriptionLabel];
-        
-        headerView;
-        
-    });
+    _decriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
     
-    _decriptionTableView.tableFooterView = [[UIView alloc] init];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, _decriptionScrollView.frame.size.height)];
+    headerView.userInteractionEnabled = YES;
+    headerView.backgroundColor = [UIColor clearColor];
     
-    return _decriptionTableView;
+    //
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 10, _screenWidth, 30)];
+    _titleLabel.text = self.zhiBoTitle;
+    _titleLabel.textColor = [UIColor blackColor];
+    _titleLabel.textAlignment = NSTextAlignmentLeft;
+    _titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    [headerView addSubview:_titleLabel];
+    
+    //
+    _playLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 35, 150, 30)];
+    _playLabel.text = [NSString stringWithFormat:@"播放: %@",model.view_count];
+    _playLabel.textColor = [UIColor lightGrayColor];
+    _playLabel.textAlignment = NSTextAlignmentLeft;
+    _playLabel.font = [UIFont systemFontOfSize:16.0f];
+    [headerView addSubview:_playLabel];
+    
+    //
+    _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"] title:@"分享" x:5 tag:100];
+    [headerView addSubview:_shareButton];
+    
+    _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
+    [headerView addSubview:_collectButton];
+    
+    _videoDecripCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaicomment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
+    [headerView addSubview:_videoDecripCommentButton];
+    
+    //
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, _shareButton.frame.origin.y + _shareButton.frame.size.height, _screenWidth, 1)];
+    line.backgroundColor = [UIColor lightGrayColor];
+    [headerView addSubview:line];
+    
+    //
+    NSString *html = model.summary;
+    NSData *data = [html dataUsingEncoding:NSUnicodeStringEncoding];
+    NSDictionary *options = @{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType};
+    NSAttributedString *attributeHtml = [[NSAttributedString alloc] initWithData:data
+                                                                         options:options
+                                                              documentAttributes:nil
+                                                                           error:nil];
+    
+    CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+    
+    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height + 5, _screenWidth - 20, htmlRect.size.height)];
+    _decriptionLabel.attributedText = attributeHtml;
+    _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
+    _decriptionLabel.numberOfLines = 0;
+    _decriptionLabel.textColor = [UIColor lightGrayColor];
+
+    [_decriptionLabel sizeThatFits:htmlRect.size];
+    
+    [headerView addSubview:_decriptionLabel];
+    
+    headerView.frame = CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
+    
+    [_decriptionScrollView addSubview:headerView];
+    
+    _decriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
+    
+    return _decriptionScrollView;
 }
 
 #pragma mark - 评论列表
@@ -337,19 +402,27 @@
         case 100:
         {
 //            NSLog(@"分享");
+            
+            //如果需要分享回调，请将delegate对象设置self，并实现下面的回调方法
+            [UMSocialSnsService presentSnsIconSheetView:self
+                                                 appKey:@"57396808e0f55a0902001ba4"
+                                              shareText:@"分享到微信"
+                                             shareImage:[UIImage imageNamed:@"AppIcon"]
+                                        shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline, UMShareToQQ, UMShareToQzone, UMShareToEmail]
+                                               delegate:nil];
         }
             break;
             
         case 101:
         {
-//            NSLog(@"收藏");
+            NSLog(@"收藏");
         }
             break;
             
             
         case 102:
         {
-//            NSLog(@"评论");
+            NSLog(@"评论");
         }
             break;
             
@@ -384,9 +457,9 @@
     
     [manager POST:kShiPinDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"直播详情: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"直播详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -402,14 +475,11 @@
             HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dataDic];
             [_dataArray addObject:model];
             
-            // 视频数据
-//            NSDictionary *videoInfoDic = dataDic[@"video_info"];
-            
             // 视频地址
             _video_url = model.video_info.url;
+            _cover_url = model.video_info.cover_url;
             
-            // 视频截图
-            [_videoImageView sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] completed:nil];
+            [self prepareZhiBoView];
             
         } else {
             
@@ -441,10 +511,38 @@
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"直播评论: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"重温评论列表: %@", reponse);
         
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            // 添加到当前视图
+            [self.view addSubview:[self createCommentTableView]];
+            
+            
+        } else {
+            
+            UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
+            
+            // 标签
+            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5-90, 120, 30)];
+            _commentTipLabel.text = @"暂无评论";
+            _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
+            _commentTipLabel.textColor = [UIColor blackColor];
+            _commentTipLabel.textAlignment = NSTextAlignmentCenter;
+            [self.view addSubview:_commentTipLabel];
+            
+            // 背景
+            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
+            _commentTipImageView.image = backgroundImage;
+            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+(_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5);
+            [self.view addSubview:_commentTipImageView];
+        }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -453,31 +551,17 @@
     }];
 }
 
-#pragma mark - 播放视频
-
-- (void)playVideo:(UIButton *)sender
-{
-    NSURL *url = [NSURL URLWithString:_video_url];
-    MPMoviePlayerController *controller = [[MPMoviePlayerController alloc] initWithContentURL:url];
-    controller.movieSourceType = MPMovieSourceTypeStreaming;
-    self.mc = controller;
-    
-    controller.view.frame = self.view.bounds;
-    [self.view addSubview:controller.view];
-    [controller play];
-}
-
 #pragma mark -  UITableViewDelegate, UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (tableView == _decriptionTableView) {
+    if (tableView == _commentTableView) {
         
         return 0;
         
     } else {
         
-        return 5;
+        return 0;
     }
 }
 
@@ -485,7 +569,7 @@
 {
     HYLVideoCommentCell *cell = nil;
     
-    if (tableView != _decriptionTableView) {
+    if (tableView == _commentTableView) {
         
         static NSString *CellIdentifier = @"CellIdentifier";
         
@@ -505,7 +589,7 @@
 {
     CGFloat height = 0;
     
-    if (tableView != _decriptionTableView) {
+    if (tableView == _commentTableView) {
         height = 100;
     }
     

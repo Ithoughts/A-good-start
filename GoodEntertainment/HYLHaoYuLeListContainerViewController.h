@@ -17,14 +17,14 @@
 
 @interface HYLHaoYuLeListContainerViewController : ViewPagerController
 
-@property (nonatomic, strong) HYLTuiJieViewController *tuiJieListVC;
+@property (nonatomic, strong) HYLTuiJieViewController       *tuiJieListVC;
 
-@property (nonatomic, strong) HYLTouTiaoViewController *touTiaoListVC;
+@property (nonatomic, strong) HYLTouTiaoViewController      *touTiaoListVC;
 
-@property (nonatomic, strong) HYLYuanChuangViewController *yuanChuangListVC;
+@property (nonatomic, strong) HYLYuanChuangViewController   *yuanChuangListVC;
 
-@property (nonatomic, strong) HYLTitlePagerView *pagingTitleView;
+@property (nonatomic, strong) HYLTitlePagerView             *pagingTitleView;
 
-@property (nonatomic, assign) NSInteger currentIndex;
+@property (nonatomic, assign) NSInteger                     currentIndex;
 
 @end

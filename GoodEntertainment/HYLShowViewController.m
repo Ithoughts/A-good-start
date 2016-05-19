@@ -38,6 +38,7 @@
 {
     UITableView *_tableView;
     NSMutableArray *_dataArray;
+    NSArray *_imageArray;
 }
 
 @end
@@ -52,6 +53,9 @@
     
     [self hylShowApiRequest];
     [self prepareShowTableView];
+    
+    // 排名
+    _imageArray = @[@"one", @"two", @"three", @"four", @"five", @"six", @"seven", @"eight", @"nine"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -142,10 +146,16 @@
     
     if (cell == nil) {
         cell = [[HYLZhiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     cell.title.text = model.title;
     cell.updated_at.text = model.updated_at;
+    
+    if (indexPath.row < 9) {
+        cell.orderImage.image = [UIImage imageNamed:_imageArray[indexPath.row]];
+    }
+    
     [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
     
     return cell;

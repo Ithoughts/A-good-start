@@ -17,11 +17,16 @@
 
 #import <SDWebImage/UIImageView+WebCache.h>
 
+#import "HYLArtistMusicListModel.h"
+#import "HYLSingerMVCell.h"
+
 // 视频播放
 #import "XLVideoPlayer.h"
 
 #import <UMengSocialCOM/UMSocialSnsService.h>
 #import <UMSocialSnsPlatformManager.h>
+
+#import "HYLPlayMVListMusicViewController.h"
 
 @interface HYLYinYueDetailCommonViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
@@ -41,6 +46,7 @@
     //
     UIScrollView *_MVDecriptionScrollView;
     NSMutableArray *_dataArray;
+    NSMutableArray *_artistListArray;
     
     //
     UITableView *_commentTable;
@@ -66,6 +72,11 @@
     
     UILabel *_commentTipLabel;
     UIImageView *_commentTipImageView;
+    
+    
+    //
+    NSIndexPath *_indexPath;
+    CGRect _currentPlayCellRect;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -81,9 +92,7 @@
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
     [self HYLMusicInfoApiRequest];
-    
     [self prepareYinYueNavigationBar];
-    
 }
 
 - (XLVideoPlayer *)player {
@@ -185,10 +194,9 @@
     //
     [self createThreeButtons];
     
-    
     _MVDecriptionScrollView = [self createMVDecriptionView];
     
-    // 描述表
+    // 描述
     [self.view addSubview:_MVDecriptionScrollView];
 }
 
@@ -267,8 +275,8 @@
             [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             [_singerButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             
-            
             _MVDecriptionScrollView = [self createMVDecriptionView];
+            
             // 添加到当前视图
             [self.view addSubview:_MVDecriptionScrollView];
         }
@@ -314,6 +322,7 @@
             [_MVDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
             [_singerButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+            
             // 添加到当前视图
             [self.view addSubview:[self createSingerTableView]];
         }
@@ -353,6 +362,7 @@
             
             // 添加到当前视图
             [self.view addSubview:[self createCommentTableView]];
+            [_singerTable reloadData];
             
         } else {
             
@@ -375,9 +385,35 @@
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        //        NSLog(@"error: %@", error);
+//        NSLog(@"error: %@", error);
         
     }];
+}
+
+#pragma mark - MV 列表播放
+
+- (void)showPlayer:(UITapGestureRecognizer *)tapGesture
+{
+    [_player destroyPlayer];
+    _player = nil;
+    
+    UIView *view = tapGesture.view;
+    HYLArtistMusicListModel *item = _artistListArray[view.tag - 100];
+    
+    _indexPath = [NSIndexPath indexPathForRow:view.tag - 100 inSection:0];
+    HYLSingerMVCell *cell = [_singerTable cellForRowAtIndexPath:_indexPath];
+    
+    _player = [[XLVideoPlayer alloc] init];
+    _player.videoUrl = item.url;
+    [_player playerBindTableView:_singerTable currentIndexPath:_indexPath];
+    _player.frame = view.bounds;
+    
+    [cell.contentView addSubview:_player];
+    
+    _player.completedPlayingBlock = ^(XLVideoPlayer *player) {
+        [player destroyPlayer];
+        _player = nil;
+    };
 }
 
 
@@ -434,11 +470,6 @@
     [headerView addSubview:line];
     
     //
-    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height+5, _screenWidth - 20, 20)];
-    _decriptionLabel.font = [UIFont systemFontOfSize:15.0f];
-    _decriptionLabel.numberOfLines = 0;
-    _decriptionLabel.textColor = [UIColor lightGrayColor];
-    
     if (_dataArray.count > 0) {
         
         NSString *html = model.summary;
@@ -448,20 +479,24 @@
                                                                              options:options
                                                                   documentAttributes:nil
                                                                                error:nil];
-        _decriptionLabel.attributedText = attributeHtml;
         
         CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
         
-        _decriptionLabel.frame = CGRectMake(10, line.frame.origin.y + line.frame.size.height, _screenWidth - 20, htmlRect.size.height);
+        _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height + 10, _screenWidth - 20, htmlRect.size.height)];
+        _decriptionLabel.attributedText = attributeHtml;
+        _decriptionLabel.numberOfLines = 0;
+        _decriptionLabel.textColor = [UIColor lightGrayColor];
+        _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
         
-        [_decriptionLabel sizeThatFits:htmlRect.size];
+//        [_decriptionLabel sizeThatFits:htmlRect.size];
         
         [headerView addSubview:_decriptionLabel];
+        
         headerView.frame = CGRectMake(0, 0, _MVDecriptionScrollView.frame.size.width, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
         
-        [_MVDecriptionScrollView addSubview:headerView];
-        
         _MVDecriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
+        
+        [_MVDecriptionScrollView addSubview:headerView];
     }
     
     return _MVDecriptionScrollView;
@@ -471,7 +506,7 @@
 
 - (UITableView *)createCommentTableView
 {
-    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+5)) style:UITableViewStylePlain];
+    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5)) style:UITableViewStylePlain];
     _commentTable.dataSource = self;
     _commentTable.delegate = self;
     _commentTable.showsHorizontalScrollIndicator = NO;
@@ -573,9 +608,9 @@
     
     [manager POST:kMusicDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
-//        NSLog(@"音乐详情: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject
+                                                  encoding:NSUTF8StringEncoding];
+        NSLog(@"音乐详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -606,8 +641,6 @@
             _music_url = music_info[@"url"];
             
             // 音乐截图
-//            [_musicImageView sd_setImageWithURL:[NSURL URLWithString:music_info[@"cover_url"]] completed:nil];
-            
             _cover_url = music_info[@"cover_url"];
             
             [self prepareMVView];
@@ -615,9 +648,6 @@
         } else {
             
         }
-        
-//        [_MVDecriptionTable reloadData];
-        
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -654,13 +684,31 @@
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
         
+        _artistListArray = [[NSMutableArray alloc] init];
+        
         if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            NSDictionary *firstData = responseDic[@"data"];
+            NSArray *musicArray = firstData[@"music"];
+            
+            for (NSDictionary *dic in musicArray) {
+                
+                HYLArtistMusicListModel *model = [[HYLArtistMusicListModel alloc] init];
+                
+                model.title = dic[@"title"];
+                model.author = dic[@"author"];
+                
+                NSDictionary *video_info = dic[@"video_info"];
+                model.url = video_info[@"url"];
+                model.cover_url = video_info[@"cover_url"];
+                
+                [_artistListArray addObject:model];
+            }
+            
             
             } else {
             
         }
-        
-//        [_MVDecriptionTable reloadData];
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -673,20 +721,38 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    NSInteger count;
+    
+    if (tableView == _singerTable) {
+        
+        count = _artistListArray.count;
+    }
+    
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = nil;
-        
-    static NSString *CellIdentifier = @"CellIdentifier";
+    static NSString *CellIdentifier = @"MVlist";
     
-    cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    HYLSingerMVCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[HYLSingerMVCell alloc] init];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
+    
+    HYLArtistMusicListModel *model = _artistListArray[indexPath.row];
+    
+    [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.cover_url]];
+    cell.titleLabel.text = model.title;
+    cell.authorLabel.text = model.author;
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPlayer:)];
+    
+    [cell.avatar addGestureRecognizer:tap];
+    
+    cell.avatar.tag = indexPath.row + 100;
     
     return cell;
 }
@@ -694,6 +760,20 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 100.0f;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HYLArtistMusicListModel *item = _artistListArray[indexPath.row];
+    
+    HYLPlayMVListMusicViewController *videoDetailViewController = [[HYLPlayMVListMusicViewController alloc] init];
+    videoDetailViewController.videoTitle = item.title;
+    videoDetailViewController.mp4_url = item.url;
+    
+    
+    [self.navigationController pushViewController:videoDetailViewController animated:YES];
 }
 
 

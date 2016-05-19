@@ -13,5 +13,6 @@
 @property (nonatomic, strong) UILabel *title;
 @property (nonatomic, strong) UILabel *updated_at;
 @property (nonatomic, strong) UIImageView *videoImage;
+@property (nonatomic, strong) UIImageView *orderImage;
 
 @end

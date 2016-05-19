@@ -341,21 +341,20 @@
     [_videoImageView addSubview:_playVideoImage];
     
     // 视频简介
-    _videoIntroductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, _videoImageView.frame.origin.y + _videoImageView.frame.size.height - 50, _screenWidth - 10, 0)];
-    _videoIntroductionLabel.numberOfLines = 0;
-    
     NSData *data = [_html dataUsingEncoding:NSUnicodeStringEncoding];
     NSDictionary *options = @{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType};
     NSAttributedString *html = [[NSAttributedString alloc] initWithData:data
                                                                 options:options
                                                      documentAttributes:nil
                                                                   error:nil];
+   
+    CGRect htmlRect = [html boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
+    
+    _videoIntroductionLabel = [[UILabel alloc] initWithFrame:CGRectMake(_videoImageView.frame.origin.x, _videoImageView.frame.origin.y + _videoImageView.frame.size.height + 10, _screenWidth - 10, htmlRect.size.height)];
+    _videoIntroductionLabel.numberOfLines = 0;
     _videoIntroductionLabel.attributedText = html;
-    _videoIntroductionLabel.font = [UIFont systemFontOfSize:14.0f];
-    
-    CGRect htmlRect = [html boundingRectWithSize:CGSizeMake(_screenWidth - 10, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-    
-    _videoIntroductionLabel.frame = CGRectMake(_videoImageView.frame.origin.x, _videoImageView.frame.origin.y + _videoImageView.frame.size.height + 10, _screenWidth - 10, htmlRect.size.height);
+    _videoIntroductionLabel.font = [UIFont systemFontOfSize:16.0f];
+    _videoIntroductionLabel.textColor = [UIColor lightGrayColor];
     
     [self.scrollView addSubview:_videoIntroductionLabel];
     

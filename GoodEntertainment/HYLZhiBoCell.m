@@ -40,6 +40,12 @@
     _videoImage.contentMode = UIViewContentModeScaleToFill;
     [self.contentView addSubview:_videoImage];
     
+    _orderImage = [[UIImageView alloc] initWithFrame:CGRectMake(40, 0, 20, 40)];
+    _orderImage.contentMode = UIViewContentModeScaleToFill;
+    _orderImage.center = CGPointMake(40, _videoImage.center.y);
+    [_videoImage addSubview:_orderImage];
+
+    
     _title = [[UILabel alloc] initWithFrame:CGRectMake(0, _videoImage.frame.size.height*0.5 - 20, contentViewWidth, 30)];
     _title.textColor = [UIColor whiteColor];
     _title.textAlignment = NSTextAlignmentCenter;

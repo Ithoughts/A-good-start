@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		59C7225E079D898BE2BDBD7C /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E0760EB12FDCC02BF111EFC /* libPods.a */; };
+		D11C71CC1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D11C71CB1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m */; };
 		D11D67591CE31CEC00612F42 /* HYLCommentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */; };
 		D126D5591C91424C000CD6D8 /* HYLMyCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D5581C91424C000CD6D8 /* HYLMyCollectionViewController.m */; };
 		D126D55C1C914613000CD6D8 /* HYLEditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D55B1C914613000CD6D8 /* HYLEditProfileViewController.m */; };
@@ -49,6 +50,7 @@
 		D1BEA4C81CB505CC000150E2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1BEA4C71CB505CC000150E2 /* MediaPlayer.framework */; };
 		D1C613471C96946600C32974 /* HYLForgetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C613461C96946600C32974 /* HYLForgetPasswordViewController.m */; };
 		D1C6134A1C96A80E00C32974 /* HYLRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */; };
+		D1D6CA901CEAEB190078D185 /* HYLPlayMVListMusicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D6CA8F1CEAEB190078D185 /* HYLPlayMVListMusicViewController.m */; };
 		D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */; };
 		D1D7C2F01CE1948F00D8F818 /* XLVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2EE1CE1948F00D8F818 /* XLVideoPlayer.m */; };
 		D1D7C2F71CE1C5DC00D8F818 /* UIViewExt.m in Sources */ = {isa = PBXBuildFile; fileRef = D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */; };
@@ -70,6 +72,8 @@
 		0787ECBD8093D4FCDA756C15 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		4E0760EB12FDCC02BF111EFC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A379C59F2A1FB0EFB902213C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		D11C71CA1CEAC3B4007C7E51 /* HYLArtistMusicListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLArtistMusicListModel.h; sourceTree = "<group>"; };
+		D11C71CB1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLArtistMusicListModel.m; sourceTree = "<group>"; };
 		D11D67561CE31CEC00612F42 /* HYLCommentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentListViewController.h; sourceTree = "<group>"; };
 		D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentListViewController.m; sourceTree = "<group>"; };
 		D126D5571C91424C000CD6D8 /* HYLMyCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLMyCollectionViewController.h; sourceTree = "<group>"; };
@@ -152,6 +156,8 @@
 		D1C613461C96946600C32974 /* HYLForgetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLForgetPasswordViewController.m; sourceTree = "<group>"; };
 		D1C613481C96A80E00C32974 /* HYLRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLRegisterViewController.h; sourceTree = "<group>"; };
 		D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLRegisterViewController.m; sourceTree = "<group>"; };
+		D1D6CA8E1CEAEB190078D185 /* HYLPlayMVListMusicViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLPlayMVListMusicViewController.h; sourceTree = "<group>"; };
+		D1D6CA8F1CEAEB190078D185 /* HYLPlayMVListMusicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLPlayMVListMusicViewController.m; sourceTree = "<group>"; };
 		D1D7C2EB1CE1948F00D8F818 /* XLSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSlider.h; sourceTree = "<group>"; };
 		D1D7C2EC1CE1948F00D8F818 /* XLSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSlider.m; sourceTree = "<group>"; };
 		D1D7C2ED1CE1948F00D8F818 /* XLVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLVideoPlayer.h; sourceTree = "<group>"; };
@@ -241,8 +247,12 @@
 			children = (
 				D14749AA1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.h */,
 				D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */,
+				D1D6CA8E1CEAEB190078D185 /* HYLPlayMVListMusicViewController.h */,
+				D1D6CA8F1CEAEB190078D185 /* HYLPlayMVListMusicViewController.m */,
 				D165ED2F1CC0BE6300C35F41 /* HYLSingerMVCell.h */,
 				D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */,
+				D11C71CA1CEAC3B4007C7E51 /* HYLArtistMusicListModel.h */,
+				D11C71CB1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m */,
 			);
 			name = YinYueDetailViewController;
 			sourceTree = "<group>";
@@ -506,6 +516,8 @@
 		D1F44C881C8D7EAD00B6AA0C /* GoodEntertainment */ = {
 			isa = PBXGroup;
 			children = (
+				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
+				D166C17C1C99505B00E20F0A /* TitleView */,
 				D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */,
 				D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */,
 				D14BFB7D1CE0331C00936D74 /* TLAttributedLabel */,
@@ -519,8 +531,6 @@
 				D19C98491C8FFC7300BDAEC8 /* HaoYinYue */,
 				D19C984A1C8FFC8500BDAEC8 /* ZhiBo */,
 				D1DC6F431CAA23B40093D735 /* BaseModel */,
-				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
-				D166C17C1C99505B00E20F0A /* TitleView */,
 				D1F44C8C1C8D7EAD00B6AA0C /* AppDelegate.h */,
 				D1F44C8D1C8D7EAD00B6AA0C /* AppDelegate.m */,
 				D1F44C921C8D7EAD00B6AA0C /* Main.storyboard */,
@@ -670,10 +680,12 @@
 				D1C6134A1C96A80E00C32974 /* HYLRegisterViewController.m in Sources */,
 				D1F44C8E1C8D7EAD00B6AA0C /* AppDelegate.m in Sources */,
 				D1BE0C5A1C8EB07F00C79A5D /* HYLZhiBoListViewController.m in Sources */,
+				D1D6CA901CEAEB190078D185 /* HYLPlayMVListMusicViewController.m in Sources */,
 				D19C984D1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.m in Sources */,
 				D1C613471C96946600C32974 /* HYLForgetPasswordViewController.m in Sources */,
 				D1BDA0C91C98192300D4F9A9 /* HYLGetSignature.m in Sources */,
 				D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */,
+				D11C71CC1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m in Sources */,
 				D1BE0C511C8EB02100C79A5D /* HYLHaoYuLeListContainerViewController.m in Sources */,
 				D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */,
 				D1D7C2F71CE1C5DC00D8F818 /* UIViewExt.m in Sources */,

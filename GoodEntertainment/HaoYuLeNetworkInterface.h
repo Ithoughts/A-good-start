@@ -68,7 +68,7 @@
 #define             kMakeCommentURL       [NSString stringWithFormat:@"%@/api/comment/send/music", kBaseURL]  // 本接口需要用户认证
 
 // 根据艺人ID获取音乐列表
-#define             kSingerMVURL       [NSString stringWithFormat:@"%@/api/music/artist", kBaseURL]
+#define             kSingerMVURL          [NSString stringWithFormat:@"%@/api/music/artist", kBaseURL]
 
 
                                   /********** 用户相关： ***********/

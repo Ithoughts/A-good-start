@@ -37,8 +37,9 @@
 {
     UITableView *_tableView;
     NSMutableArray *_dataArray;
+    
+    NSArray *_imageArray;
 }
-
 
 @end
 
@@ -48,8 +49,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    // 显示工具栏
-//    [self.tabBarController.tabBar setHidden:NO];
+    _imageArray = @[@"one", @"two", @"three", @"four", @"five", @"six", @"seven", @"eight", @"nine"];
     
     _page = 1;
     
@@ -140,10 +140,16 @@
     
     if (cell == nil) {
         cell = [[HYLZhiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     cell.title.text = model.title;
     cell.updated_at.text = model.updated_at;
+    
+    if (indexPath.row < 9) {
+        cell.orderImage.image = [UIImage imageNamed:_imageArray[indexPath.row]];
+    }
+    
     [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
     
     return cell;

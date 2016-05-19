@@ -284,7 +284,7 @@
 {
     HYLZhiBoListModel *model = _dataArray[0];
     
-    _decriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight -(_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _decriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionScrollView.frame.size.height)];
     headerView.userInteractionEnabled = YES;
@@ -322,13 +322,11 @@
     [headerView addSubview:line];
         
     //
-    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 5, _screenWidth - 20, 20)];
-    _decriptionLabel.font = [UIFont systemFontOfSize:15.0f];
-    _decriptionLabel.numberOfLines = 0;
-    _decriptionLabel.textColor = [UIColor lightGrayColor];
+//    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 10, _screenWidth - 20, 20)];
+//    _decriptionLabel.numberOfLines = 0;
+//    _decriptionLabel.textColor = [UIColor lightGrayColor];
     
     NSString *html = model.summary;
-//    NSLog(@"summary : %@", html);
     
     NSData *data = [html dataUsingEncoding:NSUnicodeStringEncoding];
     NSDictionary *options = @{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType};
@@ -336,20 +334,19 @@
                                                                          options:options
                                                               documentAttributes:nil
                                                                            error:nil];
-    _decriptionLabel.attributedText = attributeHtml;
-    
-//    NSLog(@"attribute html :%@", attributeHtml);
     
     CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
     
-    _decriptionLabel.frame = CGRectMake(10, line.frame.origin.y + line.frame.size.height, _screenWidth-20, htmlRect.size.height);
+    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 10, _screenWidth - 20, htmlRect.size.height)];
+    _decriptionLabel.attributedText = attributeHtml;
+    _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
+    _decriptionLabel.textColor = [UIColor lightGrayColor];
     
     [_decriptionLabel sizeThatFits:htmlRect.size];
     
     [headerView addSubview:_decriptionLabel];
     
     headerView.frame = CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
-    
     
     [_decriptionScrollView addSubview:headerView];
     
@@ -552,7 +549,7 @@
 {
     if (tableView == _commentTableView) {
         
-        return 5;
+        return 0;
         
     } else {
     

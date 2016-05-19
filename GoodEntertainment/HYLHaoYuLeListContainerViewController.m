@@ -11,18 +11,8 @@
 //
 #import "UIView+Additions.h"
 
-
-//#import <MMDrawerBarButtonItem.h>
-//#import <UIViewController+MMDrawerController.h>
-
-// 左侧视图控制器
-#import "HYLMyCollectionViewController.h"
-#import "HYLEditProfileViewController.h"
-#import "HYLSettingViewController.h"
-#import "HYLSignInViewController.h"
-
-// test
-#import "HYLHaoYuLeCommonDetailViewController.h"
+//
+#import "HYLMenuViewController.h"
 
 // md5 加密
 #import <CommonCrypto/CommonDigest.h>
@@ -33,15 +23,7 @@
 
 @interface HYLHaoYuLeListContainerViewController ()<ViewPagerDataSource, ViewPagerDelegate, HYLTitlePagerViewDelegate, UIGestureRecognizerDelegate>
 {
-    UIView *_backgroundView;
-    UIView *_topestView;
-    UIImageView *_footerBackgroundImageView;
-    
-    // 按钮
-    UIButton *_collectionButton;
-    UIButton *_edictButton;
-    UIButton *_settingButton;
-    UIButton *_logoutButton;
+
 }
 
 @end
@@ -57,7 +39,7 @@
     self.manualLoadData = YES;
     self.currentIndex = 0;
     
-//    [self setupLeftMenuButton];
+    [self setupLeftMenuButton];
     
     self.navigationItem.titleView = self.pagingTitleView;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -77,12 +59,18 @@
                                                  name:@"DidTapStatusBar"
                                                object:nil];
 }
+
+#pragma mark - 注销通知
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DidTapStatusBar" object:nil];
 }
+
+#pragma mark - 通知响应
+
 - (void)statusBarTappedAction:(NSNotification*)notification {
     if (self.currentIndex == 0 && self.tuiJieListVC) {
         [self.tuiJieListVC.tableView setContentOffset:CGPointZero animated:YES];
@@ -98,214 +86,22 @@
 -(void)setupLeftMenuButton
 {
     UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    leftButton.frame = CGRectMake(0, 0, 35, 40);
-    [leftButton setImage:[UIImage imageNamed:@"navi_left_item"] forState:UIControlStateNormal];
+
+    UIImage *leftImage = [UIImage imageNamed:@"navi_left_item"];
+    
+    leftButton.frame = CGRectMake(0, 0, leftImage.size.width, leftImage.size.height);
+    [leftButton setImage:leftImage forState:UIControlStateNormal];
     [leftButton addTarget:self action:@selector(leftBarButtonItemTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
     self.navigationItem.leftBarButtonItem = leftBarButtonItem;
 }
+
 - (void)leftBarButtonItemTouch:(UIButton *)sender
 {
-//    NSLog(@"创建左侧视图");
-    [self setupLeftView];
-}
-
-#pragma mark - 创建左侧视图
-
-- (void)setupLeftView
-{
-    // bgView
-    _backgroundView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    _backgroundView.backgroundColor = [UIColor clearColor];
+    HYLMenuViewController *leftMenuVC = [[HYLMenuViewController alloc] init];
     
-    _topestView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, [UIScreen mainScreen].bounds.size.width * 4/5.0, [UIScreen mainScreen].bounds.size.height - 20)];
-    _topestView.backgroundColor = [UIColor whiteColor];
-    [_backgroundView addSubview:_topestView];
-    
-    [self prepareTopestViewContentView];
-    
-    // 手势
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHandle:)];
-    tap.delegate = self;
-    [_topestView addGestureRecognizer:tap];
-    [self.view addSubview:_topestView];
-}
-
-#pragma mark - 创建左侧内容
-
-- (void)prepareTopestViewContentView
-{
-    // 头视图
-    [self prepareTopestViewHeaderView];
-    
-    // 脚视图
-    [self prepareTopestViewFooterView];
-}
-
-#pragma mark - 头视图
-
-- (void)prepareTopestViewHeaderView
-{
-    CGFloat topestViewWidth = _topestView.frame.size.width;
-    CGFloat center = topestViewWidth*0.5;
-    
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 20, topestViewWidth, 200)];
-    header.backgroundColor = [UIColor whiteColor];
-    [_topestView addSubview:header];
-    
-    UIImageView *avatar = [[UIImageView alloc] initWithFrame:CGRectMake(center - 50, 30, 100, 100)];
-    avatar.image = [UIImage imageNamed:@"defaultImage"];
-    [header addSubview:avatar];
-    
-    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(center - 90, avatar.frame.origin.y + avatar.frame.size.height + 5, 180, 30)];
-    nameLabel.text = @"小陈同志";
-    nameLabel.textColor = [UIColor blackColor];
-    nameLabel.textAlignment = NSTextAlignmentCenter;
-    nameLabel.font = [UIFont systemFontOfSize:18.0f];
-    [header addSubview:nameLabel];
-    
-    UILabel *sayingLabel = [[UILabel alloc] initWithFrame:CGRectMake(center - 90, nameLabel.frame.origin.y + nameLabel.frame.size.height, 180, 30)];
-    sayingLabel.text = @"人生旅途";
-    sayingLabel.textColor = [UIColor lightGrayColor];
-    sayingLabel.textAlignment = NSTextAlignmentCenter;
-    sayingLabel.font = [UIFont systemFontOfSize:15.0f];
-    [header addSubview:sayingLabel];
-}
-
-#pragma mark - 脚视图
-- (void)prepareTopestViewFooterView
-{
-    _footerBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 210, _topestView.frame.size.width, _topestView.frame.size.height-200)];
-    _footerBackgroundImageView.userInteractionEnabled = YES;
-    [_topestView addSubview:_footerBackgroundImageView];
-    
-    //
-    _collectionButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, 10, 120, 30)
-                                                 tag:100
-                                               image:[UIImage imageNamed:@"myCollectionIcon"]
-                                               title:@"我的收藏"];
-    
-    [_footerBackgroundImageView addSubview:_collectionButton];
-    
-    
-    //
-    [self createLineViewWithCGRECT:CGRectMake(0, _collectionButton.frame.size.height + _collectionButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
-    
-    
-    //
-    _edictButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _collectionButton.frame.origin.y + _collectionButton.frame.size.height + 5 + 5, 120, 30)
-                    
-                                                 tag:101
-                                               image:[UIImage imageNamed:@"changeInfoIcon"]
-                                               title:@"修改资料"];
-    
-    [_footerBackgroundImageView addSubview:_edictButton];
-    
-    
-    //
-    [self createLineViewWithCGRECT:CGRectMake(0, _edictButton.frame.size.height + _edictButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
-    
-    
-    
-    //
-    _settingButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _edictButton.frame.origin.y + _edictButton.frame.size.height + 5 + 5, 120, 30)
-                                              tag:102
-                                            image:[UIImage imageNamed:@"settingIcon"]
-                                            title:@"设置"];
-    
-    [_footerBackgroundImageView addSubview:_settingButton];
-    
-    
-    //
-    [self createLineViewWithCGRECT:CGRectMake(0, _settingButton.frame.size.height + _settingButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
-    
-    
-    //
-    _logoutButton = [self createButtonWithCGRECT:CGRectMake(_topestView.frame.size.width * 0.5 - 60, _settingButton.frame.origin.y + _settingButton.frame.size.height + 5 + 5, 120, 30)
-                                             tag:103
-                                           image:[UIImage imageNamed:@"logoutIcon"]
-                                           title:@"退出登录"];
-    
-    [_footerBackgroundImageView addSubview:_logoutButton];
-    
-    
-    //
-    [self createLineViewWithCGRECT:CGRectMake(0, _logoutButton.frame.size.height + _logoutButton.frame.origin.y + 5, _topestView.frame.size.width, 1)];
-}
-
-#pragma mark - 创建 按钮 共用方法
-
-- (UIButton *)createButtonWithCGRECT:(CGRect)rect tag:(NSUInteger)tag image:(UIImage *)image title:(NSString *)title
-{
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = rect;
-    button.tag = tag;
-    [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    button.titleLabel.font = [UIFont systemFontOfSize:18.0f];
-    [button setImage:image forState:UIControlStateNormal];
-    button.imageEdgeInsets = UIEdgeInsetsMake(0.0, button.frame.size.width-image.size.width , 0.0, 0.0);
-    button.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0 , 0.0, image.size.width);
-    
-    [button addTarget:self action:@selector(buttonsTap:) forControlEvents:UIControlEventTouchUpInside];
-    
-    return button;
-}
-#pragma mark - 手势响应
-- (void)tapHandle:(UIGestureRecognizer *)sender
-{
-    [_topestView removeFromSuperview];
-}
-
-#pragma mark - 按钮响应
-- (void)buttonsTap:(UIButton *)sender
-{
-    switch (sender.tag) {
-        case 100:
-        {
-            HYLMyCollectionViewController *collectionVC = [[HYLMyCollectionViewController alloc] init];
-            collectionVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:collectionVC animated:NO];
-        }
-            break;
-        case 101:
-        {
-            HYLEditProfileViewController *editProfileVC = [[HYLEditProfileViewController alloc] init];
-            editProfileVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:editProfileVC animated:NO];
-        }
-            break;
-        case 102:
-        {
-            HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
-            setUpVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:setUpVC animated:NO];
-
-        }
-            break;
-        case 103:
-        {
-            HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
-            signInVC.hidesBottomBarWhenPushed = YES;
-
-            [self.navigationController pushViewController:signInVC animated:NO];
-        }
-            break;
-            
-        default:
-            break;
-    }
-}
-
-#pragma mark - 创建线条视图
-
-- (void)createLineViewWithCGRECT:(CGRect)rect
-{
-    UIView *lineView = [[UIView alloc] initWithFrame:rect];
-    lineView.backgroundColor = [UIColor whiteColor];
-    
-    [_footerBackgroundImageView addSubview:lineView];
+    [self.navigationController pushViewController:leftMenuVC animated:YES];
 }
 
 #pragma mark - ViewPagerDataSource
@@ -377,7 +173,6 @@
 
 - (void)didTouchBWTitle:(NSUInteger)index
 {
-    // NSInteger index;
     UIPageViewControllerNavigationDirection direction;
     
     if (self.currentIndex == index) {
