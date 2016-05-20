@@ -10,7 +10,7 @@
 #define HaoYuLeNetworkInterface_h
 
 
-#define             kBaseURL              @"http://haoyule.www.fansye.com.cn"
+#define             kBaseURL              @"http://mhaotv.grtn.cn"  // @"http://haoyule.www.fansye.com.cn"
 
 
                                     /********** 视频相关： ***********/
@@ -20,7 +20,7 @@
 #define             kTouTiaoURL           [NSString stringWithFormat:@"%@/api/video/headline", kBaseURL]
 
 // 获取推介列表
-#define             kTuiJieURL         [NSString stringWithFormat:@"%@/api/video/interview", kBaseURL]
+#define             kTuiJieURL            [NSString stringWithFormat:@"%@/api/video/interview", kBaseURL]
 
 // 获取原创列表
 #define             kYuanChuangURL        [NSString stringWithFormat:@"%@/api/video/original", kBaseURL]
@@ -43,8 +43,11 @@
 // 获取视频评论
 #define             kGetVideoCommentURL       [NSString stringWithFormat:@"%@/api/comment/video", kBaseURL]
 
-// 发送视频评论
+// 发表视频评论
 #define             kSendVideoCommentURL      [NSString stringWithFormat:@"%@/api/comment/send/video", kBaseURL]
+
+// 获取 token
+#define             kGetUserTokenURL          [NSString stringWithFormat:@"%@/api/user/auth", kBaseURL]
 
 
                                     /********** 音乐相关： ***********/
@@ -91,11 +94,22 @@
 // 修改用户密码
 #define             kChangePasswordURL    [NSString stringWithFormat:@"%@/api/user/change_password", kBaseURL]
 
-// 获取收藏的音乐
-#define             kCollectMusicURL      [NSString stringWithFormat:@"%@/api/user/favorite", kBaseURL]      // 本接口需要用户认证
+// 获取收藏
+#define             kGetUserFavoriteURL      [NSString stringWithFormat:@"%@/api/user/favorite", kBaseURL]                 // 本接口需要用户认证
 
-// 添加收藏
-#define             kAddCollectionURL     [NSString stringWithFormat:@"%@/api/user/favorite/add", kBaseURL]  // 本接口需要用户认证
+// 获取视频收藏
+#define             kGetUserFavoriteVideoURL      [NSString stringWithFormat:@"%@/api/user/favorite/video", kBaseURL]      // 本接口需要用户认证
+
+// 添加视频收藏
+#define             kAddFavoriteVideoURL     [NSString stringWithFormat:@"%@/api/user/favorite/add/video", kBaseURL]       // 本接口需要用户认证
+
+// 添加音乐收藏
+#define             kAddFavoriteMusicURL     [NSString stringWithFormat:@"%@/api/user/favorite/add/music", kBaseURL]       // 本接口需要用户认证
+
+// 点赞评论
+#define             kLikeCommentURL     [NSString stringWithFormat:@"%@/api/like/comment", kBaseURL]  // 本接口需要用户认证
+
+
 
 
 

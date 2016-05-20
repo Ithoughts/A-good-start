@@ -27,6 +27,8 @@
 #import "HaoYuLeNetworkInterface.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
+#import <MJRefresh.h>
+
 @interface HYLTuiJieViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
     NSMutableArray *_dataArray;
@@ -43,21 +45,60 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.page = 1;
+    _dataArray = [[NSMutableArray alloc] init];
+    
     [self HYLTuiJieApiRequest];
+    
     [self prepareTuiJieTableView];
 }
 #pragma mark - 表格视图
 
 - (void)prepareTuiJieTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.backgroundColor = [UIColor whiteColor];
-    _tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    [self.view addSubview:_tableView];
+    [self.view addSubview:self.tableView];
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewData];
+    }];
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf loadMoreData];
+    }];
+    
+//    self.tableView.mj_footer.hidden = YES;
+
+}
+
+#pragma mark - 下拉刷新
+
+- (void)loadNewData
+{
+    self.page = 1;
+    
+    [_dataArray removeAllObjects];
+    
+    [self HYLTuiJieApiRequest];
+}
+
+#pragma mark - 上拉加载更多
+
+- (void)loadMoreData
+{
+    self.page ++;
+    
+    [self HYLTuiJieApiRequest];
 }
 
 #pragma mark - 网络请求
@@ -94,16 +135,35 @@
             
             NSArray *secondData = firstDataDic[@"data"];
             
-            _dataArray = [[NSMutableArray alloc] init];
             
-            for (NSDictionary *dic in secondData) {
+            if (secondData.count > 0) {
                 
-                HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dic];
-                [_dataArray addObject:model];
+                for (NSDictionary *dic in secondData) {
+                    
+                    HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dic];
+                    [_dataArray addObject:model];
+                }
+                
+                // 刷新表格
+                [self.tableView reloadData];
+                
+                // 拿到当前的下拉刷新控件，结束刷新状态
+                [self.tableView.mj_header endRefreshing];
+                
+                // 拿到当前的上拉刷新控件，结束刷新状态
+                [self.tableView.mj_footer endRefreshing];
+                
+            } else {
+                
+                // 刷新表格
+                [self.tableView reloadData];
+                
+                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
+                [self.tableView.mj_footer endRefreshingWithNoMoreData];
+                
+                // 隐藏当前的上拉刷新控件
+                self.tableView.mj_footer.hidden = YES;
             }
-            
-            // 刷新表格
-            [_tableView reloadData];
             
         } else {
             
@@ -117,6 +177,7 @@
 }
 
 #pragma mark - UITableViewDelegate, UITableViewDataSource
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return _dataArray.count;
@@ -150,11 +211,9 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    //
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
     NSInteger videoId = model.videoId;
     
-    //
     HYLHaoYuLeCommonDetailViewController *touTiaoDetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
     touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
     touTiaoDetailVC.hidesBottomBarWhenPushed = YES;
@@ -162,7 +221,6 @@
     HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
     [tabBarController pushToViewController:touTiaoDetailVC animated:NO];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

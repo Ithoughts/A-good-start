@@ -24,7 +24,8 @@
 #import <UMengSocialCOM/UMSocialSnsService.h>
 #import <UMSocialSnsPlatformManager.h>
 
-@interface HYLJingCaiDetailedInfoViewController ()<UITableViewDelegate, UITableViewDataSource>
+
+@interface HYLJingCaiDetailedInfoViewController ()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UMSocialUIDelegate>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
@@ -66,6 +67,13 @@
     //
     UILabel *_commentTipLabel;
     UIImageView *_commentTipImageView;
+    
+    
+    //
+    UIView *bottomView;
+    
+    //
+    NSString *token;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -74,9 +82,20 @@
 
 @implementation HYLJingCaiDetailedInfoViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    token = [defaults objectForKey:@"token"];
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    token = [defaults objectForKey:@"token"];
     
     _screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -131,7 +150,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
     
-    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 30)];
     title.textColor = [UIColor whiteColor];
     title.font = [UIFont systemFontOfSize:18.0f];
     title.textAlignment = NSTextAlignmentCenter;
@@ -173,7 +192,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showVideoPlayer:)];
     [_videoImageView addGestureRecognizer:tap];
     
-    // 视频播放图标
+    // 视频播放
     UIImage *image = [UIImage imageNamed:@"playBtn"];
     _playVideoImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
     _playVideoImage.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
@@ -184,7 +203,6 @@
     
     //
     [self createTwoButtons];
-    
     
     _descripScrollView = [self createVideoDecriptionView];
     
@@ -300,7 +318,7 @@
         
     //
     _playLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 35, _screenWidth, 30)];
-    _playLabel.text = [NSString stringWithFormat:@"播放: %@",model.view_count];
+    _playLabel.text = [NSString stringWithFormat:@"播放: %@", model.view_count];
     _playLabel.textColor = [UIColor lightGrayColor];
     _playLabel.textAlignment = NSTextAlignmentLeft;
     _playLabel.font = [UIFont systemFontOfSize:16.0f];
@@ -322,10 +340,6 @@
     [headerView addSubview:line];
         
     //
-//    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 10, _screenWidth - 20, 20)];
-//    _decriptionLabel.numberOfLines = 0;
-//    _decriptionLabel.textColor = [UIColor lightGrayColor];
-    
     NSString *html = model.summary;
     
     NSData *data = [html dataUsingEncoding:NSUnicodeStringEncoding];
@@ -337,7 +351,7 @@
     
     CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
     
-    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 10, _screenWidth - 20, htmlRect.size.height)];
+    _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + 15, _screenWidth - 20, htmlRect.size.height)];
     _decriptionLabel.attributedText = attributeHtml;
     _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
     _decriptionLabel.textColor = [UIColor lightGrayColor];
@@ -348,9 +362,14 @@
     
     headerView.frame = CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
     
+//    bottomView = [self createCommentView];
+//    bottomView.hidden = YES;
+//    [headerView addSubview:bottomView];
+    
     [_decriptionScrollView addSubview:headerView];
     
     _decriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
+    
     
     return _decriptionScrollView;
 }
@@ -392,36 +411,186 @@
 - (void)threeButtonsAction:(UIButton *)sender
 {
     switch (sender.tag) {
+            
         case 100:
         {
-//            NSLog(@"分享");
+            [UMSocialData defaultData].extConfig.wechatSessionData.url = @"http://baidu.com";
+            [UMSocialData defaultData].extConfig.wechatTimelineData.url = @"http://baidu.com";
+            [UMSocialData defaultData].extConfig.wechatSessionData.title = @"微信好友title";
+            [UMSocialData defaultData].extConfig.wechatTimelineData.title = @"微信朋友圈title";
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeImage;
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeText;
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeApp;
             
             //如果需要分享回调，请将delegate对象设置self，并实现下面的回调方法
             [UMSocialSnsService presentSnsIconSheetView:self
                                                  appKey:@"57396808e0f55a0902001ba4"
                                               shareText:@"分享到微信"
-                                             shareImage:[UIImage imageNamed:@"AppIcon"]
-                                        shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline, UMShareToQQ, UMShareToQzone, UMShareToEmail]
-                                               delegate:nil];
+                                             shareImage:[UIImage imageNamed:@"icon"]
+                                        shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline]
+                                               delegate:self];
+
         }
             break;
             
         case 101:
         {
-            NSLog(@"收藏");
+//            NSLog(@"收藏");
+            
+            if (token != nil) {
+                
+                [self collectVideo];
+                
+            } else {
+            
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+            
         }
             break;
-            
             
         case 102:
         {
             NSLog(@"评论");
+
+//            bottomView.hidden = NO;
+            
+            if (token != nil) {
+                
+                
+            } else {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+
         }
             break;
             
         default:
             break;
     }
+}
+
+
+#pragma mark - 实现回调方法：
+
+-(void)didFinishGetUMSocialDataInViewController:(UMSocialResponseEntity *)response
+{
+    //根据`responseCode`得到发送结果,如果分享成功
+    if(response.responseCode == UMSResponseCodeSuccess)
+    {
+        //得到分享到的微博平台名
+        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
+    }
+}
+
+
+#pragma mark - 收藏视频
+
+- (void)collectVideo
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:self.videoId         forKey:@"video_id"];
+    [dictionary setValue:timestamp            forKey:@"time"];
+    [dictionary setValue:signature            forKey:@"sign"];
+    
+    // HTTP Basic Authorization 认证机制
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kAddFavoriteVideoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"收藏视频返回:%@", string);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                    options:NSJSONReadingMutableLeaves
+                                                                      error:&error];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            
+            if ([responseDic[@"message"] isEqualToString:@"目标已被收藏"]) {
+                
+                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:@"已收藏" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [tip show];
+                
+            } else {
+                
+                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:@"收藏成功" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [tip show];
+            }
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+        
+    }];
+}
+
+#pragma mark - 获取 token
+
+//- (NSString *)getToken
+//{
+//    __block NSString *token = nil;
+//    
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    
+//    [manager POST:kGetUserTokenURL parameters:nil success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+//        
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"获取用户 token 返回:%@", string);
+//        
+//        token = string;
+//        
+//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+//        
+//        NSLog(@"error: %@", error);
+//    }];
+//    
+//    return token;
+//}
+
+- (UIView *)createCommentView
+{
+    UIView *commentView = [[UIView alloc] initWithFrame:CGRectMake(0, _screenHeight - 50, _screenWidth, 50)];
+    commentView.backgroundColor = [UIColor lightGrayColor];
+    
+    UITextField *commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(5, 5, commentView.frame.size.width - 10, 40)];
+    commentTextField.delegate = self;
+    commentTextField.placeholder = @"点击评论...";
+    commentTextField.clearsOnBeginEditing = YES;
+    commentTextField.background = [UIImage imageNamed:@"textfieldbackground"];
+    [commentView addSubview:commentTextField];
+    
+    UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    sendButton.frame = CGRectMake(commentTextField.frame.size.width - 55, 10, 50, 30);
+    [sendButton setTitle:@"发表" forState:UIControlStateNormal];
+    [sendButton setTitleColor:[UIColor colorWithRed:255.0/255.0 green:199.0/255.0 blue:3/255.0 alpha:1.0] forState:UIControlStateNormal];
+    sendButton.titleLabel.font = [UIFont systemFontOfSize:20.0f];
+    [sendButton addTarget:self action:@selector(sendCommentToServer:) forControlEvents:UIControlEventTouchUpInside];
+    [commentView addSubview:sendButton];
+    
+    return commentView;
+}
+
+#pragma mark - 发表评论
+
+- (void)sendCommentToServer:(UIButton *)sender
+{
+    NSLog(@"评论完毕");
 }
 
 #pragma mark - 改变指示器的位置
@@ -449,14 +618,12 @@
     
     [manager POST:kShiPinDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"好精彩详情: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"好精彩详情: %@", reponse);
         
         NSError *error = nil;
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
-                                                                    options:NSJSONReadingMutableLeaves
-                                                                      error:&error];
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        
         _dataArray = [[NSMutableArray alloc] init];
         
         if ([responseDic[@"status"]  isEqual: @1]) {
@@ -465,7 +632,6 @@
             
             HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dataDic];
             [_dataArray addObject:model];
-            
             
             // 视频地址
             _video_url = model.video_info.url;
@@ -504,9 +670,9 @@
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"好精彩评论列表: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"好精彩评论列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];

@@ -8,15 +8,23 @@
 
 #import "HYLCommentListViewController.h"
 
+#import "HYLCommentCell.h"
+#import "HYLCommentModel.h"
+
 #import <AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 #import "HaoYuLeNetworkInterface.h"
 
-@interface HYLCommentListViewController ()
+#import <MJRefresh.h>
+
+@interface HYLCommentListViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
+    
+    NSMutableArray *_dataArray;
+    UITableView *_tableView;
 }
 
 @end
@@ -32,8 +40,13 @@
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
+    _dataArray = [[NSMutableArray alloc] init];
+    self.page = 1;
+    
     [self prepareNavigationBar];
     [self HYLCommentListRequest];
+    
+    [self prepareTableView];
 }
 
 - (void)prepareNavigationBar
@@ -63,6 +76,53 @@
     navItem.titleView = titleLabel;
 }
 
+#pragma mark - 表视图
+
+- (void)prepareTableView
+{
+    _tableView = [[UITableView alloc ]initWithFrame:CGRectMake(0, 0, _screenWidth, _screenHeight - 64) style:UITableViewStylePlain];
+    _tableView.backgroundColor = [UIColor whiteColor];
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.showsVerticalScrollIndicator = NO;
+    _tableView.showsHorizontalScrollIndicator = NO;
+    _tableView.tableFooterView = [[UIView alloc] init];
+    [self.view addSubview:_tableView];
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    _tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewData];
+    }];
+    
+//    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+//    _tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+//        [weakSelf loadMoreData];
+//    }];
+
+}
+
+#pragma mark - 下拉刷新
+
+- (void)loadNewData
+{
+    self.page = 1;
+    
+    [_dataArray removeAllObjects];
+    
+    [self HYLCommentListRequest];
+}
+
+#pragma mark - 上拉加载更多
+//
+//- (void)loadMoreData
+//{
+//    self.page ++;
+//    
+//    [self HYLCommentListRequest];
+//}
+
 #pragma mark - 返回
 
 - (void)goBack:(UIButton *)sender
@@ -81,7 +141,8 @@
     
     [dictionary setValue:timestamp      forKey:@"time"];
     [dictionary setValue:signature      forKey:@"sign"];
-    [dictionary setValue:self.videoId   forKey:@"id"];
+    [dictionary setValue:self.videoId   forKey:@"video_id"];
+    [dictionary setValue:@"1"           forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -89,13 +150,49 @@
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
 //        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"评论列表: %@", reponse);
+//        NSLog(@"视频评论列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
+            NSArray *dataArray = responseDic[@"data"];
+            
+            if (dataArray.count > 0) {
+                
+                for (NSDictionary *dic in dataArray) {
+                    
+                    HYLCommentModel *model = [[HYLCommentModel alloc] init];
+                    
+                    model.title = dic[@"title"];
+                    model.content = dic[@"content"];
+                    model.like_count = dic[@"like_count"];
+                    model.created_at = dic[@"created_at"];
+                    model.comment_id = [NSString stringWithFormat:@"%@", dic[@"id"]];
+                    
+                    [_dataArray addObject:model];
+                }
+                
+                [_tableView reloadData];
+                
+                // 拿到当前的下拉刷新控件，结束刷新状态
+                [_tableView.mj_header endRefreshing];
+                
+                // 拿到当前的上拉刷新控件，结束刷新状态
+                [_tableView.mj_footer endRefreshing];
+                
+            } else {
+                
+                // 刷新表格
+                [_tableView reloadData];
+                
+                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
+                [_tableView.mj_footer endRefreshingWithNoMoreData];
+                
+                // 隐藏当前的上拉刷新控件
+                _tableView.mj_footer.hidden = YES;
+            }
             
         } else {
             
@@ -122,6 +219,113 @@
         
     }];
 }
+
+
+#pragma mark - UITableViewDelegate, UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _dataArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"commentCell";
+
+    HYLCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
+    if (cell == nil) {
+
+        cell = [[HYLCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    HYLCommentModel *model = _dataArray[indexPath.row];
+    
+    cell.titleLabel.text = @"好娱乐"; // model.title
+    cell.created_atLabel.text = model.created_at;
+    cell.contentLabel.text = model.content;
+    
+    if (model.like_count.integerValue > 0) {
+        
+        [cell.like_countButton setImage:[UIImage imageNamed:@"dianzanle"] forState:UIControlStateNormal];
+        
+    } else {
+    
+        [cell.like_countButton setImage:[UIImage imageNamed:@"dianzan"] forState:UIControlStateNormal];
+    }
+    
+    cell.like_countButton.tag = indexPath.row + 1000;
+    cell.like_countButton.userInteractionEnabled = YES;
+    
+    cell.like_countLabel.text = model.like_count;
+    
+    [cell.like_countButton addTarget:self action:@selector(dianzanAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 90.0f;
+}
+
+#pragma mark - 点赞请求
+
+- (void)dianzanAction:(UIButton *)sender
+{
+//    NSLog(@"dian zan");
+    
+    NSInteger buttonTag = sender.tag - 1000;
+    HYLCommentModel *model = _dataArray[buttonTag];
+    
+//    NSLog(@"%@", model.comment_id);
+    
+    NSString *comment_id = model.comment_id;
+    
+    //
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setValue:timestamp          forKey:@"time"];
+    [dictionary setValue:signature          forKey:@"sign"];
+    [dictionary setValue:comment_id   forKey:@"comment_id"];
+    
+    // HTTP Basic Authorization 认证机制
+    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"点赞评论返回: %@", reponse);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        
+        NSString *message = responseDic[@"message"];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+        
+            [self loadNewData];
+            
+        } else {
+        
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [alert show];
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+        
+    }];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

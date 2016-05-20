@@ -8,7 +8,6 @@
 
 #import "HYLHaoYuLeListContainerViewController.h"
 
-//
 #import "UIView+Additions.h"
 
 //
@@ -16,6 +15,10 @@
 
 // md5 加密
 #import <CommonCrypto/CommonDigest.h>
+
+#import "HYLTabBarController.h"
+#import "AppDelegate.h"
+
 
 #define     SCREEN_HEIGHT           [[UIScreen mainScreen]bounds].size.height
 #define     SCREEN_WIDTH            [[UIScreen mainScreen]bounds].size.width
@@ -39,7 +42,7 @@
     self.manualLoadData = YES;
     self.currentIndex = 0;
     
-    [self setupLeftMenuButton];
+    [self setupLeftMenuButton]; // 左侧视图
     
     self.navigationItem.titleView = self.pagingTitleView;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -72,11 +75,17 @@
 #pragma mark - 通知响应
 
 - (void)statusBarTappedAction:(NSNotification*)notification {
+    
     if (self.currentIndex == 0 && self.tuiJieListVC) {
+        
         [self.tuiJieListVC.tableView setContentOffset:CGPointZero animated:YES];
+        
     } else if (self.currentIndex == 1 && self.touTiaoListVC) {
+        
         [self.touTiaoListVC.tableView setContentOffset:CGPointZero animated:YES];
+        
     } else if (self.currentIndex == 2 && self.yuanChuangListVC) {
+        
         [self.yuanChuangListVC.tableView setContentOffset:CGPointZero animated:YES];
     }
 }
@@ -85,10 +94,9 @@
 
 -(void)setupLeftMenuButton
 {
-    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-
     UIImage *leftImage = [UIImage imageNamed:@"navi_left_item"];
     
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
     leftButton.frame = CGRectMake(0, 0, leftImage.size.width, leftImage.size.height);
     [leftButton setImage:leftImage forState:UIControlStateNormal];
     [leftButton addTarget:self action:@selector(leftBarButtonItemTouch:) forControlEvents:UIControlEventTouchUpInside];
@@ -97,11 +105,18 @@
     self.navigationItem.leftBarButtonItem = leftBarButtonItem;
 }
 
+#pragma mark - 左侧图
+
 - (void)leftBarButtonItemTouch:(UIButton *)sender
 {
     HYLMenuViewController *leftMenuVC = [[HYLMenuViewController alloc] init];
     
-    [self.navigationController pushViewController:leftMenuVC animated:YES];
+    leftMenuVC.hidesBottomBarWhenPushed = YES;
+    
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    HYLTabBarController *tabBarController = appDelegate.tabBarController;
+    
+    [tabBarController pushToViewController:leftMenuVC animated:NO];
 }
 
 #pragma mark - ViewPagerDataSource
@@ -114,13 +129,17 @@
 - (UIViewController *)viewPager:(ViewPagerController *)viewPager contentViewControllerForTabAtIndex:(NSUInteger)index
 {
     if (index == 0) {
+        
         return [self createTuiJieVC];
         
     } else if (index == 1) {
+        
         return [self createTouTiaoVC];
         
     } else {
+        
         return [self createYuanChuangVC];
+        
     }
 }
 
@@ -128,8 +147,6 @@
 - (UIViewController *)createTuiJieVC
 {
     self.tuiJieListVC = [[HYLTuiJieViewController alloc] init];
-//    self.zhuanFangListVC.haoYuLeListType = HaoYuLeListTypeZhuanFang;
-//    self.zhuanFangListVC.isFromHaoYuLeContainer = YES;
     
     return self.tuiJieListVC;
 }
@@ -137,8 +154,6 @@
 - (UIViewController *)createTouTiaoVC
 {
     self.touTiaoListVC = [[HYLTouTiaoViewController alloc] init];
-//    self.touTiaoListVC.haoYuLeListType = HaoYuLeListTypeTouTiao;
-//    self.touTiaoListVC.isFromHaoYuLeContainer = YES;
 
     return self.touTiaoListVC;
 }
@@ -146,8 +161,6 @@
 - (UIViewController *)createYuanChuangVC
 {
     self.yuanChuangListVC = [[HYLYuanChuangViewController alloc] init];
-//    self.yuanChuangListVC.haoYuLeListType = HaoYuLeListTypeYuanChuang;
-//    self.yuanChuangListVC.isFromHaoYuLeContainer = YES;
     
     return self.yuanChuangListVC;
 }
@@ -160,10 +173,13 @@
 - (HYLTitlePagerView *)pagingTitleView
 {
     if (!_pagingTitleView) {
+        
+        NSArray *titleArray = @[@"推介", @"头条", @"原创"];
+        
         self.pagingTitleView = [[HYLTitlePagerView alloc] init];
         self.pagingTitleView.frame = CGRectMake(0, 0, 0, 40);
         self.pagingTitleView.font = [UIFont systemFontOfSize:18];
-        NSArray *titleArray = @[@"推介", @"头条", @"原创"];
+        
         self.pagingTitleView.width = [HYLTitlePagerView calculateTitleWidth:titleArray withFont:self.pagingTitleView.font];
         [self.pagingTitleView addObjects:titleArray];
         self.pagingTitleView.delegate = self;
@@ -176,6 +192,7 @@
     UIPageViewControllerNavigationDirection direction;
     
     if (self.currentIndex == index) {
+        
         return;
     }
     
@@ -192,8 +209,11 @@
     UIViewController *viewController = [self viewControllerAtIndex:index];
     
     if (viewController) {
+        
         __weak typeof(self) weakself = self;
+        
         [self.pageViewController setViewControllers:@[viewController] direction:direction animated:YES completion:^(BOOL finished) {
+            
             weakself.currentIndex = index;
         }];
     }
@@ -210,6 +230,7 @@
     CGFloat contentOffsetX = scrollView.contentOffset.x;
     
     if (self.currentIndex != 0 && contentOffsetX <= SCREEN_WIDTH * 2) {
+        
         contentOffsetX += SCREEN_WIDTH * self.currentIndex;
     }
     
@@ -221,8 +242,11 @@
     self.scrollingLocked = !enabled;
     
     for (UIScrollView *view in self.pageViewController.view.subviews) {
+        
         if ([view isKindOfClass:[UIScrollView class]]) {
+            
             view.scrollEnabled = enabled;
+            
             view.bounces = enabled;
         }
     }

@@ -13,6 +13,8 @@
 
 #import "HaoYuLeNetworkInterface.h"
 
+#import "HYLSignInViewController.h"
+
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
 @interface HYLForgetPasswordViewController ()<UITextFieldDelegate>
@@ -28,6 +30,9 @@
     UIImageView *_settingImageView;
     UITextField *_settingTextField;
     UIView *_settingLineView;
+    
+    
+    UIButton *sendMessageButton;
 }
 
 @end
@@ -37,6 +42,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     // back
@@ -60,7 +66,7 @@
     
     // 确定按钮
     UIButton *sureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    sureButton.frame = CGRectMake(10, [[UIScreen mainScreen] bounds].size.height - 280 - 64 , [[UIScreen mainScreen] bounds].size.width - 20, 40);
+    sureButton.frame = CGRectMake(10, [[UIScreen mainScreen] bounds].size.height - 260 - 64 , [[UIScreen mainScreen] bounds].size.width - 20, 50);
     [sureButton setTitle:@"确定" forState:UIControlStateNormal];
     sureButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     [sureButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -72,7 +78,7 @@
     
     
     // 获取用户信息
-    [self getUserInfomation];
+//    [self getUserInfomation];
     
     // 修改用户信息
 //    [self editUserInfomation];
@@ -92,73 +98,86 @@
     _phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width + 3, _phoneImageView.frame.origin.y - 3, [[UIScreen mainScreen] bounds].size.width - (_phoneImageView.frame.size.width + _phoneImageView.frame.origin.x) - 90, 30)];
     _phoneTextField.delegate = self;
     _phoneTextField.placeholder = @"手机号码";
-    _phoneTextField.font = [UIFont systemFontOfSize:15.0f];
+    _phoneTextField.font = [UIFont systemFontOfSize:20.0f];
     _phoneTextField.textAlignment = NSTextAlignmentLeft;
     _phoneTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_phoneTextField];
     
-    UIButton *sendMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    sendMessageButton.frame = CGRectMake(_phoneTextField.frame.origin.x + _phoneTextField.frame.size.width + 5, _phoneTextField.frame.origin.y, 70, 30);
+    sendMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    sendMessageButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 110, _phoneTextField.frame.origin.y, 100, 30);
     [sendMessageButton setTitle:@"发送验证码" forState:UIControlStateNormal];
-    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:20.0f];
     [sendMessageButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
     sendMessageButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [sendMessageButton addTarget:self action:@selector(sendMessageButtonTap:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:sendMessageButton];
     
     //
-    _phoneLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _phoneTextField.frame.origin.y + _phoneTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _phoneLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _phoneTextField.frame.origin.y + _phoneTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _phoneLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_phoneLineView];
     
     
     //
     UIImage *messageImage = [UIImage imageNamed:@"message"];
-    _messageImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, _phoneImageView.frame.origin.y + _phoneTextField.frame.size.height + 20, messageImage.size.width, messageImage.size.height)];
+    _messageImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, _phoneImageView.frame.origin.y + _phoneTextField.frame.size.height + 40, messageImage.size.width, messageImage.size.height)];
     _messageImageView.image = messageImage;
     [self.view addSubview:_messageImageView];
     
     _messageTextField = [[UITextField alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x + _messageImageView.frame.size.width + 3, _messageImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
     _messageTextField.delegate = self;
     _messageTextField.placeholder = @"短信验证码";
-    _messageTextField.font = [UIFont systemFontOfSize:16.0f];
+    _messageTextField.font = [UIFont systemFontOfSize:20.0f];
     _messageTextField.textAlignment = NSTextAlignmentLeft;
     _messageTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_messageTextField];
     
-    _messageLineView = [[UIView alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x, _messageTextField.frame.origin.y + _messageTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _messageLineView = [[UIView alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x, _messageTextField.frame.origin.y + _messageTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _messageLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_messageLineView];
     
     //
     UIImage *settingImage = [UIImage imageNamed:@"passwordIcon"];
-    _settingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 5, _messageImageView.frame.origin.y + _messageTextField.frame.size.height + 20, settingImage.size.width, settingImage.size.height)];
+    _settingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 5, _messageImageView.frame.origin.y + _messageTextField.frame.size.height + 40, settingImage.size.width, settingImage.size.height)];
     _settingImageView.image = settingImage;
     [self.view addSubview:_settingImageView];
     
-   _settingTextField = [[UITextField alloc] initWithFrame:CGRectMake(_settingImageView.frame.origin.x + _settingImageView.frame.size.width + 3, _settingImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
+    _settingTextField = [[UITextField alloc] initWithFrame:CGRectMake(_settingImageView.frame.origin.x + _settingImageView.frame.size.width + 3, _settingImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
     _settingTextField.delegate = self;
     _settingTextField.placeholder = @"设置登录密码";
-    _settingTextField.font = [UIFont systemFontOfSize:16.0f];
+    _settingTextField.secureTextEntry = YES;
+    _settingTextField.clearsOnBeginEditing = YES;
+    _settingTextField.font = [UIFont systemFontOfSize:20.0f];
     _settingTextField.textAlignment = NSTextAlignmentLeft;
     _settingTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_settingTextField];
     
-    _settingLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _settingTextField.frame.origin.y + _settingTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _settingLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _settingTextField.frame.origin.y + _settingTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _settingLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_settingLineView];
 }
 
 #pragma mark - 返回
+
 - (void)backAction:(UIButton *)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - 发送信息按钮响应
+
 - (void)sendMessageButtonTap:(UIButton *)sender
 {
-    [self sendMessageApi];
+    if (_phoneTextField.text != nil) {
+        
+        [self sendMessageApi];
+        
+        sendMessageButton.enabled = NO;
+        
+    } else {
+    
+        sendMessageButton.enabled = NO;
+    }
 }
 - (void)sendMessageApi
 {
@@ -178,16 +197,17 @@
         
         NSString *reponse = [[NSString alloc] initWithData:responseObject
                                                   encoding:NSUTF8StringEncoding];
-        NSLog(@"发送验证码返回: \n%@", reponse);
+        NSLog(@"发送验证码返回: %@", reponse);
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
 
 #pragma mark - 确定按钮响应
+
 - (void)sureButtonTapped:(UIButton *)sender
 {
     [self findMyPasswordToServer];
@@ -211,124 +231,154 @@
     
     [manager POST:kGetPasswordURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"忘记密码返回: \n%@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"找密码返回: %@", reponse);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                    options:NSJSONReadingMutableLeaves
+                                                                      error:&error];
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
+            [self.navigationController pushViewController:signInVC animated:YES];
+            
+        } else {
+            
+//            NSDictionary *dic = responseDic[@"message"];
+//            
+//            NSArray *mobile = dic[@"mobile"];
+//            
+//            NSString *message = mobile[0];
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"找回密码失败" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [alert show];
+        }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
 
 #pragma mark - 获取用户信息
-
-- (void)getUserInfomation
-{
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    
-    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-    NSString *signature = [HYLGetSignature getSignature:timestamp];
-    
-    [dictionary setValue:timestamp forKey:@"time"];
-    [dictionary setValue:signature forKey:@"sign"];
-    
-    // HTTP Basic Authorization 认证机制
-    NSString *authorization = @"Basic MTU5MTg3ODkzNzI6MTIzNDU2"; // Basic token
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
-    [manager POST:kUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"获取用户信息:%@", string);
-        
-    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-        
-        NSLog(@"error: %@", error);
-    }];
-}
+//
+//- (void)getUserInfomation
+//{
+//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+//    
+//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+//    NSString *signature = [HYLGetSignature getSignature:timestamp];
+//    
+//    [dictionary setValue:timestamp forKey:@"time"];
+//    [dictionary setValue:signature forKey:@"sign"];
+//    
+//    // HTTP Basic Authorization 认证机制
+//    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
+//    
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+//    [manager POST:kUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+//        
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"获取用户信息:%@", string);
+//        
+//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+//        
+//        NSLog(@"error: %@", error);
+//    }];
+//}
 
 #pragma mark - 修改用户信息
 
-- (void)editUserInfomation
-{
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    
-    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-    NSString *signature = [HYLGetSignature getSignature:timestamp];
-    
-    [dictionary setValue:timestamp forKey:@"time"];
-    [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:@"female" forKey:@"sex"];
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager POST:kEditUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"修改用户信息:%@", string);
-        
-    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-        
-        NSLog(@"error: %@", error);
-    }];
-}
+//- (void)editUserInfomation
+//{
+//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+//    
+//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+//    NSString *signature = [HYLGetSignature getSignature:timestamp];
+//    
+//    [dictionary setValue:timestamp forKey:@"time"];
+//    [dictionary setValue:signature forKey:@"sign"];
+//    [dictionary setValue:@"female" forKey:@"sex"];
+//    
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    [manager POST:kEditUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+//        
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"修改用户信息:%@", string);
+//        
+//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+//        
+//        NSLog(@"error: %@", error);
+//    }];
+//}
 
 #pragma mark - 修改用户密码
 
-- (void)changePassword
-{
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    
-    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-    NSString *signature = [HYLGetSignature getSignature:timestamp];
-    
-    [dictionary setValue:timestamp forKey:@"time"];
-    [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:@"123456" forKey:@"oldPassword"];
-    [dictionary setValue:@"123456" forKey:@"newPassword"];
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager POST:kChangePasswordURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"修改用户密码:%@", string);
-        
-    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-        
-        NSLog(@"error: %@", error);
-    }];
-
-    
-}
+//- (void)findPassword
+//{
+//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+//    
+//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+//    NSString *signature = [HYLGetSignature getSignature:timestamp];
+//    
+//    [dictionary setValue:timestamp forKey:@"time"];
+//    [dictionary setValue:signature forKey:@"sign"];
+//    [dictionary setValue:@"123456" forKey:@"oldPassword"];
+//    [dictionary setValue:@"123456" forKey:@"newPassword"];
+//    
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    [manager POST:kGetPasswordURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+//        
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"找回密码:%@", string);
+//        
+//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+//        
+//        NSLog(@"error: %@", error);
+//    }];
+//
+//    
+//}
 
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
+    
     return YES;
 }
+
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     if (textField == _phoneTextField) {
+        
         _phoneImageView.image = [UIImage imageNamed:@"phoneselected"];
         _phoneLineView.backgroundColor = kLineViewBGColor(255, 199, 3);
+        
     } else  {
+        
         _phoneImageView.image = [UIImage imageNamed:@"phone"];
         _phoneLineView.backgroundColor = [UIColor lightGrayColor];
+        
     }
     
     if (textField == _messageTextField) {
+        
         _messageImageView.image = [UIImage imageNamed:@"messageselected"];
         _messageLineView.backgroundColor = kLineViewBGColor(255, 199, 3);
+        
     } else  {
+        
         _messageImageView.image = [UIImage imageNamed:@"message"];
         _messageLineView.backgroundColor = [UIColor lightGrayColor];
+        
     }
     
     if (textField == _settingTextField) {
@@ -342,8 +392,8 @@
         _settingLineView.backgroundColor = [UIColor lightGrayColor];
         
     }
-    
 }
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     _phoneImageView.image = [UIImage imageNamed:@"phone"];

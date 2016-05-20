@@ -37,8 +37,6 @@
 @end
 
 
-
-
 @implementation VideoInfoModel
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key

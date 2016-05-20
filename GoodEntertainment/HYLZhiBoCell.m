@@ -45,11 +45,10 @@
     _orderImage.center = CGPointMake(40, _videoImage.center.y);
     [_videoImage addSubview:_orderImage];
 
-    
     _title = [[UILabel alloc] initWithFrame:CGRectMake(0, _videoImage.frame.size.height*0.5 - 20, contentViewWidth, 30)];
     _title.textColor = [UIColor whiteColor];
     _title.textAlignment = NSTextAlignmentCenter;
-    _title.font = [UIFont boldSystemFontOfSize:20.0f];
+    _title.font = [UIFont boldSystemFontOfSize:18.0f];
     _title.numberOfLines = 1;
     [_videoImage addSubview:_title];
     

@@ -8,6 +8,8 @@
 
 #import "HYLRegisterViewController.h"
 
+#import "HYLSignInViewController.h"
+
 // 网络请求
 #import <AFNetworking.h>
 
@@ -55,7 +57,7 @@
     
     // 硬编码
     _username = @"好娱乐";
-    _sex = @"male";
+    _sex      = @"male";
     
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     backButton.frame = CGRectMake(0, 0, 30, 30);
@@ -74,7 +76,7 @@
     [self prepareRegisterView];
     
     UIButton *agreeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    agreeButton.frame = CGRectMake(10, [[UIScreen mainScreen] bounds].size.height - 280 - 50, [[UIScreen mainScreen] bounds].size.width - 20, 40);
+    agreeButton.frame = CGRectMake(10, [[UIScreen mainScreen] bounds].size.height - 250, [[UIScreen mainScreen] bounds].size.width - 20, 50);
     [agreeButton setTitle:@"同意并注册" forState:UIControlStateNormal];
     agreeButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     [agreeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -84,104 +86,119 @@
     [agreeButton addTarget:self action:@selector(agreeButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:agreeButton];
 }
+
 - (void)prepareRegisterView
 {
     //
     UIImage *phoneImage = [UIImage imageNamed:@"phone"];
-    _phoneImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 8, 100, phoneImage.size.width, phoneImage.size.height)];
+    _phoneImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 5, 100, phoneImage.size.width, phoneImage.size.height)];
     _phoneImageView.image = phoneImage;
     [self.view addSubview:_phoneImageView];
     
-    _phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width + 3, _phoneImageView.frame.origin.y - 2, [[UIScreen mainScreen] bounds].size.width - (_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width + 3) - 90 , 30)];
+    _phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width + 3, _phoneImageView.frame.origin.y - 3, [[UIScreen mainScreen] bounds].size.width - (_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width) - 90 , 30)];
     _phoneTextField.delegate = self;
     _phoneTextField.placeholder = @"手机号码";
-    _phoneTextField.font = [UIFont systemFontOfSize:15.0f];
+    _phoneTextField.font = [UIFont systemFontOfSize:20.0f];
     _phoneTextField.textAlignment = NSTextAlignmentLeft;
     _phoneTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_phoneTextField];
     
     UIButton *sendMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    sendMessageButton.frame = CGRectMake(_phoneTextField.frame.origin.x + _phoneTextField.frame.size.width + 5, _phoneTextField.frame.origin.y, 70, 30);
+    sendMessageButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 110, _phoneTextField.frame.origin.y, 100, 30);
     [sendMessageButton setTitle:@"发送验证码" forState:UIControlStateNormal];
-    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:20.0f];
     [sendMessageButton setTitleColor:[UIColor colorWithRed:255/255.0f green:190/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
     sendMessageButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [sendMessageButton addTarget:self action:@selector(sendMessageButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:sendMessageButton];
     
     //
-    _phoneLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _phoneTextField.frame.origin.y + _phoneTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _phoneLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _phoneTextField.frame.origin.y + _phoneTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _phoneLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_phoneLineView];
     
     //
     UIImage *messageImage = [UIImage imageNamed:@"message"];
-    _messageImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, _phoneImageView.frame.origin.y + _phoneTextField.frame.size.height + 25, messageImage.size.width, messageImage.size.height)];
+    _messageImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, _phoneImageView.frame.origin.y + _phoneTextField.frame.size.height + 40, messageImage.size.width, messageImage.size.height)];
     _messageImageView.image = messageImage;
     [self.view addSubview:_messageImageView];
     
-    _messageTextField = [[UITextField alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x + _messageImageView.frame.size.width + 3, _messageImageView.frame.origin.y - 4, _phoneTextField.frame.size.width, 30)];
+    _messageTextField = [[UITextField alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x + _messageImageView.frame.size.width + 3, _messageImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
     _messageTextField.delegate = self;
     _messageTextField.placeholder = @"短信验证码";
-    _messageTextField.font = [UIFont systemFontOfSize:15.0f];
+    _messageTextField.font = [UIFont systemFontOfSize:20.0f];
     _messageTextField.textAlignment = NSTextAlignmentLeft;
     _messageTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_messageTextField];
     
-    _messageLineView = [[UIView alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x, _messageTextField.frame.origin.y + _messageTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _messageLineView = [[UIView alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x, _messageTextField.frame.origin.y + _messageTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _messageLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_messageLineView];
     
     //
     UIImage *setttingImage = [UIImage imageNamed:@"passwordIcon"];
-    _settingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 4, _messageImageView.frame.origin.y + _messageTextField.frame.size.height + 25, setttingImage.size.width, setttingImage.size.height)];
+    _settingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10 + 5, _messageImageView.frame.origin.y + _messageTextField.frame.size.height + 40, setttingImage.size.width, setttingImage.size.height)];
     _settingImageView.image = setttingImage;
     [self.view addSubview:_settingImageView];
     
-    _settingTextField = [[UITextField alloc] initWithFrame:CGRectMake(_settingImageView.frame.origin.x + _settingImageView.frame.size.width + 3, _settingImageView.frame.origin.y - 2, _phoneTextField.frame.size.width, 30)];
+    _settingTextField = [[UITextField alloc] initWithFrame:CGRectMake(_settingImageView.frame.origin.x + _settingImageView.frame.size.width + 3, _settingImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
     _settingTextField.delegate = self;
     _settingTextField.placeholder = @"设置登录密码";
-    _settingTextField.font = [UIFont systemFontOfSize:15.0f];
+    _settingTextField.secureTextEntry = YES;
+    _settingTextField.clearsOnBeginEditing = YES;
+    _settingTextField.font = [UIFont systemFontOfSize:20.0f];
     _settingTextField.textAlignment = NSTextAlignmentLeft;
     _settingTextField.textColor = [UIColor lightGrayColor];
     [self.view addSubview:_settingTextField];
     
-    _settingLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _settingTextField.frame.origin.y + _settingTextField.frame.size.height + 5, sendMessageButton.frame.origin.x + 70, 1)];
+    _settingLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _settingTextField.frame.origin.y + _settingTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _settingLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_settingLineView];
 
     
-    UILabel *someLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 120, _settingLineView.frame.origin.y + _settingLineView.frame.size.height + 50, 120, 30)];
+    UILabel *someLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _settingLineView.frame.origin.y + _settingLineView.frame.size.height + 50, ([UIScreen mainScreen].bounds.size.width - 20)*0.5, 30)];
     someLabel.text = @"我已阅读并同意";
     someLabel.textColor = [UIColor lightGrayColor];
     someLabel.textAlignment = NSTextAlignmentRight;
-    someLabel.font = [UIFont systemFontOfSize:13.0f];
+    someLabel.font = [UIFont systemFontOfSize:18.0f];
     [self.view addSubview:someLabel];
     
     UIButton *provisionButton = [UIButton buttonWithType: UIButtonTypeCustom];
-    provisionButton.frame = CGRectMake(someLabel.frame.origin.x + someLabel.frame.size.width - 13, someLabel.frame.origin.y, 120, 30);
+    provisionButton.frame = CGRectMake(someLabel.frame.origin.x + someLabel.frame.size.width - 28, someLabel.frame.origin.y, someLabel.frame.size.width, 30);
     [provisionButton setTitle:@"好娱乐用户条款" forState:UIControlStateNormal];
     [provisionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-    provisionButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    provisionButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     provisionButton.titleLabel.textAlignment = NSTextAlignmentLeft;
     [provisionButton addTarget:self action:@selector(provisionButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:provisionButton];
 }
 
 #pragma mark - 返回按钮响应
+
 - (void)back:(UIButton *)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - 发送验证码按钮响应
+
 - (void)sendMessageButtonTapped:(UIButton *)sender
 {
 //    NSLog(@"发送验证码");
-    [self sendMessageApiRequest];
+    
+    if (_phoneTextField.text != nil) {
+        
+        [self sendMessageApiRequest];
+        
+    } else {
+    
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入正确手机号" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+    }
 }
 
 #pragma mark -  发送验证码
+
 - (void)sendMessageApiRequest
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
@@ -202,34 +219,36 @@
         
         NSString *reponse = [[NSString alloc] initWithData:responseObject
                                                   encoding:NSUTF8StringEncoding];
-        NSLog(@"发送验证码: \n%@", reponse);
+        NSLog(@"发送验证码: %@", reponse);
         
-//        NSError *error = nil;
-//        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
-//                                                                    options:NSJSONReadingMutableLeaves
-//                                                                      error:&error];
-//        
-//        if ([responseDic[@"status"]  isEqual: @1]) {
-//           
-//            
-//        } else {
-//            
-//        }
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                    options:NSJSONReadingMutableLeaves
+                                                                      error:&error];
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            NSLog(@"发送验证码成功");
+           
+        } else {
+            
+        }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error:%@", error);
         
     }];
 }
 
 #pragma mark - 条款按钮响应
+
 - (void)provisionButtonTapped:(UIButton *)sender
 {
     NSLog(@"条款按钮被按!");
 }
 
 #pragma mark - 同意并注册 按钮响应
+
 - (void)agreeButtonTapped:(UIButton *)sender
 {
 //    NSLog(@"同意并注册");
@@ -266,28 +285,38 @@
         
         NSString *reponse = [[NSString alloc] initWithData:responseObject
                                                   encoding:NSUTF8StringEncoding];
-        NSLog(@"注册返回: \n%@", reponse);
+        NSLog(@"注册返回: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-        
         if ([responseDic[@"status"]  isEqual: @1]) {
             
+            HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
+            [self.navigationController pushViewController:signInVC animated:YES];
             
         } else {
             
+            NSDictionary *dic = responseDic[@"message"];
+            
+            NSArray *mobile = dic[@"mobile"];
+            
+            NSString *message = mobile[0];
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [alert show];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-        NSLog(@"error:\n%@", error);
+        NSLog(@"error:%@", error);
         
     }];
 }
 
 #pragma mark - 是否都填了
+
 - (BOOL)hasAllFillIn
 {
     BOOL hasAllFill = (_phoneTextField.text.length > 0 && _messageTextField.text.length > 0 && _settingTextField.text.length > 0);
@@ -296,9 +325,11 @@
 }
 
 #pragma mark - UITextFieldDelegate
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
+    
     return YES;
 }
 
@@ -328,6 +359,7 @@
         _settingLineView.backgroundColor = [UIColor lightGrayColor];
     }
 }
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     _phoneImageView.image = [UIImage imageNamed:@"phone"];

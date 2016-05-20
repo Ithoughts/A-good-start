@@ -36,22 +36,16 @@
 
 @property (nonatomic, strong) VideoInfoModel *video_info;
 
-
 @end
 
 
 @interface VideoInfoModel : HYLJSONModel
-
-
 
 @property (nonatomic, assign) NSInteger videoInfoId;
 
 @property (nonatomic, copy) NSString *url;
 
 @property (nonatomic, copy) NSString *cover_url;
-
-
-
 
 @property (nonatomic, copy) NSString *aspect;
 
@@ -68,7 +62,6 @@
 @property (nonatomic, copy) NSString *bitrate;
 
 @property (nonatomic, copy) NSString *is_audio;
-
 
 @end
 

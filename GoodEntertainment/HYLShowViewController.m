@@ -34,9 +34,11 @@
 // model
 #import "HYLBangDanModel.h"
 
+// 刷新
+#import <MJRefresh.h>
+
 @interface HYLShowViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
-    UITableView *_tableView;
     NSMutableArray *_dataArray;
     NSArray *_imageArray;
 }
@@ -50,6 +52,8 @@
     // Do any additional setup after loading the view.
     
     _page = 1;
+    
+    _dataArray = [[NSMutableArray alloc] init];
     
     [self hylShowApiRequest];
     [self prepareShowTableView];
@@ -67,14 +71,49 @@
 
 - (void)prepareShowTableView
 {
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49 - 64)
                                               style:UITableViewStylePlain];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.backgroundColor = [UIColor whiteColor];
-    _tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    [self.view addSubview:self.tableView];
     
-    [self.view addSubview:_tableView];
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewData];
+    }];
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf loadMoreData];
+    }];
+    
+//    self.tableView.mj_footer.hidden = YES;
+}
+
+#pragma mark - 下拉刷新
+
+- (void)loadNewData
+{
+    _page = 1;
+    
+    [_dataArray removeAllObjects];
+    
+    [self hylShowApiRequest];
+}
+
+#pragma mark - 上拉加载更多
+
+- (void)loadMoreData
+{
+    _page ++;
+    
+    [self hylShowApiRequest];
 }
 
 #pragma mark - 网络请求
@@ -93,7 +132,7 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
-    [manager POST:kBangDanListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    [manager POST:kShowListURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
 //        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"show: %@", reponse);
@@ -107,20 +146,38 @@
             
             NSArray *secondData = firstDataDic[@"data"];
             
-            _dataArray = [[NSMutableArray alloc] init];
-            
-            for (NSDictionary *dic in secondData) {
+            if (secondData.count > 0) {
                 
-                BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:dic];
-                [_dataArray addObject:model];
-            }
+                for (NSDictionary *dic in secondData) {
+                    
+                    BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:dic];
+                    [_dataArray addObject:model];
+                }
+                
+                [self.tableView reloadData];
+                
+                // 拿到当前的下拉刷新控件，结束刷新状态
+                [self.tableView.mj_header endRefreshing];
+                
+                // 拿到当前的上拉刷新控件，结束刷新状态
+                [self.tableView.mj_footer endRefreshing];
+                
+            } else {
             
-            [_tableView reloadData];
+                // 刷新表格
+                [self.tableView reloadData];
+                
+                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
+                [self.tableView.mj_footer endRefreshingWithNoMoreData];
+                
+                // 隐藏当前的上拉刷新控件
+                self.tableView.mj_footer.hidden = YES;
+            }
             
         } else {
             
+           
         }
-
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -154,6 +211,11 @@
     
     if (indexPath.row < 9) {
         cell.orderImage.image = [UIImage imageNamed:_imageArray[indexPath.row]];
+        
+    } else {
+        
+        cell.orderImage.image = nil;
+    
     }
     
     [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];

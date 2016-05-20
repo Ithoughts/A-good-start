@@ -28,7 +28,11 @@
 
 #import "HYLPlayMVListMusicViewController.h"
 
-@interface HYLYinYueDetailCommonViewController ()<UITableViewDelegate, UITableViewDataSource>
+// 刷新
+#import <MJRefresh.h>
+
+
+@interface HYLYinYueDetailCommonViewController ()<UITableViewDelegate, UITableViewDataSource, UMSocialUIDelegate>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
@@ -77,6 +81,11 @@
     //
     NSIndexPath *_indexPath;
     CGRect _currentPlayCellRect;
+    
+    //
+    NSInteger _page;
+    
+    NSString *token;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -85,11 +94,25 @@
 
 @implementation HYLYinYueDetailCommonViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    token = [defaults objectForKey:@"token"];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    token = [defaults objectForKey:@"token"];
+    
+    
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
+    
+    _artistListArray = [[NSMutableArray alloc] init];
+    _page = 1;
     
     [self HYLMusicInfoApiRequest];
     [self prepareYinYueNavigationBar];
@@ -140,7 +163,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"naviBar_background"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 30)];
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = [UIFont systemFontOfSize:18.0f];
     titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -254,6 +277,7 @@
 - (void)threeButtonAction:(UIButton *)sender
 {
     switch (sender.tag) {
+            
         case 1000:
         {
 //            NSLog(@"MV描述");
@@ -328,7 +352,6 @@
         }
             break;
 
-            
         default:
             break;
     }
@@ -352,8 +375,8 @@
     
     [manager POST:kMusicCommentsURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"音乐评论列表: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"音乐评论列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
@@ -362,7 +385,7 @@
             
             // 添加到当前视图
             [self.view addSubview:[self createCommentTableView]];
-            [_singerTable reloadData];
+            [_commentTable reloadData];
             
         } else {
             
@@ -415,8 +438,6 @@
         _player = nil;
     };
 }
-
-
 
 #pragma mark - 影片简介表
 
@@ -482,13 +503,11 @@
         
         CGRect htmlRect = [attributeHtml boundingRectWithSize:CGSizeMake(_screenWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
         
-        _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height + 10, _screenWidth - 20, htmlRect.size.height)];
+        _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height + 15, _screenWidth - 20, htmlRect.size.height)];
         _decriptionLabel.attributedText = attributeHtml;
         _decriptionLabel.numberOfLines = 0;
         _decriptionLabel.textColor = [UIColor lightGrayColor];
         _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
-        
-//        [_decriptionLabel sizeThatFits:htmlRect.size];
         
         [headerView addSubview:_decriptionLabel];
         
@@ -516,18 +535,50 @@
     return _commentTable;
 }
 
-#pragma mark -  MV艺人 列表
+#pragma mark -  艺人MV 列表
 
 - (UITableView *)createSingerTableView
 {
-    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5)) style:UITableViewStylePlain];
+    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 64)) style:UITableViewStylePlain];
     _singerTable.dataSource = self;
     _singerTable.delegate = self;
     _singerTable.showsHorizontalScrollIndicator = NO;
     _singerTable.showsVerticalScrollIndicator = NO;
     _singerTable.tableFooterView = [[UIView alloc] init];
     
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    _singerTable.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewData];
+    }];
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    _singerTable.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf loadMoreData];
+    }];
+
     return _singerTable;
+}
+
+#pragma mark - 下拉刷新
+
+- (void)loadNewData
+{
+    _page = 1;
+    
+    [_artistListArray removeAllObjects];
+    
+    [self HYLMusicListApiRequest:_artist_id];
+}
+
+#pragma mark - 上拉加载更多
+
+- (void)loadMoreData
+{
+    _page ++;
+    
+    [self HYLMusicListApiRequest:_artist_id];
 }
 
 #pragma mark - 改变指示器的位置
@@ -561,20 +612,38 @@
     switch (sender.tag) {
         case 100:
         {
-//            NSLog(@"分享");
+            [UMSocialData defaultData].extConfig.wechatSessionData.url = @"http://baidu.com";
+            [UMSocialData defaultData].extConfig.wechatTimelineData.url = @"http://baidu.com";
+            [UMSocialData defaultData].extConfig.wechatSessionData.title = @"微信好友title";
+            [UMSocialData defaultData].extConfig.wechatTimelineData.title = @"微信朋友圈title";
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeImage;
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeText;
+            [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeApp;
+            
             //如果需要分享回调，请将delegate对象设置self，并实现下面的回调方法
             [UMSocialSnsService presentSnsIconSheetView:self
                                                  appKey:@"57396808e0f55a0902001ba4"
                                               shareText:@"分享到微信"
-                                             shareImage:[UIImage imageNamed:@"AppIcon"]
-                                        shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline, UMShareToQQ, UMShareToQzone, UMShareToEmail]
-                                               delegate:nil];
+                                             shareImage:[UIImage imageNamed:@"icon"]
+                                        shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline]
+                                               delegate:self];
+
         }
             break;
             
         case 101:
         {
-            NSLog(@"收藏");
+//            NSLog(@"收藏");
+            
+            if (token != nil) {
+                
+                [self collectVideo];
+                
+            } else {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
         }
             break;
             
@@ -582,12 +651,89 @@
         case 102:
         {
             NSLog(@"评论");
+            
+            if (token != nil) {
+                
+//                [self collectVideo];
+                
+            } else {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+
         }
             break;
             
         default:
             break;
     }
+}
+
+#pragma mark - 实现回调方法：
+
+-(void)didFinishGetUMSocialDataInViewController:(UMSocialResponseEntity *)response
+{
+    //根据`responseCode`得到发送结果,如果分享成功
+    if(response.responseCode == UMSResponseCodeSuccess)
+    {
+        //得到分享到的微博平台名
+        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
+    }
+}
+
+#pragma mark - 收藏视频
+
+- (void)collectVideo
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:self.musicID         forKey:@"music_id"];
+    [dictionary setValue:timestamp            forKey:@"time"];
+    [dictionary setValue:signature            forKey:@"sign"];
+    
+    // HTTP Basic Authorization 认证机制
+//    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
+    
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kAddFavoriteMusicURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"收藏音乐返回:%@", string);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                    options:NSJSONReadingMutableLeaves
+                                                                      error:&error];
+        NSString *message = responseDic[@"message"];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            if ([responseDic[@"message"] isEqualToString:@"目标已被收藏"]) {
+                
+                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [tip show];
+                
+            } else {
+                
+                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:@"收藏成功" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [tip show];
+            }
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+        
+    }];
 }
 
 #pragma mark - 网络请求
@@ -608,9 +754,9 @@
     
     [manager POST:kMusicDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"音乐详情: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"音乐详情: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -634,7 +780,7 @@
                 _artist_id = dic[@"id"];
             }
             
-            // 获取歌曲列表
+            // 获取 艺人MV 
             [self HYLMusicListApiRequest:_artist_id];
             
             // 音乐地址
@@ -643,7 +789,9 @@
             // 音乐截图
             _cover_url = music_info[@"cover_url"];
             
+            
             [self prepareMVView];
+            
 
         } else {
             
@@ -656,7 +804,7 @@
     }];
 }
 
-#pragma mark - 获取某人的音乐列表
+#pragma mark - 获取 艺人MV
 
 - (void)HYLMusicListApiRequest:(NSString *)artist_id
 {
@@ -668,43 +816,63 @@
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
     [dictionary setValue:artist_id forKey:@"artist_id"];
-    [dictionary setValue:@"1" forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", _page] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kSingerMVURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"音乐人的音乐列表: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject
+//                                                  encoding:NSUTF8StringEncoding];
+//        NSLog(@"音乐人的音乐列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
         
-        _artistListArray = [[NSMutableArray alloc] init];
-        
         if ([responseDic[@"status"]  isEqual: @1]) {
             
             NSDictionary *firstData = responseDic[@"data"];
             NSArray *musicArray = firstData[@"music"];
             
-            for (NSDictionary *dic in musicArray) {
+            if (musicArray.count > 0) {
                 
-                HYLArtistMusicListModel *model = [[HYLArtistMusicListModel alloc] init];
+                for (NSDictionary *dic in musicArray) {
+                    
+                    HYLArtistMusicListModel *model = [[HYLArtistMusicListModel alloc] init];
+                    
+                    model.title = dic[@"title"];
+                    model.author = dic[@"author"];
+                    
+                    NSDictionary *video_info = dic[@"video_info"];
+                    model.url = video_info[@"url"];
+                    model.cover_url = video_info[@"cover_url"];
+                    
+                    [_artistListArray addObject:model];
+                }
                 
-                model.title = dic[@"title"];
-                model.author = dic[@"author"];
+                [_singerTable reloadData];
                 
-                NSDictionary *video_info = dic[@"video_info"];
-                model.url = video_info[@"url"];
-                model.cover_url = video_info[@"cover_url"];
+                // 拿到当前的下拉刷新控件，结束刷新状态
+                [_singerTable.mj_header endRefreshing];
                 
-                [_artistListArray addObject:model];
-            }
+                // 拿到当前的上拉刷新控件，结束刷新状态
+                [_singerTable.mj_footer endRefreshing];
+                
+            } else {
+                
+                // 刷新表格
+                [_singerTable reloadData];
+                
+                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
+                [_singerTable.mj_footer endRefreshingWithNoMoreData];
+                
+                // 隐藏当前的上拉刷新控件
+                _singerTable.mj_footer.hidden = YES;
             
+            }
             
             } else {
             
@@ -771,7 +939,6 @@
     HYLPlayMVListMusicViewController *videoDetailViewController = [[HYLPlayMVListMusicViewController alloc] init];
     videoDetailViewController.videoTitle = item.title;
     videoDetailViewController.mp4_url = item.url;
-    
     
     [self.navigationController pushViewController:videoDetailViewController animated:YES];
 }

@@ -8,6 +8,10 @@
 
 #import "AppDelegate.h"
 
+//
+#import <IQKeyboardManager.h>
+
+//
 #import <UMSocial.h>
 #import <UMSocialWechatHandler.h>
 #import <UMSocialQQHandler.h>
@@ -15,7 +19,6 @@
 
 @interface AppDelegate ()
 
-//@property (nonatomic, strong) MMDrawerController *drawerController;
 
 @end
 
@@ -25,19 +28,25 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    [[IQKeyboardManager sharedManager] setEnable:YES];
+    
+    //(Optional)Set Distance between keyboard & textField, Default is 10.
+    [[IQKeyboardManager sharedManager] setKeyboardDistanceFromTextField:50];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     
     // 初始化
-    if (_tabBarController == nil){
+    if (_tabBarController == nil) {
         _tabBarController = [[HYLTabBarController alloc] init];
     }
     
     self.window.rootViewController = _tabBarController;
     [self.window makeKeyAndVisible];
+
     
-    [UMSocialConfig hiddenNotInstallPlatforms:@[UMShareToQQ,UMShareToQzone,UMShareToWechatSession,UMShareToWechatTimeline]];
-    
+    //
+    [UMSocialConfig hiddenNotInstallPlatforms:@[UMShareToWechatSession, UMShareToWechatTimeline]];
     [UMSocialData setAppKey:@"57396808e0f55a0902001ba4"];
     
 //    [UMSocialData openLog:YES];
@@ -46,9 +55,11 @@
     [UMSocialConfig setSupportedInterfaceOrientations:UIInterfaceOrientationMaskAll];
     
     //设置微信AppId、appSecret，分享url
-    [UMSocialWechatHandler setWXAppId:@"wx72de4c2154afca8f" appSecret:@"b63f86e9d29a2d2d12b70f6e42569f16" url:@"http://www.umeng.com/social"];
+    [UMSocialWechatHandler setWXAppId:@"wx9446332f72e2a718" appSecret:@"960917f9d8348c6aa0931064c0d86237" url:@"http://www.umeng.com/social"];
+    
     //设置手机QQ 的AppId，Appkey，和分享URL，需要#import "UMSocialQQHandler.h"
 //    [UMSocialQQHandler setQQWithAppId:@"100424468" appKey:@"c7394704798a158208a74ab60104f0ba" url:@"http://www.umeng.com/social"];
+    
     //打开新浪微博的SSO开关，设置新浪微博回调地址，这里必须要和你在新浪微博后台设置的回调地址一致。需要 #import "UMSocialSinaSSOHandler.h"
 //    [UMSocialSinaSSOHandler openNewSinaSSOWithAppKey:@"3921700954"
 //                                              secret:@"04b48b094faeb16683c32669824ebdad"

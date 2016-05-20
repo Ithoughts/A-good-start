@@ -10,8 +10,6 @@
 #import "HYLForgetPasswordViewController.h"
 #import "HYLRegisterViewController.h"
 
-#import <UIViewController+MMDrawerController.h>
-
 #import "HaoYuLeNetworkInterface.h"
 #import <AFNetworking.h>
 #import "HYLGetSignature.h"
@@ -20,13 +18,16 @@
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
 @interface HYLSignInViewController ()<UITextFieldDelegate>
+{
+    UIButton *loginButton;
+}
 
 @property (nonatomic, strong) UIImageView *userImageView;
 @property (nonatomic, strong) UIImageView *passwordImageView;
 @property (nonatomic, strong) UITextField *userTextField;
 @property (nonatomic, strong) UITextField *passwordTextField;
-@property (nonatomic, strong) UIView *userlineView;
-@property (nonatomic, strong) UIView *passwordlineView;
+@property (nonatomic, strong) UIView      *userlineView;
+@property (nonatomic, strong) UIView      *passwordlineView;
 
 @property (nonatomic, strong) UIImageView *loginBgView;
 
@@ -97,11 +98,12 @@
     [userplaceholder addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15.0f] range:NSMakeRange(0, userholderText.length)];
     
     self.userTextField.attributedPlaceholder = userplaceholder;
-    self.userTextField.font = [UIFont systemFontOfSize:15.0f];
+    self.userTextField.font = [UIFont systemFontOfSize:20.0f];
     self.userTextField.textColor = [UIColor whiteColor];
     self.userTextField.textAlignment = NSTextAlignmentLeft;
     self.userTextField.autocorrectionType = NO;
-    self.userTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.userTextField.clearsOnBeginEditing = YES;
+    self.userTextField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
     [self.loginBgView addSubview:self.userTextField];
     
     // 线条
@@ -111,12 +113,12 @@
     
     //
     UIImage *passwordImage = [UIImage imageNamed:@"passwordIcon"];
-    self.passwordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 10 + 3, passwordImage.size.width, passwordImage.size.height)];
+    self.passwordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 30, passwordImage.size.width, passwordImage.size.height)];
     self.passwordImageView.image = passwordImage;
     [self.loginBgView addSubview:self.passwordImageView];
     
     // 密码文本框
-    self.passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(43, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 10, screenWidth - 63 , 30)];
+    self.passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(43, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 23, screenWidth - 63 , 30)];
     self.passwordTextField.delegate = self;
     self.passwordTextField.secureTextEntry = YES;
     
@@ -124,10 +126,10 @@
     NSString *passwordholderText = @"登录密码";
     NSMutableAttributedString *passwordplaceholder = [[NSMutableAttributedString alloc] initWithString:passwordholderText];
     [passwordplaceholder addAttribute:NSForegroundColorAttributeName value:[UIColor lightGrayColor] range:NSMakeRange(0, passwordholderText.length)];
-    [passwordplaceholder addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15.0f] range:NSMakeRange(0, passwordholderText.length)];
+    [passwordplaceholder addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:20.0f] range:NSMakeRange(0, passwordholderText.length)];
 
     self.passwordTextField.attributedPlaceholder = passwordplaceholder;
-    self.passwordTextField.font = [UIFont systemFontOfSize:15.0f];
+    self.passwordTextField.font = [UIFont systemFontOfSize:20.0f];
     self.passwordTextField.textColor = [UIColor whiteColor];
     self.passwordTextField.textAlignment = NSTextAlignmentLeft;
     [self.loginBgView addSubview:self.passwordTextField];
@@ -140,7 +142,7 @@
     // 登录按钮
     [self prepareLoginButton:screenWidth origin:self.passwordTextField.frame.origin];
     
-    // 忘记密码按钮
+    // 忘记密码
     [self prepareForgetPasswordButton:screenWidth screenHeight:screenHeight];
     
     // 创建 分隔线
@@ -148,19 +150,20 @@
     dividerView.backgroundColor = [UIColor whiteColor];
     [self.loginBgView addSubview:dividerView];
     
-    // 注册账号按钮
+    // 注册账号
     [self prepareRegisterButton:screenWidth screenHeight:screenHeight];
 }
 
-#pragma mark - 创建 登录按钮
+#pragma mark - 创建 登录 按钮
+
 - (void)prepareLoginButton:(CGFloat)screenWidth  origin:(CGPoint)origin
 {
-    UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    loginButton.frame = CGRectMake(20, origin.y + 30 + 50, screenWidth - 40, 40);
+    loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    loginButton.frame = CGRectMake(20, origin.y + 30 + 50, screenWidth - 40, 50);
     [loginButton setBackgroundImage:[UIImage imageNamed:@"determineIcon"] forState:UIControlStateNormal];
     [loginButton setTitle:@"登录" forState:UIControlStateNormal];
     [loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    loginButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
+    loginButton.titleLabel.font = [UIFont systemFontOfSize:20.0f];
     loginButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [loginButton addTarget:self action:@selector(loginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -168,6 +171,7 @@
 }
 
 #pragma mark - 创建 忘记密码 按钮
+
 - (void)prepareForgetPasswordButton:(CGFloat)screenWidth screenHeight:(CGFloat)screenHeight
 {
     UIButton *forgetPasswordButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -182,6 +186,7 @@
 }
 
 #pragma mark - 创建 注册账号 按钮
+
 - (void)prepareRegisterButton:(CGFloat)screenWidth screenHeight:(CGFloat)screenHeight
 {
     UIButton *registerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -196,10 +201,19 @@
 }
 
 #pragma mark - 登录按钮 响应
+
 - (void)loginButtonAction:(UIButton *)sender
 {
-//    NSLog(@"login button tapped!");
-    [self login];
+    if (_userTextField.text != nil && _passwordTextField.text != nil) {
+        
+        [self login];
+        
+    } else {
+    
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"手机号、密码不能为空" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+//        loginButton.enabled = NO;
+    }
 }
 
 #pragma - 用户登录 响应
@@ -211,8 +225,8 @@
     NSString *timestamp = [HYLGetTimestamp getTimestampString];
     NSString *signature = [HYLGetSignature getSignature:timestamp];
     
-    [dictionary setValue:timestamp forKey:@"time"];
-    [dictionary setValue:signature forKey:@"sign"];
+    [dictionary setValue:timestamp               forKey:@"time"];
+    [dictionary setValue:signature               forKey:@"sign"];
     [dictionary setValue:_userTextField.text     forKey:@"mobile"];
     [dictionary setValue:_passwordTextField.text forKey:@"password"];
     
@@ -224,6 +238,38 @@
         NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         NSLog(@"登录返回: %@", reponse);
         
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        NSString *message = responseDic[@"message"];
+        
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            NSDictionary *dataDic = responseDic[@"data"];
+            
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            
+            [userDefaults       setObject:dataDic[@"id"]                  forKey:@"user_id"];
+            [userDefaults       setObject:dataDic[@"name"]                forKey:@"name"];
+            [userDefaults       setObject:dataDic[@"mobile"]              forKey:@"mobile"];
+            [userDefaults       setObject:dataDic[@"sex"]                 forKey:@"sex"];
+            [userDefaults       setObject:dataDic[@"avatar"]              forKey:@"avatar"];
+            [userDefaults       setObject:dataDic[@"created_at"]          forKey:@"created_at"];
+            [userDefaults       setObject:dataDic[@"updated_at"]          forKey:@"updated_at"];
+            [userDefaults       setObject:dataDic[@"token"]               forKey:@"token"];
+            
+            [userDefaults synchronize];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"logined" object:nil];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } else {
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [alert show];
+        }
+
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
         NSLog(@"error: %@", error);
@@ -232,23 +278,25 @@
 }
 
 #pragma mark - 忘记密码 响应
+
 - (void)forgetPasswordButtonTapped:(UIButton *)sender
 {
-    NSLog(@"忘记密码");
-    
+//    NSLog(@"忘记密码");
     HYLForgetPasswordViewController *forgetPasswordViewController = [[HYLForgetPasswordViewController alloc] init];
     [self.navigationController pushViewController:forgetPasswordViewController animated:NO];
 }
+
 #pragma mark - 注册账号 响应
+
 - (void)registerButtonTapped:(UIButton *)sender
 {
-    NSLog(@"注册账号");
-    
+//    NSLog(@"注册账号");
     HYLRegisterViewController *registerViewController = [[HYLRegisterViewController alloc] init];
     [self.navigationController pushViewController:registerViewController animated:NO];
 }
 
 #pragma mark - 关闭登录界面
+
 - (void)shutdown:(UIButton *)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -259,13 +307,17 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
+    
     return YES;
 }
+
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     if (textField == self.userTextField) {
+        
         self.userImageView.image = [UIImage imageNamed:@"userIconselected"];
         self.userlineView.backgroundColor = kLineViewBGColor(255, 199, 3);
+        
     } else {
     
         self.userImageView.image = [UIImage imageNamed:@"userIcon"];
@@ -273,13 +325,18 @@
     }
     
     if (textField == self.passwordTextField) {
+        
         self.passwordImageView.image = [UIImage imageNamed:@"passwordfieldselected"];
         self.passwordlineView.backgroundColor = kLineViewBGColor(255, 199, 3);
+        
     } else {
+        
         self.passwordImageView.image = [UIImage imageNamed:@"passwordIcon"];
         self.passwordlineView.backgroundColor = [UIColor lightGrayColor];
+        
     }
 }
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     self.userImageView.image = [UIImage imageNamed:@"userIcon"];

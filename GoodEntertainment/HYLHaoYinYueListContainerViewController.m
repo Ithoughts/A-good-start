@@ -12,8 +12,9 @@
 
 #import "UIView+Additions.h"
 
-//#import <MMDrawerBarButtonItem.h>
-//#import <UIViewController+MMDrawerController.h>
+#import "HYLMenuViewController.h"
+#import "HYLTabBarController.h"
+#import "AppDelegate.h"
 
 #import "HYLMVViewController.h"
 #import "HYLShowViewController.h"
@@ -41,7 +42,7 @@
     
     self.view.backgroundColor = [UIColor orangeColor];
     
-//    [self setupLeftMenuButton];
+    [self setupLeftMenuButton];
     
     self.navigationItem.titleView = self.pagingTitleView;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -53,6 +54,35 @@
     self.currentIndex = 0;
     
     [self reloadData];
+}
+
+#pragma mark - 导航栏左侧按钮
+
+-(void)setupLeftMenuButton
+{
+    UIImage *leftImage = [UIImage imageNamed:@"navi_left_item"];
+    
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.frame = CGRectMake(0, 0, leftImage.size.width, leftImage.size.height);
+    [leftButton setImage:leftImage forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(leftBarButtonItemTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    self.navigationItem.leftBarButtonItem = leftBarButtonItem;
+}
+
+#pragma mark - 左侧图
+
+- (void)leftBarButtonItemTouch:(UIButton *)sender
+{
+    HYLMenuViewController *leftMenuVC = [[HYLMenuViewController alloc] init];
+    
+    leftMenuVC.hidesBottomBarWhenPushed = YES;
+    
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    HYLTabBarController *tabBarController = appDelegate.tabBarController;
+    
+    [tabBarController pushToViewController:leftMenuVC animated:NO];
 }
 
 //#pragma mark - 导航栏左侧按钮

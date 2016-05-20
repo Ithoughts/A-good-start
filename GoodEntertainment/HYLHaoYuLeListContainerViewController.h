@@ -15,6 +15,9 @@
 #import "HYLTuiJieViewController.h"
 #import "HYLYuanChuangViewController.h"
 
+//
+#import "HYLTabBarController.h"
+
 @interface HYLHaoYuLeListContainerViewController : ViewPagerController
 
 @property (nonatomic, strong) HYLTuiJieViewController       *tuiJieListVC;
@@ -26,5 +29,7 @@
 @property (nonatomic, strong) HYLTitlePagerView             *pagingTitleView;
 
 @property (nonatomic, assign) NSInteger                     currentIndex;
+
+//@property (nonatomic, strong) UIPanGestureRecognizer        *panGesture;
 
 @end

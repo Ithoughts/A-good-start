@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong) UIImageView *avatar;
 @property (nonatomic, strong) UIImageView *honorImageView;
-@property (nonatomic, strong) UILabel *honorCountLabel;
+@property (nonatomic, strong) UILabel     *honorCountLabel;
 
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *createdTimeLabel;

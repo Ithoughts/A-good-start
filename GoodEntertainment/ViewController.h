@@ -8,8 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
+//#import "HYLTabBarController.h"
+//#import "HYLMenuViewController.h"
+//#import "HYLHaoYuLeListContainerViewController.h"
+
 @interface ViewController : UIViewController
 
+//@property (nonatomic, strong) HYLTabBarController *mainTabBarController;
+//
+//@property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
+//
+//@property (nonatomic, strong) UINavigationController *homeNavigationController;
+//
+//@property (nonatomic, strong) HYLHaoYuLeListContainerViewController *homeViewController;
+//
+//@property (nonatomic, strong) HYLMenuViewController *leftViewController;
+//
+//@property (nonatomic, strong) UIView *mainView;
 
 @end
 

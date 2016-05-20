@@ -58,6 +58,8 @@
 		D1DC6F3B1CAA1F820093D735 /* HYLMVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3A1CAA1F820093D735 /* HYLMVViewController.m */; };
 		D1DC6F3E1CAA1F910093D735 /* HYLBangDanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F3D1CAA1F910093D735 /* HYLBangDanViewController.m */; };
 		D1DC6F411CAA23850093D735 /* HYLBangDanModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F401CAA23850093D735 /* HYLBangDanModel.m */; };
+		D1DC989D1CEEA5B0005FC95C /* HYLCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC989C1CEEA5B0005FC95C /* HYLCommentCell.m */; };
+		D1DC98A01CEEA5CA005FC95C /* HYLCommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC989F1CEEA5CA005FC95C /* HYLCommentModel.m */; };
 		D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */; };
 		D1F44C8B1C8D7EAD00B6AA0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8A1C8D7EAD00B6AA0C /* main.m */; };
 		D1F44C8E1C8D7EAD00B6AA0C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8D1C8D7EAD00B6AA0C /* AppDelegate.m */; };
@@ -172,6 +174,10 @@
 		D1DC6F3D1CAA1F910093D735 /* HYLBangDanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLBangDanViewController.m; sourceTree = "<group>"; };
 		D1DC6F3F1CAA23850093D735 /* HYLBangDanModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLBangDanModel.h; sourceTree = "<group>"; };
 		D1DC6F401CAA23850093D735 /* HYLBangDanModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLBangDanModel.m; sourceTree = "<group>"; };
+		D1DC989B1CEEA5B0005FC95C /* HYLCommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentCell.h; sourceTree = "<group>"; };
+		D1DC989C1CEEA5B0005FC95C /* HYLCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentCell.m; sourceTree = "<group>"; };
+		D1DC989E1CEEA5CA005FC95C /* HYLCommentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentModel.h; sourceTree = "<group>"; };
+		D1DC989F1CEEA5CA005FC95C /* HYLCommentModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentModel.m; sourceTree = "<group>"; };
 		D1E93BA01CBB96D100069DE9 /* HYLVideoCommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLVideoCommentCell.h; sourceTree = "<group>"; };
 		D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLVideoCommentCell.m; sourceTree = "<group>"; };
 		D1F44C861C8D7EAD00B6AA0C /* GoodEntertainment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoodEntertainment.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -214,6 +220,7 @@
 			children = (
 				D149E7851C8EDB37006D17A5 /* HYLMenuViewController.h */,
 				D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */,
+				D166C17D1C9950DE00E20F0A /* LeftViewControllers */,
 			);
 			name = MenuViewController;
 			sourceTree = "<group>";
@@ -225,6 +232,10 @@
 				D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */,
 				D11D67561CE31CEC00612F42 /* HYLCommentListViewController.h */,
 				D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */,
+				D1DC989B1CEEA5B0005FC95C /* HYLCommentCell.h */,
+				D1DC989C1CEEA5B0005FC95C /* HYLCommentCell.m */,
+				D1DC989E1CEEA5CA005FC95C /* HYLCommentModel.h */,
+				D1DC989F1CEEA5CA005FC95C /* HYLCommentModel.m */,
 			);
 			name = HaoYuLeDetailedViewController;
 			sourceTree = "<group>";
@@ -311,7 +322,7 @@
 			name = TitleView;
 			sourceTree = "<group>";
 		};
-		D166C17D1C9950DE00E20F0A /* LeftViewContainer */ = {
+		D166C17D1C9950DE00E20F0A /* LeftViewControllers */ = {
 			isa = PBXGroup;
 			children = (
 				D126D5571C91424C000CD6D8 /* HYLMyCollectionViewController.h */,
@@ -327,7 +338,7 @@
 				D1C613481C96A80E00C32974 /* HYLRegisterViewController.h */,
 				D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */,
 			);
-			name = LeftViewContainer;
+			name = LeftViewControllers;
 			sourceTree = "<group>";
 		};
 		D1840E0A1CAE521700A9B781 /* ZhiBoView */ = {
@@ -525,7 +536,6 @@
 				D1C262271C9968A9000ABA63 /* NetworkInterface */,
 				D15749311CB75C9D0095E524 /* TabBarController */,
 				D102A4A41CB39F4900E14C2C /* MenuViewController */,
-				D166C17D1C9950DE00E20F0A /* LeftViewContainer */,
 				D19C98461C8FFC0D00BDAEC8 /* HaoYuLe */,
 				D19C98481C8FFC5A00BDAEC8 /* HaoJingCai */,
 				D19C98491C8FFC7300BDAEC8 /* HaoYinYue */,
@@ -596,7 +606,7 @@
 				TargetAttributes = {
 					D1F44C851C8D7EAD00B6AA0C = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = E6NG2WDXZU;
+						DevelopmentTeam = MNQ58858Q4;
 					};
 				};
 			};
@@ -670,6 +680,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1DC98A01CEEA5CA005FC95C /* HYLCommentModel.m in Sources */,
 				D1DC6F3E1CAA1F910093D735 /* HYLBangDanViewController.m in Sources */,
 				D1D7C2F01CE1948F00D8F818 /* XLVideoPlayer.m in Sources */,
 				D1BE0C4E1C8EAE3400C79A5D /* HYLTabBarController.m in Sources */,
@@ -677,6 +688,7 @@
 				D1F44C911C8D7EAD00B6AA0C /* ViewController.m in Sources */,
 				D13F95CD1CA2679300F8B069 /* HYLTouTiaoViewController.m in Sources */,
 				D126D5591C91424C000CD6D8 /* HYLMyCollectionViewController.m in Sources */,
+				D1DC989D1CEEA5B0005FC95C /* HYLCommentCell.m in Sources */,
 				D1C6134A1C96A80E00C32974 /* HYLRegisterViewController.m in Sources */,
 				D1F44C8E1C8D7EAD00B6AA0C /* AppDelegate.m in Sources */,
 				D1BE0C5A1C8EB07F00C79A5D /* HYLZhiBoListViewController.m in Sources */,
@@ -834,15 +846,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.entertainmentTest.www;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "475a0881-8785-4687-bc64-cb910fb66a63";
 			};
 			name = Debug;
 		};
@@ -852,15 +864,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.entertainmentTest.www;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "475a0881-8785-4687-bc64-cb910fb66a63";
 			};
 			name = Release;
 		};
