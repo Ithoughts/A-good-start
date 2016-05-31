@@ -71,7 +71,7 @@
     self.tableView.backgroundColor = [UIColor whiteColor];
     self.tableView.showsHorizontalScrollIndicator = NO;
     self.tableView.showsVerticalScrollIndicator = YES;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
     
@@ -86,8 +86,6 @@
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
         [weakSelf loadMoreData];
     }];
-    
-//    self.tableView.mj_footer.hidden = YES;
 }
 
 #pragma mark - 下拉刷新
@@ -95,7 +93,6 @@
 - (void)loadNewData
 {
     _page = 1;
-    
     [_dataArray removeAllObjects];
     
     [self hylMVApiRequest];
@@ -168,7 +165,6 @@
                 self.tableView.mj_footer.hidden = YES;
             }
             
-            
         } else {
             
             
@@ -190,9 +186,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ZhiBoCell";
-    
-    BangDanDetailInfoData *model = _dataArray[indexPath.row];
-    
+
     HYLZhiBoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
@@ -200,44 +194,68 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-    cell.title.text = model.title;
-    cell.updated_at.text = model.updated_at;
-    
-    if (indexPath.row < 9) {
+    if (_dataArray.count > indexPath.row) {
         
-        cell.orderImage.image = [UIImage imageNamed:_imageArray[indexPath.row]];
+        BangDanDetailInfoData *model = _dataArray[indexPath.row];
         
-    } else {
+        cell.title.text = model.title;
+        cell.updated_at.text = model.updated_at;
         
-        cell.orderImage.image = nil;
+        CGFloat imageHeight = model.video_info.cover_height.floatValue;
+        CGFloat imageWidth = model.video_info.cover_width.floatValue;
+        CGFloat trueHeight = [UIScreen mainScreen].bounds.size.width * (imageHeight/imageWidth);
         
+        cell.videoImage.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, trueHeight);
+        cell.orderImage.center = CGPointMake(40, cell.videoImage.frame.size.height*0.5-12);
+        cell.title.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5-25);
+        cell.updated_at.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5);
+        [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:[UIImage imageNamed:@"defaultload"]];
+        
+        if (indexPath.row < 9) {
+            
+            cell.orderImage.image = [UIImage imageNamed:_imageArray[indexPath.row]];
+            
+        } else {
+            
+            cell.orderImage.image = nil;
+        }
     }
-    
-    [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 220.0f;
+    CGFloat imageHeight;
+    CGFloat imageWidth;
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        BangDanDetailInfoData *model = _dataArray[indexPath.row];
+        
+        imageHeight = model.video_info.cover_height.floatValue;
+        imageWidth  = model.video_info.cover_width.floatValue;
+    }
+    
+    return [HYLZhiBoCell getImageViewWidth:imageWidth height:imageHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     BangDanDetailInfoData *model = _dataArray[indexPath.row];
-    NSString *music_id = [NSString stringWithFormat:@"%ld", model.musicId];
+    NSString *music_id = [NSString stringWithFormat:@"%ld", (long)(model.musicId)];
+    CGFloat imageHeight = model.video_info.cover_height.floatValue;
+    CGFloat imageWidth  = model.video_info.cover_width.floatValue;
     
     HYLYinYueDetailCommonViewController *yinYueDetailVC = [[HYLYinYueDetailCommonViewController alloc] init];
-    yinYueDetailVC.musicID = music_id;
-    yinYueDetailVC.musicTitle = model.title;
-    
+    yinYueDetailVC.musicID      = music_id;
+    yinYueDetailVC.musicTitle   = model.title;
+    yinYueDetailVC.imageWidth   = imageWidth;
+    yinYueDetailVC.imageHeight  = imageHeight;
     yinYueDetailVC.hidesBottomBarWhenPushed = YES;
     
     AppDelegate *delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    
     HYLTabBarController *tabBarController = delegate.tabBarController;
-    
     [tabBarController pushToViewController:yinYueDetailVC animated:NO];
 }
 

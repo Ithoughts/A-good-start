@@ -15,4 +15,7 @@
 @property (nonatomic, strong) UIImageView *videoImage;
 @property (nonatomic, strong) UIImageView *orderImage;
 
+ //获取图片高度
++ (CGFloat)getImageViewWidth:(float)width height:(float)height;
+
 @end

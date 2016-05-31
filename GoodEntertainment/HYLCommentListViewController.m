@@ -11,6 +11,8 @@
 #import "HYLCommentCell.h"
 #import "HYLCommentModel.h"
 
+#import "HYLSignInViewController.h"
+
 #import <AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
@@ -25,6 +27,8 @@
     
     NSMutableArray *_dataArray;
     UITableView *_tableView;
+    
+    NSString *_token;
 }
 
 @end
@@ -33,20 +37,25 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
     self.view.backgroundColor = [UIColor whiteColor];
     
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
+    _page = 1;
     _dataArray = [[NSMutableArray alloc] init];
-    self.page = 1;
     
     [self prepareNavigationBar];
     [self HYLCommentListRequest];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     
-    [self prepareTableView];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token = [defaults objectForKey:@"token"];
 }
 
 - (void)prepareNavigationBar
@@ -174,6 +183,9 @@
                     [_dataArray addObject:model];
                 }
                 
+                
+                [self prepareTableView];
+                
                 [_tableView reloadData];
                 
                 // 拿到当前的下拉刷新控件，结束刷新状态
@@ -184,42 +196,42 @@
                 
             } else {
                 
-                // 刷新表格
-                [_tableView reloadData];
+//                // 刷新表格
+//                [_tableView reloadData];
+//                
+//                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
+//                [_tableView.mj_footer endRefreshingWithNoMoreData];
+//                
+//                // 隐藏当前的上拉刷新控件
+//                _tableView.mj_footer.hidden = YES;
                 
-                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
-                [_tableView.mj_footer endRefreshingWithNoMoreData];
+                UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
                 
-                // 隐藏当前的上拉刷新控件
-                _tableView.mj_footer.hidden = YES;
+                // 背景
+                UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
+                imageView.image = backgroundImage;
+                imageView.center = CGPointMake(self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.5);
+                [self.view addSubview:imageView];
+                
+                // 标签
+                UILabel *tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, imageView.frame.origin.y + imageView.frame.size.height + 5, 120, 30)];
+                tipLabel.text = @"暂无评论";
+                tipLabel.font = [UIFont systemFontOfSize:16.0f];
+                tipLabel.textColor = [UIColor blackColor];
+                tipLabel.textAlignment = NSTextAlignmentCenter;
+                [self.view addSubview:tipLabel];
             }
             
         } else {
             
-            UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
-            
-            // 标签
-            UILabel *tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, self.view.frame.size.height * 0.5 - backgroundImage.size.height*0.5-30, 120, 30)];
-            tipLabel.text = @"暂无评论";
-            tipLabel.font = [UIFont systemFontOfSize:16.0f];
-            tipLabel.textColor = [UIColor blackColor];
-            tipLabel.textAlignment = NSTextAlignmentCenter;
-            [self.view addSubview:tipLabel];
-            
-            // 背景
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
-            imageView.image = backgroundImage;
-            imageView.center = CGPointMake(self.view.frame.size.width * 0.5, self.view.frame.size.height * 0.5);
-            [self.view addSubview:imageView];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-//        NSLog(@"error: %@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
-
 
 #pragma mark - UITableViewDelegate, UITableViewDataSource
 
@@ -242,7 +254,7 @@
     
     HYLCommentModel *model = _dataArray[indexPath.row];
     
-    cell.titleLabel.text = @"好娱乐"; // model.title
+    cell.titleLabel.text =  model.title;
     cell.created_atLabel.text = model.created_at;
     cell.contentLabel.text = model.content;
     
@@ -274,58 +286,63 @@
 
 - (void)dianzanAction:(UIButton *)sender
 {
-//    NSLog(@"dian zan");
-    
-    NSInteger buttonTag = sender.tag - 1000;
-    HYLCommentModel *model = _dataArray[buttonTag];
-    
-//    NSLog(@"%@", model.comment_id);
-    
-    NSString *comment_id = model.comment_id;
-    
-    //
-    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-    NSString *signature = [HYLGetSignature getSignature:timestamp];
-    
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    [dictionary setValue:timestamp          forKey:@"time"];
-    [dictionary setValue:signature          forKey:@"sign"];
-    [dictionary setValue:comment_id   forKey:@"comment_id"];
-    
-    // HTTP Basic Authorization 认证机制
-    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
-    
-    [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    if (_token != nil && _token.length > 0) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"点赞评论返回: %@", reponse);
+        NSInteger buttonTag = sender.tag - 1000;
+        HYLCommentModel *model = _dataArray[buttonTag];
         
-        NSError *error = nil;
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        NSString *comment_id = model.comment_id;
         
-        NSString *message = responseDic[@"message"];
+        //
+        NSString *timestamp = [HYLGetTimestamp getTimestampString];
+        NSString *signature = [HYLGetSignature getSignature:timestamp];
         
-        if ([responseDic[@"status"]  isEqual: @1]) {
+        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
         
-            [self loadNewData];
+        [dictionary setValue:timestamp          forKey:@"time"];
+        [dictionary setValue:signature          forKey:@"sign"];
+        [dictionary setValue:comment_id         forKey:@"comment_id"];
+        
+        // HTTP Basic Authorization 认证机制
+        NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+        
+        [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
             
-        } else {
-        
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
-        }
-        
-    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-        
-        NSLog(@"error: %@", error);
-        
-    }];
-}
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"点赞评论返回: %@", reponse);
+            
+            NSError *error = nil;
+            NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+            
+            NSString *message = responseDic[@"message"];
+            
+            if ([responseDic[@"status"]  isEqual: @1]) {
+                
+                [self loadNewData];
+                
+            } else {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+            
+        } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+            
+            NSLog(@"error: %@", error);
+            
+        }];
 
+    } else {
+    
+        HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

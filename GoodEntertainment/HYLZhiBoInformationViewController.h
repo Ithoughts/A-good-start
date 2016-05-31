@@ -13,4 +13,8 @@
 @property (nonatomic, copy) NSString *videoId;
 @property (nonatomic, copy) NSString *zhiBoTitle;
 
+@property (nonatomic, assign) CGFloat imageHeight;
+@property (nonatomic, assign) CGFloat imageWidth;
+
+
 @end

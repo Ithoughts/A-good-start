@@ -14,15 +14,14 @@
 {
     UITableView *_tableView;
     
-    //
-    UIImageView *imageView;
-    UIButton *replaceAvatarButton;
+    UIImageView *_imageView;
+    UIButton    *_replaceAvatarButton;
     
-    UITextField *nicknameField;
-    UITextField *sexField;
+    UITextField *_nicknameField;
+    UITextField *_sexField;
     
-    NSString *_edited_name;
-    NSString *_edited_sex;
+    NSString    *_edited_name;
+    NSString    *_edited_sex;
 }
 
 @end
@@ -51,6 +50,8 @@
     [self prepareTableView];
 }
 
+#pragma mark - 表视图
+
 - (void)prepareTableView
 {
     CGRect screenRect    = [[UIScreen mainScreen] bounds];
@@ -61,34 +62,33 @@
     
     UIImage *image = [UIImage imageNamed:@"defaultImage"];
     
-    
-    imageView = [[UIImageView alloc] initWithFrame:CGRectMake(screenWidth * 0.5 - image.size.width * 0.5, 50, image.size.width, image.size.height)];
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(screenWidth * 0.5 - image.size.width * 0.5, 50, image.size.width, image.size.height)];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *avatar = [defaults objectForKey:@"avatar"];
-    
+    NSString       *avatar   = [defaults objectForKey:@"avatar"];
     
     if (avatar != nil) {
-        [imageView sd_setImageWithURL:[NSURL URLWithString:avatar]];
+        
+        [_imageView sd_setImageWithURL:[NSURL URLWithString:avatar]];
         [_tableView reloadData];
         
     } else {
          
-         imageView.image = image;
+         _imageView.image = image;
     }
 
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    [headerView addSubview:imageView];
+    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    [headerView addSubview:_imageView];
     
-    replaceAvatarButton = [[UIButton alloc] initWithFrame:CGRectMake(0, imageView.frame.size.height + imageView.frame.origin.y + 15, [UIScreen mainScreen].bounds.size.width, 30)];
-    replaceAvatarButton.center = CGPointMake([UIScreen mainScreen].bounds.size.width * 0.5, imageView.frame.size.height + imageView.frame.origin.y + 15 + 0.5*replaceAvatarButton.frame.size.height);
+    _replaceAvatarButton = [[UIButton alloc] initWithFrame:CGRectMake(0, _imageView.frame.size.height + _imageView.frame.origin.y + 15, [UIScreen mainScreen].bounds.size.width, 30)];
+    _replaceAvatarButton.center = CGPointMake([UIScreen mainScreen].bounds.size.width * 0.5, _imageView.frame.size.height + _imageView.frame.origin.y + 15 + 0.5*_replaceAvatarButton.frame.size.height);
     
-    [replaceAvatarButton setTitle:@"更换头像" forState:UIControlStateNormal];
-    replaceAvatarButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
-    [replaceAvatarButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    replaceAvatarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [replaceAvatarButton addTarget:self action:@selector(changeAvatar:) forControlEvents:UIControlEventTouchUpInside];
-    [headerView addSubview:replaceAvatarButton];
+    [_replaceAvatarButton setTitle:@"更换头像" forState:UIControlStateNormal];
+    _replaceAvatarButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
+    [_replaceAvatarButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    _replaceAvatarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_replaceAvatarButton addTarget:self action:@selector(changeAvatar:) forControlEvents:UIControlEventTouchUpInside];
+    [headerView addSubview:_replaceAvatarButton];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight - 64) style: UITableViewStylePlain];
     _tableView.dataSource = self;
@@ -108,6 +108,21 @@
     [self.view addSubview:determineButton];
 }
 
+#pragma mark - 返回
+
+- (void)back
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+#pragma mark - 确定按钮
+
+- (void)determineButtonTapped:(UIButton *)sender
+{
+    NSLog(@"确定");
+}
+
+
 #pragma mark - 更换头像
 
 - (void)changeAvatar:(UIButton *)sender
@@ -121,6 +136,7 @@
 {
     return 2;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"CellIdentifier";
@@ -140,27 +156,25 @@
         nicknameLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:nicknameLabel];
         
-        nicknameField = [[UITextField alloc] initWithFrame:CGRectMake(nicknameLabel.frame.origin.x+nicknameLabel.frame.size.width-30, 10, screenWidth- (nicknameLabel.frame.origin.x+nicknameLabel.frame.size.width-30) - 10, 30)];
-        nicknameField.delegate = self;
-        
+        _nicknameField = [[UITextField alloc] initWithFrame:CGRectMake(nicknameLabel.frame.origin.x+nicknameLabel.frame.size.width - 30, 10, screenWidth - (nicknameLabel.frame.origin.x + nicknameLabel.frame.size.width - 30) - 10, 30)];
+        _nicknameField.delegate = self;
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
         NSString *name = [defaults objectForKey:@"name"];
         
         if (name != nil) {
             
-            nicknameField.text = name;
+            _nicknameField.text = name;
             
         } else {
         
-            nicknameField.text = @"";
+            _nicknameField.text = @"";
         }
         
-        nicknameField.textColor = [UIColor lightGrayColor];
-        nicknameField.font = [UIFont systemFontOfSize:18.0f];
-        nicknameField.textAlignment = NSTextAlignmentRight;
-        [cell.contentView addSubview: nicknameField];
+        _nicknameField.textColor = [UIColor lightGrayColor];
+        _nicknameField.font = [UIFont systemFontOfSize:18.0f];
+        _nicknameField.textAlignment = NSTextAlignmentRight;
+        [cell.contentView addSubview: _nicknameField];
 
         
     } else if (indexPath.row == 1) {
@@ -172,8 +186,8 @@
         genderLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:genderLabel];
         
-        sexField = [[UITextField alloc] initWithFrame:CGRectMake(genderLabel.frame.origin.x+genderLabel.frame.size.width-30, 10, screenWidth - (genderLabel.frame.origin.x+genderLabel.frame.size.width-30) - 10, 30)];
-        sexField.delegate = self;
+        _sexField = [[UITextField alloc] initWithFrame:CGRectMake(genderLabel.frame.origin.x+genderLabel.frame.size.width - 30, 10, screenWidth - (genderLabel.frame.origin.x+genderLabel.frame.size.width - 30) - 10, 30)];
+        _sexField.delegate = self;
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
@@ -183,25 +197,30 @@
             
             if ([sex isEqualToString:@"male"]) {
                 
-                sexField.text = @"男";
+                _sexField.text = @"男";
                 
             } else if ([sex isEqualToString:@"female"]) {
             
-                sexField.text = @"女";
+                _sexField.text = @"女";
             }
             
         } else {
         
-            sexField.text = @"";
+            _sexField.text = @"";
         }
         
-        sexField.textColor = [UIColor lightGrayColor];
-        sexField.font = [UIFont systemFontOfSize:18.0f];
-        sexField.textAlignment = NSTextAlignmentRight;
-        [cell.contentView addSubview: sexField];
+        _sexField.textColor = [UIColor lightGrayColor];
+        _sexField.font = [UIFont systemFontOfSize:18.0f];
+        _sexField.textAlignment = NSTextAlignmentRight;
+        [cell.contentView addSubview: _sexField];
     }
     
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50.0f;
 }
 
 #pragma mark - cell contentview
@@ -222,23 +241,6 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 50.0f;
-}
-
-- (void)back
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-#pragma mark - 确定按钮
-
-- (void)determineButtonTapped:(UIButton *)sender
-{
-    NSLog(@"确定");
-}
-
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -250,13 +252,13 @@
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    if (textField == nicknameField) {
-        _edited_name = nicknameField.text;
+    if (textField == _nicknameField) {
+        _edited_name = _nicknameField.text;
     }
     
-    if (textField == sexField) {
+    if (textField == _sexField) {
         
-        _edited_sex = sexField.text;
+        _edited_sex = _sexField.text;
     }
 }
 

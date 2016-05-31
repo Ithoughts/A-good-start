@@ -25,6 +25,9 @@
 #import <UMengSocialCOM/UMSocialSnsService.h>
 #import <UMSocialSnsPlatformManager.h>
 
+#import "HYLSignInViewController.h"
+
+#import <SVProgressHUD.h>
 
 @interface HYLHaoYuLeCommonDetailViewController ()<UIScrollViewDelegate, UITextFieldDelegate, UMSocialUIDelegate>
 {
@@ -52,37 +55,32 @@
     // 评论数
     UILabel *_rightLabel;
     
-    NSString *token;
+    NSString *_token;
 }
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 @property (weak, nonatomic) IBOutlet UITextField *textField;
 
-@property (nonatomic, strong) XLVideoPlayer *player;
-
 @property (weak, nonatomic) IBOutlet UIView *textBackgroundView;
+
+@property (nonatomic, strong) XLVideoPlayer *player;
 
 @end
 
 @implementation HYLHaoYuLeCommonDetailViewController
 
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    token = [defaults objectForKey:@"token"];
+    _token = [defaults objectForKey:@"token"];
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    token = [defaults objectForKey:@"token"];
-//    
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -128,10 +126,7 @@
 
 - (IBAction)sendComment:(UIButton *)sender
 {
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    NSString *token = [defaults objectForKey:@"token"];
-    
-    if (token != nil) {
+    if (_token != nil && _token.length > 0) {
         
         if (self.textField.text.length > 0 && self.textField.text != nil) {
             
@@ -143,12 +138,11 @@
             [dictionary setValue:_videoTitle         forKey:@"title"];
             [dictionary setValue:self.textField.text forKey:@"content"];
             [dictionary setValue:self.videoId        forKey:@"commentable_id"];
-            [dictionary setValue:timestamp forKey:@"time"];
-            [dictionary setValue:signature forKey:@"sign"];
-//        [dictionary setValue:@""                 forKey:@"reply_id"];
+            [dictionary setValue:timestamp           forKey:@"time"];
+            [dictionary setValue:signature           forKey:@"sign"];
             
             // HTTP Basic Authorization 认证机制
-            NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+            NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
             
             AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
             manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -156,8 +150,8 @@
             
             [manager POST:kSendVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
                 
-                //            NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-                //            NSLog(@"发表视频评论返回:%@", string);
+//            NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//            NSLog(@"发表视频评论返回:%@", string);
                 
                 NSError *error = nil;
                 NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -168,10 +162,7 @@
                     
                     self.textField.text = @"";
                     [self.textField resignFirstResponder];
-                    
-                    //                [self HYLDetailInfoApiRequest]; // 刷新下
                 }
-                
                 
             } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
                 
@@ -181,20 +172,24 @@
             
         } else {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"评论内容不能为空" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"评论内容不能为空" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            [alert show];
+            
+            [SVProgressHUD showErrorWithStatus:@"请填写内容"];
         }
         
     } else {
     
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+        
+        HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
     }
     
 }
 
-#pragma mark - 获取 token // 需要传手机号和密码
+#pragma mark - 获取 token (需要传手机号和密码)
 
 //- (NSString *)getToken
 //{
@@ -280,7 +275,6 @@
     UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
     navItem.leftBarButtonItem = left;
     
-    
     // right bar button items
     UIButton *rightButton =  [UIButton buttonWithType:UIButtonTypeCustom];
     
@@ -356,7 +350,7 @@
     if(response.responseCode == UMSResponseCodeSuccess)
     {
         //得到分享到的微博平台名
-        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
+//        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
     }
 }
 
@@ -402,10 +396,10 @@
     [self.scrollView addSubview:lineView];
     
     // 视频截图
-    _videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5, lineView.frame.origin.y + 1 + 10, _screenWidth - 10, 220)];
+    _videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5, lineView.frame.origin.y + 1 + 10, _screenWidth - 10, (self.imageHeight/self.imageWidth)*(_screenWidth - 10))];
     _videoImageView.clipsToBounds = YES;
     _videoImageView.userInteractionEnabled = YES;
-    _videoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _videoImageView.contentMode = UIViewContentModeScaleAspectFit;
     [_videoImageView sd_setImageWithURL:[NSURL URLWithString:_cover_url] completed:nil];
     [self.scrollView addSubview:_videoImageView];
     
@@ -524,7 +518,7 @@
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-//        NSLog(@"error: %@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }

@@ -11,6 +11,8 @@
 #import "HYLZhiBoListModel.h"
 #import "HYLVideoCommentCell.h"
 
+#import "HYLSignInViewController.h"
+
 #import <AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
@@ -73,7 +75,7 @@
     UIView *bottomView;
     
     //
-    NSString *token;
+    NSString *_token;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -86,16 +88,13 @@
 {
     [super viewWillAppear:animated];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    token = [defaults objectForKey:@"token"];
+    _token = [defaults objectForKey:@"token"];
 }
 
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    token = [defaults objectForKey:@"token"];
     
     _screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -182,10 +181,10 @@
 - (void)prepareJingCaiView
 {
     // 视频截图
-    _videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 220)];
+    _videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, (self.imageHeight/self.imageWidth)*_screenWidth)];
     _videoImageView.clipsToBounds = YES;
     _videoImageView.userInteractionEnabled = YES;
-    _videoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _videoImageView.contentMode = UIViewContentModeScaleAspectFit;
     [_videoImageView sd_setImageWithURL:[NSURL URLWithString:_cover_url] completed:nil];
     [self.view addSubview:_videoImageView];
     
@@ -362,10 +361,6 @@
     
     headerView.frame = CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
     
-//    bottomView = [self createCommentView];
-//    bottomView.hidden = YES;
-//    [headerView addSubview:bottomView];
-    
     [_decriptionScrollView addSubview:headerView];
     
     _decriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
@@ -437,14 +432,17 @@
         {
 //            NSLog(@"收藏");
             
-            if (token != nil) {
+            if (_token != nil && _token.length > 0) {
                 
                 [self collectVideo];
                 
             } else {
             
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//                [alert show];
+                
+                HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+                [self.navigationController pushViewController:loginVC animated:YES];
             }
             
         }
@@ -453,16 +451,17 @@
         case 102:
         {
             NSLog(@"评论");
-
-//            bottomView.hidden = NO;
             
-            if (token != nil) {
+            if (_token != nil && _token.length > 0) {
                 
                 
             } else {
                 
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//                [alert show];
+                
+                HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+                [self.navigationController pushViewController:loginVC animated:YES];
             }
 
         }
@@ -482,7 +481,7 @@
     if(response.responseCode == UMSResponseCodeSuccess)
     {
         //得到分享到的微博平台名
-        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
+//        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
     }
 }
 
@@ -501,7 +500,7 @@
     [dictionary setValue:signature            forKey:@"sign"];
     
     // HTTP Basic Authorization 认证机制
-    NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -509,8 +508,8 @@
     
     [manager POST:kAddFavoriteVideoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"收藏视频返回:%@", string);
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"收藏视频返回:%@", string);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -590,7 +589,7 @@
 
 - (void)sendCommentToServer:(UIButton *)sender
 {
-    NSLog(@"评论完毕");
+//    NSLog(@"评论完毕");
 }
 
 #pragma mark - 改变指示器的位置
@@ -682,24 +681,24 @@
             // 添加到当前视图
             [self.view addSubview:[self createCommentTableView]];
             
-            
         } else {
             
             UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
             
+            // 背景
+            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
+            _commentTipImageView.image = backgroundImage;
+            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+ (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5 - 0.5 * backgroundImage.size.height);
+            [self.view addSubview:_commentTipImageView];
+            
             // 标签
-            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5-90, 120, 30)];
+            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
             _commentTipLabel.text = @"暂无评论";
             _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
             _commentTipLabel.textColor = [UIColor blackColor];
             _commentTipLabel.textAlignment = NSTextAlignmentCenter;
-            [self.view addSubview:_commentTipLabel];
             
-            // 背景
-            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
-            _commentTipImageView.image = backgroundImage;
-            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+(_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5);
-            [self.view addSubview:_commentTipImageView];
+            [self.view addSubview:_commentTipLabel];
         }
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {

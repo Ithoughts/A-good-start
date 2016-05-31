@@ -8,7 +8,8 @@
 
 #import "HYLMyCollectionViewController.h"
 #import "HYLZhiBoCell.h"
-#import "HYLZhiBoListModel.h"
+//#import "HYLZhiBoListModel.h"
+#import "HYLCollectionModel.h"
 
 #import "AppDelegate.h"
 #import "HYLTabBarController.h"
@@ -25,7 +26,7 @@
 {
     NSMutableArray *_dataArray;
     NSInteger _page;
-    NSString *token;
+    NSString *_token;
 }
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -38,24 +39,29 @@
 {
     [super viewWillAppear:animated];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    token = [defaults objectForKey:@"token"];
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    _token                   = [defaults objectForKey:@"token"];
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     _page = 1;
     _dataArray = [[NSMutableArray alloc] init];
     
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    token = [defaults objectForKey:@"token"];
+    _token = @"MTU4MTU4MzU2NjU6MTIzNDU2";
     
-    [self hylCollectApiRequest];
-    
+    [self HYLCollectionApiRequest];
+    [self prepareCollectionNaviBar];
+    [self prepareCollectionTableView];
+}
+
+#pragma mark - 导航栏
+
+- (void)prepareCollectionNaviBar
+{
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
     titleLabel.text = @"我的收藏";
     titleLabel.textColor = [UIColor whiteColor];
@@ -69,13 +75,11 @@
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
     
     self.navigationItem.leftBarButtonItem = leftBarButtonItem;
-    
-    [self prepareCollectableView];
 }
 
 #pragma mark - 表格视图
 
-- (void)prepareCollectableView
+- (void)prepareCollectionTableView
 {
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 64)
                                                   style:UITableViewStylePlain];
@@ -85,7 +89,7 @@
     self.tableView.tableFooterView = [[UIView alloc] init];
     self.tableView.showsHorizontalScrollIndicator = NO;
     self.tableView.showsVerticalScrollIndicator = YES;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
     
@@ -93,13 +97,24 @@
     
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        
         [weakSelf loadNewData];
+        
     }];
     
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
-    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-        [weakSelf loadMoreData];
-    }];
+//    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+//        
+//        [weakSelf loadMoreData];
+//        
+//    }];
+}
+
+#pragma mark - 返回
+
+- (void)goBack
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - 下拉刷新
@@ -107,29 +122,23 @@
 - (void)loadNewData
 {
     _page = 1;
-    
     [_dataArray removeAllObjects];
     
-    [self hylCollectApiRequest];
+    [self HYLCollectionApiRequest];
 }
 
 #pragma mark - 上拉加载更多
 
-- (void)loadMoreData
-{
-    _page ++;
-    
-    [self hylCollectApiRequest];
-}
-
-- (void)goBack
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
+//- (void)loadMoreData
+//{
+//    _page ++;
+//    
+//    [self HYLCollectionApiRequest];
+//}
 
 #pragma mark - 网络请求
 
-- (void)hylCollectApiRequest
+- (void)HYLCollectionApiRequest
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
@@ -140,33 +149,47 @@
     [dictionary setValue:signature forKey:@"sign"];
     [dictionary setValue:[NSString stringWithFormat:@"%ld", (long)_page] forKey:@"page"];
     
-    NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
     
-    [manager POST:kJingCaiURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+    [manager POST:kGetUserFavoriteURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"收藏返回: %@", reponse);
         
         NSError *error = nil;
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
-                                                                    options:NSJSONReadingMutableLeaves
-                                                                      error:&error];
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        
         if ([responseDic[@"status"]  isEqual: @1]) {
         
-            NSDictionary *firstDataDic = responseDic[@"data"];
+            NSArray  *data = responseDic[@"data"];
             
-            NSArray *secondData = firstDataDic[@"data"];
-            
-            if (secondData.count > 0) {
+            if (data.count > 0) {
                 
-                for (NSDictionary *dic in secondData) {
+                for (NSDictionary *dic in data) {
                     
-                    HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dic];
+                    HYLCollectionModel *model = [[HYLCollectionModel alloc] init];
+                    model.videoId = [dic[@"id"] integerValue];
+                    model.title = dic[@"title"];
+                    model.video_info_id = dic[@"video_info_id"];
+                    model.author = dic[@"author"];
+                    model.view_count = dic[@"view_count"];
+                    model.comment_count = dic[@"comment_count"];
+                    model.like_count = dic[@"like_count"];
+                    model.created_at = dic[@"created_at"];
+                    
+                    //
+                    NSDictionary *video_info = dic[@"video_info"];
+                    
+                    model.video_info_id = video_info[@"id"];
+                    model.url = video_info[@"url"];
+                    model.cover_url = video_info[@"cover_url"];
+                    model.cover_width = video_info[@"cover_width"];
+                    model.cover_height = video_info[@"cover_height"];
+                    
                     [_dataArray addObject:model];
                 }
                 
@@ -177,7 +200,7 @@
                 [self.tableView.mj_header endRefreshing];
                 
                 // 拿到当前的上拉刷新控件，结束刷新状态
-                [self.tableView.mj_footer endRefreshing];
+//                [self.tableView.mj_footer endRefreshing];
             
             } else {
         
@@ -185,10 +208,10 @@
                 [self.tableView reloadData];
                 
                 // 拿到当前的上拉刷新控件，变为没有更多数据的状态
-                [self.tableView.mj_footer endRefreshingWithNoMoreData];
+//                [self.tableView.mj_footer endRefreshingWithNoMoreData];
                 
                 // 隐藏当前的上拉刷新控件
-                self.tableView.mj_footer.hidden = YES;
+//                self.tableView.mj_footer.hidden = YES;
             }
             
         } else {
@@ -213,44 +236,50 @@
 {
     static NSString *CellIdentifier = @"XiChangCell";
     
-    HYLZhiBoListModel *model = _dataArray[indexPath.row];
-    
     HYLZhiBoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
+        
         cell = [[HYLZhiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.title.text = model.title;
-//    cell.updated_at.text = model.updated_at;
-    [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLCollectionModel *model = _dataArray[indexPath.row];
+        
+        cell.title.text = model.title;
+        
+        CGFloat imageHeight = model.cover_height.floatValue;
+        CGFloat imageWidth  = model.cover_width.floatValue;
+        CGFloat trueHeight = [UIScreen mainScreen].bounds.size.width * (imageHeight/imageWidth);
+        
+        cell.videoImage.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, trueHeight);
+        cell.title.center = cell.videoImage.center;
+        [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.cover_url] placeholderImage:[UIImage imageNamed:@"defaultload"]];
+    }
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 220.0f;
+    CGFloat imageHeight;
+    CGFloat imageWidth;
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLCollectionModel *model = _dataArray[indexPath.row];
+        imageHeight = model.cover_height.floatValue;
+        imageWidth  = model.cover_width.floatValue;
+    }
+    
+    return [HYLZhiBoCell getImageViewWidth:imageWidth height:imageHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    //
-//    HYLZhiBoListModel *model = _dataArray[indexPath.row];
-//    NSInteger videoId = model.videoId;
-    
-//    HYLJingCaiDetailedInfoViewController *jingCaiDetailedVC = [[HYLJingCaiDetailedInfoViewController alloc] init];
-//    jingCaiDetailedVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
-//    jingCaiDetailedVC.jingCaiTitle = model.title;
-//    
-//    //
-//    jingCaiDetailedVC.hidesBottomBarWhenPushed = YES;
-//    
-//    //
-//    HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];
-//    [tabBarController pushToViewController:jingCaiDetailedVC animated:NO];
 }
 
 - (void)didReceiveMemoryWarning {

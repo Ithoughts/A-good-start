@@ -32,6 +32,7 @@
 		D14BFB7C1CE0330600936D74 /* UIImageView+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = D14BFB7B1CE0330600936D74 /* UIImageView+GIF.m */; };
 		D15749341CB75F330095E524 /* HYLZhiBoInformationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */; };
 		D165ED311CC0BE6300C35F41 /* HYLSingerMVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */; };
+		D16F2FD31CF4453800BD8F1D /* HYLCollectionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D16F2FD21CF4453800BD8F1D /* HYLCollectionModel.m */; };
 		D177B9781CAA55B4003EEB32 /* HYLZhiBoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */; };
 		D177B97B1CAA61C9003EEB32 /* HYLZhiBoListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B97A1CAA61C9003EEB32 /* HYLZhiBoListModel.m */; };
 		D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */; };
@@ -122,6 +123,8 @@
 		D15749331CB75F330095E524 /* HYLZhiBoInformationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoInformationViewController.m; sourceTree = "<group>"; };
 		D165ED2F1CC0BE6300C35F41 /* HYLSingerMVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSingerMVCell.h; sourceTree = "<group>"; };
 		D165ED301CC0BE6300C35F41 /* HYLSingerMVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLSingerMVCell.m; sourceTree = "<group>"; };
+		D16F2FD11CF4453800BD8F1D /* HYLCollectionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCollectionModel.h; sourceTree = "<group>"; };
+		D16F2FD21CF4453800BD8F1D /* HYLCollectionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCollectionModel.m; sourceTree = "<group>"; };
 		D177B9761CAA55B4003EEB32 /* HYLZhiBoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoCell.h; sourceTree = "<group>"; };
 		D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoCell.m; sourceTree = "<group>"; };
 		D177B9791CAA61C9003EEB32 /* HYLZhiBoListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLZhiBoListModel.h; sourceTree = "<group>"; };
@@ -325,20 +328,70 @@
 		D166C17D1C9950DE00E20F0A /* LeftViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				D16F2FD41CF44C0200BD8F1D /* Collection */,
+				D16F2FD51CF44C1400BD8F1D /* Edit */,
+				D16F2FD61CF44C2000BD8F1D /* Setting */,
+				D16F2FD71CF44C2D00BD8F1D /* Login */,
+				D16F2FD81CF44C5100BD8F1D /* Forget */,
+				D16F2FD91CF44C5E00BD8F1D /* Register */,
+			);
+			name = LeftViewControllers;
+			sourceTree = "<group>";
+		};
+		D16F2FD41CF44C0200BD8F1D /* Collection */ = {
+			isa = PBXGroup;
+			children = (
 				D126D5571C91424C000CD6D8 /* HYLMyCollectionViewController.h */,
 				D126D5581C91424C000CD6D8 /* HYLMyCollectionViewController.m */,
+				D16F2FD11CF4453800BD8F1D /* HYLCollectionModel.h */,
+				D16F2FD21CF4453800BD8F1D /* HYLCollectionModel.m */,
+			);
+			name = Collection;
+			sourceTree = "<group>";
+		};
+		D16F2FD51CF44C1400BD8F1D /* Edit */ = {
+			isa = PBXGroup;
+			children = (
 				D126D55A1C914613000CD6D8 /* HYLEditProfileViewController.h */,
 				D126D55B1C914613000CD6D8 /* HYLEditProfileViewController.m */,
+			);
+			name = Edit;
+			sourceTree = "<group>";
+		};
+		D16F2FD61CF44C2000BD8F1D /* Setting */ = {
+			isa = PBXGroup;
+			children = (
 				D126D55D1C915A02000CD6D8 /* HYLSettingViewController.h */,
 				D126D55E1C915A02000CD6D8 /* HYLSettingViewController.m */,
+			);
+			name = Setting;
+			sourceTree = "<group>";
+		};
+		D16F2FD71CF44C2D00BD8F1D /* Login */ = {
+			isa = PBXGroup;
+			children = (
 				D126D5601C9160F1000CD6D8 /* HYLSignInViewController.h */,
 				D126D5611C9160F1000CD6D8 /* HYLSignInViewController.m */,
+			);
+			name = Login;
+			sourceTree = "<group>";
+		};
+		D16F2FD81CF44C5100BD8F1D /* Forget */ = {
+			isa = PBXGroup;
+			children = (
 				D1C613451C96946600C32974 /* HYLForgetPasswordViewController.h */,
 				D1C613461C96946600C32974 /* HYLForgetPasswordViewController.m */,
+			);
+			name = Forget;
+			sourceTree = "<group>";
+		};
+		D16F2FD91CF44C5E00BD8F1D /* Register */ = {
+			isa = PBXGroup;
+			children = (
 				D1C613481C96A80E00C32974 /* HYLRegisterViewController.h */,
 				D1C613491C96A80E00C32974 /* HYLRegisterViewController.m */,
 			);
-			name = LeftViewControllers;
+			name = Register;
 			sourceTree = "<group>";
 		};
 		D1840E0A1CAE521700A9B781 /* ZhiBoView */ = {
@@ -527,10 +580,11 @@
 		D1F44C881C8D7EAD00B6AA0C /* GoodEntertainment */ = {
 			isa = PBXGroup;
 			children = (
-				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
-				D166C17C1C99505B00E20F0A /* TitleView */,
 				D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */,
 				D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */,
+				D1DC6F431CAA23B40093D735 /* BaseModel */,
+				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
+				D166C17C1C99505B00E20F0A /* TitleView */,
 				D14BFB7D1CE0331C00936D74 /* TLAttributedLabel */,
 				D1D7C2F11CE194A100D8F818 /* VideoPlayer */,
 				D1C262271C9968A9000ABA63 /* NetworkInterface */,
@@ -540,7 +594,6 @@
 				D19C98481C8FFC5A00BDAEC8 /* HaoJingCai */,
 				D19C98491C8FFC7300BDAEC8 /* HaoYinYue */,
 				D19C984A1C8FFC8500BDAEC8 /* ZhiBo */,
-				D1DC6F431CAA23B40093D735 /* BaseModel */,
 				D1F44C8C1C8D7EAD00B6AA0C /* AppDelegate.h */,
 				D1F44C8D1C8D7EAD00B6AA0C /* AppDelegate.m */,
 				D1F44C921C8D7EAD00B6AA0C /* Main.storyboard */,
@@ -705,6 +758,7 @@
 				D14BFB6A1CE0329600936D74 /* TLAttributedLabelUtils.m in Sources */,
 				D1BE0C541C8EB04500C79A5D /* HYLHaoJingCaiListViewController.m in Sources */,
 				D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */,
+				D16F2FD31CF4453800BD8F1D /* HYLCollectionModel.m in Sources */,
 				D14BFB791CE032EC00936D74 /* NSMutableAttributedString+CTFrameRef.m in Sources */,
 				D13F95D01CA267A500F8B069 /* HYLTuiJieViewController.m in Sources */,
 				D14BFB6D1CE032A700936D74 /* TLAttributedLabelConst.m in Sources */,
@@ -777,7 +831,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -820,7 +875,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -846,15 +902,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = cn.entertainmentTest.www;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.goodEntertainment.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "475a0881-8785-4687-bc64-cb910fb66a63";
+				PROVISIONING_PROFILE = "50c997d9-5510-4d53-a9c2-615e9b424a7f";
 			};
 			name = Debug;
 		};
@@ -864,15 +920,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Guangdong Jin's Agel Ecommerce Ltd (MNQ58858Q4)";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = cn.entertainmentTest.www;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.goodEntertainment.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "475a0881-8785-4687-bc64-cb910fb66a63";
+				PROVISIONING_PROFILE = "50c997d9-5510-4d53-a9c2-615e9b424a7f";
 			};
 			name = Release;
 		};

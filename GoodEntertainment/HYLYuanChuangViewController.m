@@ -35,7 +35,6 @@
     NSMutableArray *_dataArray;
 }
 
-
 @end
 
 @implementation HYLYuanChuangViewController
@@ -63,7 +62,7 @@
     self.tableView.dataSource = self;
     self.tableView.backgroundColor = [UIColor whiteColor];
     self.tableView.tableFooterView = [[UIView alloc] init];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
     [self.view addSubview:self.tableView];
     
@@ -113,15 +112,14 @@
     
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:[NSString stringWithFormat:@"%ld", self.page] forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", (long)(self.page)] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kYuanChuangURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"原创: %@", reponse);
         
         NSError *error = nil;
@@ -185,24 +183,48 @@
 {
     static NSString *CellIdentifier = @"YuanChuangCell";
     
-    HYLZhiBoListModel *model = _dataArray[indexPath.row];
-    
     HYLZhiBoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
+        
         cell = [[HYLZhiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.title.text = model.title;
-    cell.updated_at.text = model.updated_at;
-    [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLZhiBoListModel *model = _dataArray[indexPath.row];
+        
+        cell.title.text = model.title;
+        cell.updated_at.text = model.updated_at;
+        
+        CGFloat imageHeight = model.video_info.cover_height.floatValue;
+        CGFloat imageWidth = model.video_info.cover_width.floatValue;
+        CGFloat trueHeight = [UIScreen mainScreen].bounds.size.width * (imageHeight/imageWidth);
+        
+        cell.videoImage.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, trueHeight);
+        cell.title.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5-25);
+        cell.updated_at.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5);
+        [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:[UIImage imageNamed:@"defaultload"]];
+    }
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 220.0f;
+    CGFloat imageHeight;
+    CGFloat imageWidth;
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLZhiBoListModel *model = _dataArray[indexPath.row];
+        
+        imageHeight = model.video_info.cover_height.floatValue;
+        imageWidth  = model.video_info.cover_width.floatValue;
+    }
+    
+    return [HYLZhiBoCell getImageViewWidth:imageWidth height:imageHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -213,9 +235,16 @@
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
     NSInteger videoId = model.videoId;
     
+    CGFloat imageHeight = model.video_info.cover_height.floatValue;
+    CGFloat imageWidth  = model.video_info.cover_width.floatValue;
+    
     //
     HYLHaoYuLeCommonDetailViewController *touTiaoDetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HYLTouTiaoDetailViewController"];
     touTiaoDetailVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
+    
+    touTiaoDetailVC.imageWidth = imageWidth;
+    touTiaoDetailVC.imageHeight = imageHeight;
+    
     touTiaoDetailVC.hidesBottomBarWhenPushed = YES;
     
     HYLTabBarController *tabBarController = [(AppDelegate *)[[UIApplication sharedApplication] delegate] tabBarController];

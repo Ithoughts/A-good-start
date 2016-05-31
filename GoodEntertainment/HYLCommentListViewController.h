@@ -11,6 +11,6 @@
 @interface HYLCommentListViewController : UIViewController
 
 @property (nonatomic, copy) NSString *videoId;
-@property (nonatomic) NSInteger page;
+@property (nonatomic)       NSInteger page;
 
 @end

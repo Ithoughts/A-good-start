@@ -25,9 +25,6 @@
 #define     ORIGINAL_MAX_WIDTH      640.0f
 
 @interface HYLHaoYuLeListContainerViewController ()<ViewPagerDataSource, ViewPagerDelegate, HYLTitlePagerViewDelegate, UIGestureRecognizerDelegate>
-{
-
-}
 
 @end
 
@@ -110,13 +107,14 @@
 - (void)leftBarButtonItemTouch:(UIButton *)sender
 {
     HYLMenuViewController *leftMenuVC = [[HYLMenuViewController alloc] init];
-    
     leftMenuVC.hidesBottomBarWhenPushed = YES;
+    
+//    leftMenuVC.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
     
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     HYLTabBarController *tabBarController = appDelegate.tabBarController;
     
-    [tabBarController pushToViewController:leftMenuVC animated:NO];
+    [tabBarController pushToViewController:leftMenuVC animated:YES];
 }
 
 #pragma mark - ViewPagerDataSource
@@ -139,11 +137,11 @@
     } else {
         
         return [self createYuanChuangVC];
-        
     }
 }
 
 #pragma mark - 创建 3个 控制器
+
 - (UIViewController *)createTuiJieVC
 {
     self.tuiJieListVC = [[HYLTuiJieViewController alloc] init];
@@ -184,6 +182,7 @@
         [self.pagingTitleView addObjects:titleArray];
         self.pagingTitleView.delegate = self;
     }
+    
     return _pagingTitleView;
 }
 
@@ -203,7 +202,6 @@
     } else {
         
         direction = UIPageViewControllerNavigationDirectionReverse;
-        
     }
     
     UIViewController *viewController = [self viewControllerAtIndex:index];

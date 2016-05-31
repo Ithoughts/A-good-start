@@ -15,6 +15,8 @@
 
 #import "HYLSignInViewController.h"
 
+#import <SVProgressHUD.h>
+
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
 @interface HYLForgetPasswordViewController ()<UITextFieldDelegate>
@@ -76,7 +78,6 @@
     [sureButton addTarget:self action:@selector(sureButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:sureButton];
     
-    
     // 获取用户信息
 //    [self getUserInfomation];
     
@@ -98,15 +99,16 @@
     _phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(_phoneImageView.frame.origin.x + _phoneImageView.frame.size.width + 3, _phoneImageView.frame.origin.y - 3, [[UIScreen mainScreen] bounds].size.width - (_phoneImageView.frame.size.width + _phoneImageView.frame.origin.x) - 90, 30)];
     _phoneTextField.delegate = self;
     _phoneTextField.placeholder = @"手机号码";
+    _phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
     _phoneTextField.font = [UIFont systemFontOfSize:20.0f];
     _phoneTextField.textAlignment = NSTextAlignmentLeft;
-    _phoneTextField.textColor = [UIColor lightGrayColor];
+    _phoneTextField.textColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0];
     [self.view addSubview:_phoneTextField];
     
     sendMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
     sendMessageButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 110, _phoneTextField.frame.origin.y, 100, 30);
     [sendMessageButton setTitle:@"发送验证码" forState:UIControlStateNormal];
-    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:20.0f];
+    sendMessageButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     [sendMessageButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
     sendMessageButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [sendMessageButton addTarget:self action:@selector(sendMessageButtonTap:) forControlEvents:UIControlEventTouchUpInside];
@@ -127,9 +129,10 @@
     _messageTextField = [[UITextField alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x + _messageImageView.frame.size.width + 3, _messageImageView.frame.origin.y - 3, _phoneTextField.frame.size.width, 30)];
     _messageTextField.delegate = self;
     _messageTextField.placeholder = @"短信验证码";
+    _messageTextField.keyboardType = UIKeyboardTypeNumberPad;
     _messageTextField.font = [UIFont systemFontOfSize:20.0f];
     _messageTextField.textAlignment = NSTextAlignmentLeft;
-    _messageTextField.textColor = [UIColor lightGrayColor];
+    _messageTextField.textColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0];
     [self.view addSubview:_messageTextField];
     
     _messageLineView = [[UIView alloc] initWithFrame:CGRectMake(_messageImageView.frame.origin.x, _messageTextField.frame.origin.y + _messageTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
@@ -149,7 +152,7 @@
     _settingTextField.clearsOnBeginEditing = YES;
     _settingTextField.font = [UIFont systemFontOfSize:20.0f];
     _settingTextField.textAlignment = NSTextAlignmentLeft;
-    _settingTextField.textColor = [UIColor lightGrayColor];
+    _settingTextField.textColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0];
     [self.view addSubview:_settingTextField];
     
     _settingLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _settingTextField.frame.origin.y + _settingTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
@@ -164,21 +167,21 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - 发送信息按钮响应
+#pragma mark - 发送信息
 
 - (void)sendMessageButtonTap:(UIButton *)sender
 {
-    if (_phoneTextField.text != nil) {
+    if (_phoneTextField.text.length > 0) {
         
         [self sendMessageApi];
         
-        sendMessageButton.enabled = NO;
-        
     } else {
     
-        sendMessageButton.enabled = NO;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入手机号" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
     }
 }
+
 - (void)sendMessageApi
 {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
@@ -195,8 +198,7 @@
     
     [manager POST:kSendCaptchaURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
+        NSString *reponse = [[NSString alloc] initWithData:responseObject  encoding:NSUTF8StringEncoding];
         NSLog(@"发送验证码返回: %@", reponse);
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -210,7 +212,40 @@
 
 - (void)sureButtonTapped:(UIButton *)sender
 {
-    [self findMyPasswordToServer];
+    if (_phoneTextField.text.length == 0) {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入手机号" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+        
+        [SVProgressHUD showErrorWithStatus:@"请输入手机号"];
+    }
+    
+    if (_messageTextField.text.length == 0) {
+        
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入验证码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+        
+        [SVProgressHUD showErrorWithStatus:@"请输入验证码"];
+    }
+    
+    if (_settingTextField.text.length == 0) {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入密码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+        
+        [SVProgressHUD showErrorWithStatus:@"请输入密码"];
+    }
+    
+    if (_phoneTextField.text.length > 0 && _messageTextField.text.length > 0 && _settingTextField.text.length > 0) {
+        
+        [self findMyPasswordToServer]; // 请求到服务器
+        
+    }
+//    else {
+    
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入手机号、验证码、密码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+        
+//        [SVProgressHUD showErrorWithStatus:@"请输入手机号、验证码、密码"];
+//    }
 }
 
 - (void)findMyPasswordToServer
@@ -240,19 +275,17 @@
                                                                       error:&error];
         if ([responseDic[@"status"]  isEqual: @1]) {
             
+            [SVProgressHUD showSuccessWithStatus:@"找回密码成功"];
+            
             HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
             [self.navigationController pushViewController:signInVC animated:YES];
             
         } else {
             
-//            NSDictionary *dic = responseDic[@"message"];
-//            
-//            NSArray *mobile = dic[@"mobile"];
-//            
-//            NSString *message = mobile[0];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"找回密码失败" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            [alert show];
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"找回密码失败" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
+            [SVProgressHUD showErrorWithStatus:@"找回密码失败"];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {

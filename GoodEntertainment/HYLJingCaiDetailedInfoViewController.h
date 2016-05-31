@@ -13,4 +13,9 @@
 @property (nonatomic, copy) NSString *videoId;
 @property (nonatomic, copy) NSString *jingCaiTitle;
 
+
+@property (nonatomic, assign) CGFloat imageHeight;
+@property (nonatomic, assign) CGFloat imageWidth;
+
+
 @end

@@ -38,6 +38,15 @@
     
     [self prepareTableView];
 }
+
+#pragma mark - 返回
+
+- (void)back
+{
+    // 弹出一个栈顶控制器，即本控制器，回到上一页
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
 - (void)prepareTableView
 {
     CGRect screenRect = [[UIScreen mainScreen] bounds];
@@ -58,6 +67,7 @@
 {
     return 3;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"CellIdentifier";
@@ -71,7 +81,7 @@
         
         UILabel *aboutLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 180, 30)];
         aboutLabel.text = @"关于好娱乐";
-        aboutLabel.font = [UIFont systemFontOfSize:18.0f];
+        aboutLabel.font = [UIFont systemFontOfSize:16.0f];
         aboutLabel.textColor = [UIColor blackColor];
         aboutLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:aboutLabel];
@@ -79,7 +89,7 @@
         UILabel *versionLabel = [[UILabel alloc] initWithFrame:CGRectMake(aboutLabel.frame.origin.x+aboutLabel.frame.size.width, 10, screenWidth - (aboutLabel.frame.origin.x+aboutLabel.frame.size.width) - 10, 30)];
         versionLabel.text = @"1.0";
         versionLabel.textColor = [UIColor lightGrayColor];
-        versionLabel.font = [UIFont systemFontOfSize:18.0f];
+        versionLabel.font = [UIFont systemFontOfSize:16.0f];
         versionLabel.textAlignment = NSTextAlignmentRight;
         [cell.contentView addSubview: versionLabel];
         
@@ -88,14 +98,14 @@
         
         UILabel *feedbackLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 180, 30)];
         feedbackLabel.text = @"意见反馈";
-        feedbackLabel.font = [UIFont systemFontOfSize:18.0f];
+        feedbackLabel.font = [UIFont systemFontOfSize:16.0f];
         feedbackLabel.textColor = [UIColor blackColor];
         feedbackLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:feedbackLabel];
         
         UILabel *rightLabel = [[UILabel alloc] initWithFrame:CGRectMake(feedbackLabel.frame.origin.x+feedbackLabel.frame.size.width, 10, screenWidth - (feedbackLabel.frame.origin.x+feedbackLabel.frame.size.width) - 10, 30)];
         rightLabel.textColor = [UIColor lightGrayColor];
-        rightLabel.font = [UIFont systemFontOfSize:18.0f];
+        rightLabel.font = [UIFont systemFontOfSize:16.0f];
         rightLabel.textAlignment = NSTextAlignmentRight;
         [cell.contentView addSubview: rightLabel];
         
@@ -104,7 +114,7 @@
         
         UILabel *cacheLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 180, 30)];
         cacheLabel.text = @"清理缓存";
-        cacheLabel.font = [UIFont systemFontOfSize:18.0f];
+        cacheLabel.font = [UIFont systemFontOfSize:16.0f];
         cacheLabel.textColor = [UIColor blackColor];
         cacheLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:cacheLabel];
@@ -112,12 +122,31 @@
         UILabel *rightLabel = [[UILabel alloc] initWithFrame:CGRectMake(cacheLabel.frame.origin.x+cacheLabel.frame.size.width, 10, screenWidth - (cacheLabel.frame.origin.x+cacheLabel.frame.size.width) - 10, 30)];
         rightLabel.text = @"";
         rightLabel.textColor = [UIColor lightGrayColor];
-        rightLabel.font = [UIFont systemFontOfSize:18.0f];
+        rightLabel.font = [UIFont systemFontOfSize:16.0f];
         rightLabel.textAlignment = NSTextAlignmentRight;
         [cell.contentView addSubview: rightLabel];
     }
     
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50.0f;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+    
+    } else if (indexPath.row == 1) {
+        
+        NSLog(@"意见反馈");
+        
+    } else if (indexPath.row == 2) {
+        
+        NSLog(@"清理缓存");
+    }
 }
 
 #pragma mark - cell contentview
@@ -136,30 +165,6 @@
     [cell.contentView addSubview: rightLabel];
     
     return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 50.0f;
-}
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.row == 0) {
-    
-    } else if (indexPath.row == 1) {
-        
-        NSLog(@"意见反馈");
-        
-    } else if (indexPath.row == 2) {
-        
-        NSLog(@"清理缓存");
-    }
-}
-
-#pragma mark - 返回
-- (void)back
-{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

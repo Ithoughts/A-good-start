@@ -9,6 +9,7 @@
 #import "HYLYinYueDetailCommonViewController.h"
 
 #import "HYLBangDanModel.h"
+#import "HYLSignInViewController.h"
 
 #import <AFNetworking.h>
 #import "HYLGetTimestamp.h"
@@ -77,7 +78,6 @@
     UILabel *_commentTipLabel;
     UIImageView *_commentTipImageView;
     
-    
     //
     NSIndexPath *_indexPath;
     CGRect _currentPlayCellRect;
@@ -85,7 +85,7 @@
     //
     NSInteger _page;
     
-    NSString *token;
+    NSString *_token;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -98,21 +98,17 @@
 {
     [super viewWillAppear:animated];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    token = [defaults objectForKey:@"token"];
+    _token = [defaults objectForKey:@"token"];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    token = [defaults objectForKey:@"token"];
-    
-    
+        
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    _artistListArray = [[NSMutableArray alloc] init];
     _page = 1;
+    _artistListArray = [[NSMutableArray alloc] init];
     
     [self HYLMusicInfoApiRequest];
     [self prepareYinYueNavigationBar];
@@ -195,10 +191,10 @@
 - (void)prepareMVView
 {
     // 音乐截图
-    _musicImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, 220)];
+    _musicImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, (self.imageHeight/self.imageWidth)*_screenWidth)];
     _musicImageView.clipsToBounds = YES;
     _musicImageView.userInteractionEnabled = YES;
-    _musicImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _musicImageView.contentMode = UIViewContentModeScaleAspectFit;
     [_musicImageView sd_setImageWithURL:[NSURL URLWithString:_cover_url] completed:nil];
     [self.view addSubview:_musicImageView];
     
@@ -391,24 +387,25 @@
             
             UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
             
+            // 背景
+            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
+            _commentTipImageView.image = backgroundImage;
+            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5)) * 0.5 - backgroundImage.size.height * 0.5);
+            [self.view addSubview:_commentTipImageView];
+            
             // 标签
-            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5-90, 120, 30)];
+            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
             _commentTipLabel.text = @"暂无评论";
             _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
             _commentTipLabel.textColor = [UIColor blackColor];
             _commentTipLabel.textAlignment = NSTextAlignmentCenter;
             [self.view addSubview:_commentTipLabel];
-            
-            // 背景
-            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
-            _commentTipImageView.image = backgroundImage;
-            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+(_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5);
-            [self.view addSubview:_commentTipImageView];
+
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-//        NSLog(@"error: %@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
@@ -476,10 +473,10 @@
     [headerView addSubview:_playLabel];
     
     //
-    _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"] title:@"分享" x:5 tag:100];
+    _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"]          title:@"分享" x:5 tag:100];
     [headerView addSubview:_shareButton];
     
-    _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
+    _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"]    title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
     [headerView addSubview:_collectButton];
     
     _musicCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaicomment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
@@ -635,14 +632,17 @@
         {
 //            NSLog(@"收藏");
             
-            if (token != nil) {
+            if (_token != nil && _token.length > 0) {
                 
                 [self collectVideo];
                 
             } else {
                 
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//                [alert show];
+                
+                HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+                [self.navigationController pushViewController:loginVC animated:YES];
             }
         }
             break;
@@ -652,14 +652,17 @@
         {
             NSLog(@"评论");
             
-            if (token != nil) {
+            if (_token != nil && _token.length > 0) {
                 
 //                [self collectVideo];
                 
             } else {
                 
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//                [alert show];
+                
+                HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+                [self.navigationController pushViewController:loginVC animated:YES];
             }
 
         }
@@ -698,7 +701,7 @@
     // HTTP Basic Authorization 认证机制
 //    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
     
-    NSString *authorization = [NSString stringWithFormat:@"Basic %@", token];
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -816,7 +819,7 @@
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
     [dictionary setValue:artist_id forKey:@"artist_id"];
-    [dictionary setValue:[NSString stringWithFormat:@"%ld", _page] forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", (long)_page] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];

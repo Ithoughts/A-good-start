@@ -14,8 +14,8 @@
 //
 #import <UMSocial.h>
 #import <UMSocialWechatHandler.h>
-#import <UMSocialQQHandler.h>
-#import <UMSocialSinaSSOHandler.h>
+//#import <UMSocialQQHandler.h>
+//#import <UMSocialSinaSSOHandler.h>
 
 @interface AppDelegate ()
 
@@ -31,7 +31,7 @@
     [[IQKeyboardManager sharedManager] setEnable:YES];
     
     //(Optional)Set Distance between keyboard & textField, Default is 10.
-    [[IQKeyboardManager sharedManager] setKeyboardDistanceFromTextField:50];
+    [[IQKeyboardManager sharedManager] setKeyboardDistanceFromTextField:20];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -44,7 +44,6 @@
     self.window.rootViewController = _tabBarController;
     [self.window makeKeyAndVisible];
 
-    
     //
     [UMSocialConfig hiddenNotInstallPlatforms:@[UMShareToWechatSession, UMShareToWechatTimeline]];
     [UMSocialData setAppKey:@"57396808e0f55a0902001ba4"];

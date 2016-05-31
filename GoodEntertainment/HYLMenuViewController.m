@@ -245,9 +245,12 @@
             
         } else {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            
+//            [alert show];
             
-            [alert show];
+            HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+            [self.navigationController pushViewController:loginVC animated:YES];
         }
         
     } else if (indexPath.row == 1) {
@@ -262,27 +265,30 @@
             
         } else {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            
+//            [alert show];
             
-            [alert show];
+            HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+            [self.navigationController pushViewController:loginVC animated:YES];
         }
     
     } else if (indexPath.row == 2) {
         
-        if (token != nil) {
+//        if (token != nil) {
         
-            HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
-            
-            setUpVC.hidesBottomBarWhenPushed = YES;
-            
-            [self.navigationController pushViewController:setUpVC animated:NO];
-            
-        } else {
+        HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
         
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        setUpVC.hidesBottomBarWhenPushed = YES;
+        
+        [self.navigationController pushViewController:setUpVC animated:YES];
             
-            [alert show];
-        }
+//        } else {
+//        
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            
+//            [alert show];
+//        }
         
         
     } else if (indexPath.row == 3) {
@@ -306,7 +312,6 @@
         }
     }
 }
-
 
 #pragma mark --- UIActionSheetDelegate
 

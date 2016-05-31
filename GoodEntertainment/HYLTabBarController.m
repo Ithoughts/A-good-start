@@ -14,9 +14,7 @@
 #import "HYLHaoYinYueListContainerViewController.h"
 #import "HYLZhiBoListViewController.h"
 
-
 #define   kTabBarRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
-
 
 @interface HYLTabBarController ()
 {
@@ -35,7 +33,6 @@
     // Do any additional setup after loading the view.
     
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
     appDelegate.tabBarController = self;
     
     [self setupTabBarStyle];
@@ -47,9 +44,7 @@
 - (void)setupTabBarStyle
 {
     self.delegate = self;
-    
     self.tabBar.tintColor = kTabBarRGB(255, 199, 3);
-    
     [self.tabBar setBackgroundImage:[UIImage imageNamed:@"tabBar_background"]];
 }
 
@@ -88,8 +83,6 @@
     _zhiBoNC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"直播"
                                                         image:[[UIImage imageNamed:@"tabBar_zhibo_unselected.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                                 selectedImage:[UIImage imageNamed:@"tabBar_zhibo_selected.png"]];
-    
-    
     // view controllers
     NSArray *viewControllers = @[_haoYuLeNC, _haoJingCaiNC, _haoYinYueNC, _zhiBoNC];
     

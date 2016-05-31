@@ -15,6 +15,8 @@
 #import "HYLGetSignature.h"
 #import "HYLGetTimestamp.h"
 
+#import <SVProgressHUD.h>
+
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
 @interface HYLSignInViewController ()<UITextFieldDelegate>
@@ -99,11 +101,11 @@
     
     self.userTextField.attributedPlaceholder = userplaceholder;
     self.userTextField.font = [UIFont systemFontOfSize:20.0f];
-    self.userTextField.textColor = [UIColor whiteColor];
+    self.userTextField.textColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0];
     self.userTextField.textAlignment = NSTextAlignmentLeft;
     self.userTextField.autocorrectionType = NO;
     self.userTextField.clearsOnBeginEditing = YES;
-    self.userTextField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    self.userTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.loginBgView addSubview:self.userTextField];
     
     // 线条
@@ -120,6 +122,7 @@
     // 密码文本框
     self.passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(43, self.userTextField.frame.origin.y + self.userTextField.frame.size.height + 23, screenWidth - 63 , 30)];
     self.passwordTextField.delegate = self;
+    self.passwordTextField.clearsOnBeginEditing = YES;
     self.passwordTextField.secureTextEntry = YES;
     
     // 修改 placeholder 的字体颜色大小
@@ -130,7 +133,7 @@
 
     self.passwordTextField.attributedPlaceholder = passwordplaceholder;
     self.passwordTextField.font = [UIFont systemFontOfSize:20.0f];
-    self.passwordTextField.textColor = [UIColor whiteColor];
+    self.passwordTextField.textColor = [UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0];
     self.passwordTextField.textAlignment = NSTextAlignmentLeft;
     [self.loginBgView addSubview:self.passwordTextField];
     
@@ -204,15 +207,17 @@
 
 - (void)loginButtonAction:(UIButton *)sender
 {
+    if (_userTextField.text == nil || _userTextField.text.length == 0) {
+        [SVProgressHUD showErrorWithStatus:@"请输入用户名"];
+    }
+    
+    if (_passwordTextField.text == nil || _passwordTextField.text.length == 0) {
+        [SVProgressHUD showErrorWithStatus:@"请输入密码"];
+    }
+    
     if (_userTextField.text != nil && _passwordTextField.text != nil) {
         
         [self login];
-        
-    } else {
-    
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"手机号、密码不能为空" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-//        loginButton.enabled = NO;
     }
 }
 
@@ -235,13 +240,12 @@
     
     [manager POST:kUserLoginURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"登录返回: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"登录返回: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
         NSString *message = responseDic[@"message"];
-        
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
@@ -262,12 +266,15 @@
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"logined" object:nil];
             
-            [self.navigationController popViewControllerAnimated:YES];
+            [SVProgressHUD showSuccessWithStatus:message];
+            
+            [self.navigationController popToRootViewControllerAnimated:YES];
             
         } else {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//            [alert show];
+            [SVProgressHUD showErrorWithStatus:message];
         }
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -299,7 +306,8 @@
 
 - (void)shutdown:(UIButton *)sender
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    // 弹出一个栈顶控制器，即本控制器，回到上一页
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - UITextFieldDelegate

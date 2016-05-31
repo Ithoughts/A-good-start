@@ -23,7 +23,7 @@
 
 @property (nonatomic, strong) NSMutableArray<BangDanDetailInfoData *> *data;
 
-@property (nonatomic, copy) NSString *next_page_url;
+@property (nonatomic, copy)   NSString *next_page_url;
 
 @property (nonatomic, assign) NSInteger total;
 
@@ -31,7 +31,7 @@
 
 @property (nonatomic, assign) NSInteger last_page;
 
-@property (nonatomic, copy) NSString *prev_page_url;
+@property (nonatomic, copy)   NSString *prev_page_url;
 
 @end
 
@@ -70,27 +70,25 @@
 //
 @interface VideoInfo : HYLJSONModel
 
-@property (nonatomic, copy) NSString *aspect;
+@property (nonatomic, assign) NSInteger videoId;
+
+@property (nonatomic, copy) NSString *url;
 
 @property (nonatomic, copy) NSString *cover_url;
 
 @property (nonatomic, copy) NSString *cover_width;
 
-@property (nonatomic, assign) NSInteger videoId;
-
-@property (nonatomic, copy) NSString *remote_id;
-
 @property (nonatomic, copy) NSString *cover_height;
 
-@property (nonatomic, copy) NSString *created_at;
-
-@property (nonatomic, copy) NSString *updated_at;
-
-@property (nonatomic, copy) NSString *bitrate;
-
-@property (nonatomic, copy) NSString *is_audio;
-
-@property (nonatomic, copy) NSString *url;
+//@property (nonatomic, copy) NSString *remote_id;
+//
+//@property (nonatomic, copy) NSString *created_at;
+//
+//@property (nonatomic, copy) NSString *updated_at;
+//
+//@property (nonatomic, copy) NSString *bitrate;
+//
+//@property (nonatomic, copy) NSString *is_audio;
 
 @end
 

@@ -123,7 +123,7 @@
     self.tableView.tableFooterView = [[UIView alloc] init];
     self.tableView.showsHorizontalScrollIndicator = NO;
     self.tableView.showsVerticalScrollIndicator = YES;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
     
@@ -138,7 +138,7 @@
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
         [weakSelf loadMoreData];
     }];
-//    self.tableView.mj_footer.hidden = YES;
+
 }
 
 #pragma mark - 下拉刷新
@@ -184,7 +184,6 @@
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
-//        NSLog(@"status: %@", responseDic[@"status"]);
         
         if ([responseDic[@"status"]  isEqual: @1]) {
             
@@ -198,9 +197,6 @@
                     
                     HYLZhiBoListModel *model = [[HYLZhiBoListModel alloc] initWithDictionary:dic];
                     [_dataArray addObject:model];
-                    
-//                NSLog(@"title: %@", model.title);
-//                NSLog(@"updated_at: %@", model.updated_at);
                 }
                 
                 [self.tableView reloadData];
@@ -244,42 +240,68 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ZhiBoCell";
-
-    HYLZhiBoListModel *model = _dataArray[indexPath.row];
     
     HYLZhiBoCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
+        
         cell = [[HYLZhiBoCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-    cell.title.text = model.title;
-    cell.updated_at.text = model.updated_at;
-    [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:nil];
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLZhiBoListModel *model = _dataArray[indexPath.row];
+        
+        cell.title.text = model.title;
+        cell.updated_at.text = model.updated_at;
+        
+        CGFloat imageHeight = model.video_info.cover_height.floatValue;
+        CGFloat imageWidth  = model.video_info.cover_width.floatValue;
+        CGFloat trueHeight  = [UIScreen mainScreen].bounds.size.width * (imageHeight/imageWidth);
+        
+        cell.videoImage.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, trueHeight);
+        cell.title.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5-25);
+        cell.updated_at.center = CGPointMake(cell.videoImage.frame.size.width*0.5, cell.videoImage.frame.size.height*0.5);
+        [cell.videoImage sd_setImageWithURL:[NSURL URLWithString:model.video_info.cover_url] placeholderImage:[UIImage imageNamed:@"defaultload"]];
+    }
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 220.0f;
+    CGFloat imageHeight;
+    CGFloat imageWidth;
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLZhiBoListModel *model = _dataArray[indexPath.row];
+        imageHeight = model.video_info.cover_height.floatValue;
+        imageWidth  = model.video_info.cover_width.floatValue;
+    }
+    
+    return [HYLZhiBoCell getImageViewWidth:imageWidth height:imageHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
-    NSInteger videoId = model.videoId;
+    
+    NSInteger videoId   = model.videoId;
+    CGFloat imageHeight = model.video_info.cover_height.floatValue;
+    CGFloat imageWidth  = model.video_info.cover_width.floatValue;
     
     HYLZhiBoInformationViewController *zhiBoInforVC = [[HYLZhiBoInformationViewController alloc] init];
-    zhiBoInforVC.videoId = [NSString stringWithFormat:@"%ld", (long)videoId];
-    zhiBoInforVC.zhiBoTitle = model.title;
+    
+    zhiBoInforVC.videoId     = [NSString stringWithFormat:@"%ld", (long)videoId];
+    zhiBoInforVC.zhiBoTitle  = model.title;
+    zhiBoInforVC.imageWidth  = imageWidth;
+    zhiBoInforVC.imageHeight = imageHeight;
     zhiBoInforVC.hidesBottomBarWhenPushed = YES;
     
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     HYLTabBarController *tabBarController = appDelegate.tabBarController;
-    
     [tabBarController pushToViewController:zhiBoInforVC animated:NO];
 }
 
