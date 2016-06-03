@@ -7,18 +7,19 @@
 //
 
 #import "HYLCommentListViewController.h"
-
 #import "HYLCommentCell.h"
 #import "HYLCommentModel.h"
 
 #import "HYLSignInViewController.h"
 
-#import <AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 #import "HaoYuLeNetworkInterface.h"
 
-#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <AFNetworking/AFNetworking.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface HYLCommentListViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
@@ -109,7 +110,6 @@
 //    _tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
 //        [weakSelf loadMoreData];
 //    }];
-
 }
 
 #pragma mark - 下拉刷新
@@ -123,7 +123,7 @@
     [self HYLCommentListRequest];
 }
 
-#pragma mark - 上拉加载更多
+//#pragma mark - 上拉加载更多
 //
 //- (void)loadMoreData
 //{
@@ -139,27 +139,27 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - 网络请求
+#pragma mark - 获取评论列表，网络请求
 
 - (void)HYLCommentListRequest
 {
-    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-    NSString *signature = [HYLGetSignature getSignature:timestamp];
-    
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+
     [dictionary setValue:timestamp      forKey:@"time"];
     [dictionary setValue:signature      forKey:@"sign"];
     [dictionary setValue:self.videoId   forKey:@"video_id"];
-    [dictionary setValue:@"1"           forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", _page] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"视频评论列表: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"评论列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
@@ -174,15 +174,19 @@
                     
                     HYLCommentModel *model = [[HYLCommentModel alloc] init];
                     
-                    model.title = dic[@"title"];
-                    model.content = dic[@"content"];
+                    
+                    model.content    = dic[@"content"];
                     model.like_count = dic[@"like_count"];
                     model.created_at = dic[@"created_at"];
                     model.comment_id = [NSString stringWithFormat:@"%@", dic[@"id"]];
                     
+                    NSDictionary *user = dic[@"user"];
+                    
+                    model.name         = user[@"name"];
+                    model.avatar       = user[@"avatar"];
+                    
                     [_dataArray addObject:model];
                 }
-                
                 
                 [self prepareTableView];
                 
@@ -195,15 +199,6 @@
                 [_tableView.mj_footer endRefreshing];
                 
             } else {
-                
-//                // 刷新表格
-//                [_tableView reloadData];
-//                
-//                // 拿到当前的上拉刷新控件，变为没有更多数据的状态
-//                [_tableView.mj_footer endRefreshingWithNoMoreData];
-//                
-//                // 隐藏当前的上拉刷新控件
-//                _tableView.mj_footer.hidden = YES;
                 
                 UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
                 
@@ -252,11 +247,13 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-    HYLCommentModel *model = _dataArray[indexPath.row];
+    HYLCommentModel *model    = _dataArray[indexPath.row];
     
-    cell.titleLabel.text =  model.title;
+    cell.titleLabel.text      = model.name;
     cell.created_atLabel.text = model.created_at;
-    cell.contentLabel.text = model.content;
+    cell.contentLabel.text    = model.content;
+    
+    [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.avatar] placeholderImage:[UIImage imageNamed:@"defaultImage"]];
     
     if (model.like_count.integerValue > 0) {
         
@@ -269,7 +266,6 @@
     
     cell.like_countButton.tag = indexPath.row + 1000;
     cell.like_countButton.userInteractionEnabled = YES;
-    
     cell.like_countLabel.text = model.like_count;
     
     [cell.like_countButton addTarget:self action:@selector(dianzanAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -313,8 +309,8 @@
         
         [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
             
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"点赞评论返回: %@", reponse);
+            NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            NSLog(@"点赞返回: %@", reponse);
             
             NSError *error = nil;
             NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
@@ -325,10 +321,15 @@
                 
                 [self loadNewData];
                 
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+                [SVProgressHUD showSuccessWithStatus:message];
+                
             } else {
                 
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+                [SVProgressHUD showErrorWithStatus:message];
             }
             
         } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {

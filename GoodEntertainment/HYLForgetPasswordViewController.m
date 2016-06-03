@@ -7,7 +7,8 @@
 //
 
 #import "HYLForgetPasswordViewController.h"
-#import <AFNetworking.h>
+//#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 
@@ -15,7 +16,8 @@
 
 #import "HYLSignInViewController.h"
 
-#import <SVProgressHUD.h>
+//#import <SVProgressHUD.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
@@ -32,7 +34,6 @@
     UIImageView *_settingImageView;
     UITextField *_settingTextField;
     UIView *_settingLineView;
-    
     
     UIButton *sendMessageButton;
 }
@@ -77,15 +78,6 @@
     [sureButton setBackgroundImage:[UIImage imageNamed:@"determineselected"] forState:UIControlStateHighlighted];
     [sureButton addTarget:self action:@selector(sureButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:sureButton];
-    
-    // 获取用户信息
-//    [self getUserInfomation];
-    
-    // 修改用户信息
-//    [self editUserInfomation];
-    
-    // 修改密码
-//    [self changePassword];
 }
 
 - (void)prepareForgetPasswordView
@@ -118,7 +110,6 @@
     _phoneLineView = [[UIView alloc] initWithFrame:CGRectMake(10, _phoneTextField.frame.origin.y + _phoneTextField.frame.size.height + 8, [UIScreen mainScreen].bounds.size.width - 20, 1)];
     _phoneLineView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:_phoneLineView];
-    
     
     //
     UIImage *messageImage = [UIImage imageNamed:@"message"];
@@ -198,8 +189,8 @@
     
     [manager POST:kSendCaptchaURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject  encoding:NSUTF8StringEncoding];
-        NSLog(@"发送验证码返回: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject  encoding:NSUTF8StringEncoding];
+//        NSLog(@"发送验证码返回: %@", reponse);
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
@@ -213,39 +204,27 @@
 - (void)sureButtonTapped:(UIButton *)sender
 {
     if (_phoneTextField.text.length == 0) {
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入手机号" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//        [alert show];
         
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
         [SVProgressHUD showErrorWithStatus:@"请输入手机号"];
     }
     
     if (_messageTextField.text.length == 0) {
-        
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入验证码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//        [alert show];
-        
+ 
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
         [SVProgressHUD showErrorWithStatus:@"请输入验证码"];
     }
     
     if (_settingTextField.text.length == 0) {
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入密码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//        [alert show];
-        
+
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
         [SVProgressHUD showErrorWithStatus:@"请输入密码"];
     }
     
     if (_phoneTextField.text.length > 0 && _messageTextField.text.length > 0 && _settingTextField.text.length > 0) {
         
         [self findMyPasswordToServer]; // 请求到服务器
-        
     }
-//    else {
-    
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请输入手机号、验证码、密码" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//        [alert show];
-        
-//        [SVProgressHUD showErrorWithStatus:@"请输入手机号、验证码、密码"];
-//    }
 }
 
 - (void)findMyPasswordToServer
@@ -266,8 +245,8 @@
     
     [manager POST:kGetPasswordURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"找密码返回: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"找密码返回: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -275,6 +254,7 @@
                                                                       error:&error];
         if ([responseDic[@"status"]  isEqual: @1]) {
             
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
             [SVProgressHUD showSuccessWithStatus:@"找回密码成功"];
             
             HYLSignInViewController *signInVC = [[HYLSignInViewController alloc] init];
@@ -282,9 +262,7 @@
             
         } else {
             
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"找回密码失败" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            [alert show];
-            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
             [SVProgressHUD showErrorWithStatus:@"找回密码失败"];
         }
         
@@ -294,90 +272,6 @@
         
     }];
 }
-
-#pragma mark - 获取用户信息
-//
-//- (void)getUserInfomation
-//{
-//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-//    
-//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-//    NSString *signature = [HYLGetSignature getSignature:timestamp];
-//    
-//    [dictionary setValue:timestamp forKey:@"time"];
-//    [dictionary setValue:signature forKey:@"sign"];
-//    
-//    // HTTP Basic Authorization 认证机制
-//    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
-//    
-//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
-//    [manager POST:kUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-//        
-//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"获取用户信息:%@", string);
-//        
-//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-//        
-//        NSLog(@"error: %@", error);
-//    }];
-//}
-
-#pragma mark - 修改用户信息
-
-//- (void)editUserInfomation
-//{
-//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-//    
-//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-//    NSString *signature = [HYLGetSignature getSignature:timestamp];
-//    
-//    [dictionary setValue:timestamp forKey:@"time"];
-//    [dictionary setValue:signature forKey:@"sign"];
-//    [dictionary setValue:@"female" forKey:@"sex"];
-//    
-//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//    [manager POST:kEditUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-//        
-//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"修改用户信息:%@", string);
-//        
-//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-//        
-//        NSLog(@"error: %@", error);
-//    }];
-//}
-
-#pragma mark - 修改用户密码
-
-//- (void)findPassword
-//{
-//    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-//    
-//    NSString *timestamp = [HYLGetTimestamp getTimestampString];
-//    NSString *signature = [HYLGetSignature getSignature:timestamp];
-//    
-//    [dictionary setValue:timestamp forKey:@"time"];
-//    [dictionary setValue:signature forKey:@"sign"];
-//    [dictionary setValue:@"123456" forKey:@"oldPassword"];
-//    [dictionary setValue:@"123456" forKey:@"newPassword"];
-//    
-//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//    [manager POST:kGetPasswordURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-//        
-//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"找回密码:%@", string);
-//        
-//    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-//        
-//        NSLog(@"error: %@", error);
-//    }];
-//
-//    
-//}
 
 #pragma mark - UITextFieldDelegate
 

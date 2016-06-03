@@ -8,7 +8,6 @@
 
 #import "HYLMyCollectionViewController.h"
 #import "HYLZhiBoCell.h"
-//#import "HYLZhiBoListModel.h"
 #import "HYLCollectionModel.h"
 
 #import "AppDelegate.h"
@@ -16,11 +15,14 @@
 
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
-#import <AFNetworking.h>
+
+#import <AFNetworking/AFNetworking.h>
 #import "HaoYuLeNetworkInterface.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
-#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
+
+#import "HYLPlayMVListMusicViewController.h"
 
 @interface HYLMyCollectionViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
@@ -39,8 +41,8 @@
 {
     [super viewWillAppear:animated];
     
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    _token                   = [defaults objectForKey:@"token"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token                   = [defaults objectForKey:@"token"];
 }
 
 - (void)viewDidLoad {
@@ -48,10 +50,13 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token                   = [defaults objectForKey:@"token"];
+    
     _page = 1;
     _dataArray = [[NSMutableArray alloc] init];
     
-    _token = @"MTU4MTU4MzU2NjU6MTIzNDU2";
+//    _token = @"MTU4MTU4MzU2NjU6MTIzNDU2";
     
     [self HYLCollectionApiRequest];
     [self prepareCollectionNaviBar];
@@ -157,8 +162,8 @@
     
     [manager POST:kGetUserFavoriteURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        NSLog(@"收藏返回: %@", reponse);
+        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"收藏返回: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
@@ -205,7 +210,7 @@
             } else {
         
                 // 刷新表格
-                [self.tableView reloadData];
+//                [self.tableView reloadData];
                 
                 // 拿到当前的上拉刷新控件，变为没有更多数据的状态
 //                [self.tableView.mj_footer endRefreshingWithNoMoreData];
@@ -280,6 +285,17 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (_dataArray.count > indexPath.row) {
+        
+        HYLCollectionModel *model = _dataArray[indexPath.row];
+        
+        HYLPlayMVListMusicViewController *videoDetailViewController = [[HYLPlayMVListMusicViewController alloc] init];
+        videoDetailViewController.videoTitle = model.title;
+        videoDetailViewController.mp4_url = model.url;
+        
+        [self.navigationController pushViewController:videoDetailViewController animated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

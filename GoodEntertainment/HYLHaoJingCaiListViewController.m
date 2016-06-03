@@ -16,14 +16,16 @@
 
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
-#import <AFNetworking.h>
+//#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 #import "HaoYuLeNetworkInterface.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
 #import "HYLZhiBoCell.h"
 #import "HYLZhiBoListModel.h"
 
-#import <MJRefresh.h>
+//#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
 
 #define   kTITLEVIEWRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
 
@@ -167,8 +169,7 @@
     
     [manager POST:kJingCaiURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"好精彩: %@", reponse);
         
         NSError *error = nil;
@@ -212,12 +213,23 @@
             }
         
         } else {
-        
+            
+            // 拿到当前的下拉刷新控件，结束刷新状态
+            [self.tableView.mj_header endRefreshing];
+            
+            // 拿到当前的上拉刷新控件，结束刷新状态
+            [self.tableView.mj_footer endRefreshing];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
         NSLog(@"error:%@", error);
+        
+        // 拿到当前的下拉刷新控件，结束刷新状态
+        [self.tableView.mj_header endRefreshing];
+        
+        // 拿到当前的上拉刷新控件，结束刷新状态
+        [self.tableView.mj_footer endRefreshing];
         
     }];
 }

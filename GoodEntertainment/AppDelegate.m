@@ -8,8 +8,7 @@
 
 #import "AppDelegate.h"
 
-//
-#import <IQKeyboardManager.h>
+#import <IQKeyboardManager/IQKeyboardManager.h>
 
 //
 #import <UMSocial.h>
@@ -46,7 +45,7 @@
 
     //
     [UMSocialConfig hiddenNotInstallPlatforms:@[UMShareToWechatSession, UMShareToWechatTimeline]];
-    [UMSocialData setAppKey:@"57396808e0f55a0902001ba4"];
+    [UMSocialData   setAppKey:@"57396808e0f55a0902001ba4"];
     
 //    [UMSocialData openLog:YES];
     
@@ -101,6 +100,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
 }
 
 @end

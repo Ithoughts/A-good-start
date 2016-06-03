@@ -244,7 +244,6 @@
         if ([view isKindOfClass:[UIScrollView class]]) {
             
             view.scrollEnabled = enabled;
-            
             view.bounces = enabled;
         }
     }

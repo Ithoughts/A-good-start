@@ -13,7 +13,8 @@
 #import "HYLSettingViewController.h"
 #import "HYLSignInViewController.h"
 
-#import <UIImageView+WebCache.h>
+//#import <UIImageView+WebCache.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface HYLMenuViewController ()<UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
 {
@@ -37,13 +38,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    token = [defaults objectForKey:@"token"];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
     
     // 注册通知
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -51,6 +45,16 @@
                                                  name:@"logined"
                                                object:nil];
     
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    token = [defaults objectForKey:@"token"];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    token = [defaults objectForKey:@"token"];
+
     _screenWidth = [UIScreen mainScreen].bounds.size.width;
     _screenHeight = [UIScreen mainScreen].bounds.size.height;
     
@@ -72,16 +76,33 @@
         
         avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 50, avatar.size.width, avatar.size.height)];
         avatarImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        avatarImageView.image = avatar;
-//        imageView.clipsToBounds = YES;
-//        imageView.layer.masksToBounds = YES;
-//        imageView.layer.cornerRadius = 50.0;
-        avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
+//        avatarImageView.clipsToBounds = YES;
+        avatarImageView.layer.masksToBounds = YES;
+        avatarImageView.layer.cornerRadius = 10.0;
+        avatarImageView.contentMode = UIViewContentModeScaleAspectFit;
+        
+        if (token != nil) {
+            
+            [avatarImageView sd_setImageWithURL:[NSURL URLWithString:[defaults objectForKey:@"avatar"]]];
+            
+        } else {
+            
+            avatarImageView.image = avatar;
+        }
         [view addSubview:avatarImageView];
         
         // 昵称
         nicknameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 180, _screenWidth, 24)];
-        nicknameLabel.text = @"未登录";
+        
+        if (token != nil) {
+            
+            nicknameLabel.text = [defaults objectForKey:@"name"];
+            
+        } else {
+            
+            nicknameLabel.text = @"未登录";
+        }
+        
         nicknameLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:18];
         nicknameLabel.backgroundColor = [UIColor clearColor];
         nicknameLabel.textColor = [UIColor blackColor];
@@ -106,6 +127,12 @@
         nicknameLabel.text = nickName;
         loginLabel.text = @"退出登录";
         [self.tableView reloadData];
+        
+    } else {
+        
+        nicknameLabel.text = @"未登录";
+        loginLabel.text = @"登录";
+        [self.tableView reloadData];
     }
     
     NSString *avatar = [defaults objectForKey:@"avatar"];
@@ -114,8 +141,14 @@
         
         [avatarImageView sd_setImageWithURL:[NSURL URLWithString:avatar]];
         [self.tableView reloadData];
+        
+    } else {
+    
+        avatarImageView.image = [UIImage imageNamed:@"defaultImage"];
     }
 }
+
+#pragma mark - 注销通知
 
 - (void)dealloc
 {
@@ -188,7 +221,7 @@
         
         loginLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftImageView.frame.origin.x+leftImageView.frame.size.width + 10, 10, 120, 30)];
         
-        if ([nicknameLabel.text isEqualToString:@"未登录"]) {
+        if (token == nil && token.length == 0) {
             
             loginLabel.text = _titleArray[3];
             
@@ -245,10 +278,6 @@
             
         } else {
             
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            
-//            [alert show];
-            
             HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
             [self.navigationController pushViewController:loginVC animated:YES];
         }
@@ -264,32 +293,17 @@
             [self.navigationController pushViewController:editProfileVC animated:NO];
             
         } else {
-            
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            
-//            [alert show];
-            
             HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
             [self.navigationController pushViewController:loginVC animated:YES];
         }
     
     } else if (indexPath.row == 2) {
         
-//        if (token != nil) {
-        
         HYLSettingViewController *setUpVC = [[HYLSettingViewController alloc] init];
         
         setUpVC.hidesBottomBarWhenPushed = YES;
         
         [self.navigationController pushViewController:setUpVC animated:YES];
-            
-//        } else {
-//        
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            
-//            [alert show];
-//        }
-        
         
     } else if (indexPath.row == 3) {
         

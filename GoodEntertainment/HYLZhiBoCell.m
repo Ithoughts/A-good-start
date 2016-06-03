@@ -49,8 +49,7 @@
     _title.textColor = [UIColor whiteColor];
     _title.textAlignment = NSTextAlignmentCenter;
     _title.adjustsFontSizeToFitWidth = YES;
-//    _title.font = [UIFont boldSystemFontOfSize:18.0f];
-//    _title.minimumFontSize = 16.0f;
+    _title.font = [UIFont boldSystemFontOfSize:16.0f];
     _title.numberOfLines = 1;
     [_videoImage addSubview:_title];
     
@@ -58,7 +57,7 @@
     _updated_at.textColor = [UIColor whiteColor];
     _updated_at.textAlignment = NSTextAlignmentCenter;
     _updated_at.font = [UIFont systemFontOfSize:18.0f];
-    _updated_at.numberOfLines = 1;
+    _updated_at.numberOfLines = 0;
     [_videoImage addSubview:_updated_at];
 }
 

@@ -11,7 +11,7 @@
 #import "HYLSignInViewController.h"
 
 // 网络请求
-#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 
 // 时间戳
 #import "HYLGetTimestamp.h"
@@ -22,7 +22,7 @@
 // api 接口
 #import "HaoYuLeNetworkInterface.h"
 
-#import <SVProgressHUD.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
@@ -195,6 +195,7 @@
         
     } else {
     
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
         [SVProgressHUD showErrorWithStatus:@"请输入手机号"];
     }
 }
@@ -217,9 +218,8 @@
     
     [manager POST:kSendCaptchaURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"发送验证码: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"发送验证码: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -247,7 +247,7 @@
 
 - (void)provisionButtonTapped:(UIButton *)sender
 {
-    NSLog(@"条款按钮被按!");
+//    NSLog(@"条款按钮被按!");
 }
 
 #pragma mark - 同意并注册 按钮响应
@@ -297,9 +297,8 @@
     
     [manager POST:kUserRegisterURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *reponse = [[NSString alloc] initWithData:responseObject
-                                                  encoding:NSUTF8StringEncoding];
-        NSLog(@"注册返回: %@", reponse);
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"注册返回: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject

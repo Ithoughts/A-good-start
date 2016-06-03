@@ -8,7 +8,11 @@
 
 #import "HYLSettingViewController.h"
 
-@interface HYLSettingViewController ()<UITableViewDelegate, UITableViewDataSource>
+#import "HYLClearCaches.h"
+
+#import <MBProgressHUD/MBProgressHUD.h>
+
+@interface HYLSettingViewController ()<UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate>
 {
     UITableView *_tableView;
 }
@@ -120,7 +124,7 @@
         [cell.contentView addSubview:cacheLabel];
         
         UILabel *rightLabel = [[UILabel alloc] initWithFrame:CGRectMake(cacheLabel.frame.origin.x+cacheLabel.frame.size.width, 10, screenWidth - (cacheLabel.frame.origin.x+cacheLabel.frame.size.width) - 10, 30)];
-        rightLabel.text = @"";
+        rightLabel.text = [NSString stringWithFormat:@"%.1fMB", [HYLClearCaches folderSizeAtPath:[HYLClearCaches getCachesPath:@"Caches"]]];;
         rightLabel.textColor = [UIColor lightGrayColor];
         rightLabel.font = [UIFont systemFontOfSize:16.0f];
         rightLabel.textAlignment = NSTextAlignmentRight;
@@ -141,11 +145,18 @@
     
     } else if (indexPath.row == 1) {
         
-        NSLog(@"意见反馈");
+//        NSLog(@"意见反馈");
         
     } else if (indexPath.row == 2) {
         
-        NSLog(@"清理缓存");
+//        NSLog(@"清理缓存");
+        
+        UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"确定要清除缓存?"
+                                                           delegate:self
+                                                  cancelButtonTitle:@"取消"
+                                             destructiveButtonTitle:@"确定"
+                                                  otherButtonTitles:nil, nil];
+        [sheet showInView:self.view];
     }
 }
 
@@ -165,6 +176,24 @@
     [cell.contentView addSubview: rightLabel];
     
     return cell;
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != 0)
+    {
+        return;
+    }
+    
+    [MBProgressHUD setAnimationDuration:1.0f];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [HYLClearCaches cleanCaches:[HYLClearCaches getCachesPath:@"Caches"]];
+    [_tableView reloadData];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -8,9 +8,18 @@
 
 #import "HYLEditProfileViewController.h"
 
-#import <UIImageView+WebCache.h>
 
-@interface HYLEditProfileViewController ()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
+#import <SDWebImage/UIImageView+WebCache.h>
+#import <AFNetworking/AFNetworking.h>
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <ActionSheetPicker_3_0/ActionSheetStringPicker.h>
+
+
+#import "HYLGetTimestamp.h"
+#import "HYLGetSignature.h"
+#import "HaoYuLeNetworkInterface.h"
+
+@interface HYLEditProfileViewController ()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 {
     UITableView *_tableView;
     
@@ -18,15 +27,32 @@
     UIButton    *_replaceAvatarButton;
     
     UITextField *_nicknameField;
-    UITextField *_sexField;
+    UILabel *_sexLabel;
     
     NSString    *_edited_name;
     NSString    *_edited_sex;
+    
+    //
+    NSString       *avatar;
+    
+    //
+    UIImage *_photoImage;
+    
+    //
+    NSString *_token;
 }
 
 @end
 
 @implementation HYLEditProfileViewController
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token                   = [defaults objectForKey:@"token"];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -47,6 +73,10 @@
     title.textAlignment = NSTextAlignmentCenter;
     self.navigationItem.titleView = title;
     
+    //
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    avatar   = [defaults objectForKey:@"avatar"];
+    
     [self prepareTableView];
 }
 
@@ -63,10 +93,14 @@
     UIImage *image = [UIImage imageNamed:@"defaultImage"];
     
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(screenWidth * 0.5 - image.size.width * 0.5, 50, image.size.width, image.size.height)];
+    _imageView.layer.cornerRadius  = 10.0f;
+    _imageView.layer.masksToBounds = YES;
+    _imageView.clipsToBounds = YES;
+    _imageView.userInteractionEnabled = YES;
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString       *avatar   = [defaults objectForKey:@"avatar"];
-    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeAvatar)];
+    [_imageView addGestureRecognizer:tap];
+   
     if (avatar != nil) {
         
         [_imageView sd_setImageWithURL:[NSURL URLWithString:avatar]];
@@ -77,7 +111,8 @@
          _imageView.image = image;
     }
 
-    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
     [headerView addSubview:_imageView];
     
     _replaceAvatarButton = [[UIButton alloc] initWithFrame:CGRectMake(0, _imageView.frame.size.height + _imageView.frame.origin.y + 15, [UIScreen mainScreen].bounds.size.width, 30)];
@@ -87,7 +122,7 @@
     _replaceAvatarButton.titleLabel.font = [UIFont systemFontOfSize:18.0f];
     [_replaceAvatarButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     _replaceAvatarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [_replaceAvatarButton addTarget:self action:@selector(changeAvatar:) forControlEvents:UIControlEventTouchUpInside];
+    [_replaceAvatarButton addTarget:self action:@selector(changeAvatar) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:_replaceAvatarButton];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight - 64) style: UITableViewStylePlain];
@@ -105,6 +140,7 @@
     determineButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [determineButton setBackgroundImage:[UIImage imageNamed:@"determineIcon"] forState:UIControlStateNormal];
     [determineButton addTarget:self action:@selector(determineButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.view addSubview:determineButton];
 }
 
@@ -119,15 +155,236 @@
 
 - (void)determineButtonTapped:(UIButton *)sender
 {
-    NSLog(@"确定");
+    if (_sexLabel.text.length > 0 && _sexLabel.text != nil && _nicknameField.text.length > 0 && _nicknameField.text != nil) {
+        
+        [self uploadNicknameAndSexToServer]; // 修改信息上传服务器
+        
+    } else {
+    
+        [SVProgressHUD showErrorWithStatus:@"昵称和性别不为空"];
+    }
 }
 
+#pragma mark - 更改昵称、性别上传服务器
+
+- (void)uploadNicknameAndSexToServer
+{
+    [SVProgressHUD show];
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:timestamp forKey:@"time"];
+    [dictionary setValue:signature forKey:@"sign"];
+    [dictionary setValue:_edited_sex forKey:@"sex"];
+    [dictionary setValue:_edited_name forKey:@"username"];
+    
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kEditUserInfoURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"更改用户信息返回: %@", reponse);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            NSDictionary *dataDic = responseDic[@"data"];
+            
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            
+            [userDefaults       setObject:dataDic[@"name"]                forKey:@"name"];
+            [userDefaults       setObject:dataDic[@"sex"]                 forKey:@"sex"];
+            [userDefaults       setObject:dataDic[@"avatar"]              forKey:@"avatar"];
+            
+            [userDefaults synchronize];
+            [_tableView reloadData];
+            
+            // 通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"logined" object:nil];
+            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+            [SVProgressHUD showSuccessWithStatus:@"修改成功"];
+            
+        } else {
+            
+            NSString *message = responseDic[@"message"];
+            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+            [SVProgressHUD showErrorWithStatus:message];
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+    }];
+}
 
 #pragma mark - 更换头像
 
-- (void)changeAvatar:(UIButton *)sender
+- (void)changeAvatar
 {
-    NSLog(@"更换头像");
+    [self chooseImage];
+}
+
+- (void)chooseImage {
+
+    UIActionSheet *sheet;
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        
+        sheet = [[UIActionSheet alloc] initWithTitle:@"更换头像"
+                                            delegate:self
+                                   cancelButtonTitle:nil
+                              destructiveButtonTitle:@"取消"
+                                   otherButtonTitles:@"拍照", @"从相册选择", nil];
+    } else {
+    
+        sheet = [[UIActionSheet alloc] initWithTitle:@"更换头像"
+                                            delegate:self
+                                   cancelButtonTitle:nil
+                              destructiveButtonTitle:@"取消"
+                                   otherButtonTitles:@"从相册选择", nil];
+    }
+    
+    sheet.tag = 255;
+    
+    [sheet showInView:self.view];
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (actionSheet.tag == 255) {
+        
+        NSUInteger sourceType = 0;
+        
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            
+            switch (buttonIndex) {
+                case 0:
+                    // 取消
+                    return;
+                    
+                case 1:
+                    // 相机
+                    sourceType = UIImagePickerControllerSourceTypeCamera;
+                    break;
+                    
+                case 2:
+                    // 相册
+                    sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+        } else {
+        
+            if (buttonIndex == 0) {
+                
+                return;
+                
+            } else {
+                sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+            }
+        }
+        
+        UIImagePickerController *pickerController = [[UIImagePickerController alloc] init];
+        pickerController.sourceType = sourceType;
+        pickerController.delegate = self;
+        
+        [self presentViewController:pickerController animated:YES completion:nil];
+    }
+}
+
+#pragma mark - 上传照片
+
+- (void)UploadAvatar
+{
+    [SVProgressHUD show];
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:timestamp forKey:@"time"];
+    [dictionary setValue:signature forKey:@"sign"];
+    
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    /**
+     *  post : 上传的网址
+     *
+     *  parameters 服务器需要上传的参数
+     *
+     */
+    [manager POST:kUploadAvatarURL parameters:dictionary constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+        /*   参数说明：
+         1. fileData:   要上传文件的数据
+         2. name:       负责上传文件的远程服务中接收文件使用的字段名称
+         3. fileName：   要上传文件的文件名
+         4. mimeType：   要上传文件的文件类型
+      */
+        NSData *fileData = UIImageJPEGRepresentation(_photoImage, 0.5);
+        
+        // 1) 取当前系统时间
+        NSDate *date = [NSDate date];
+        
+        // 2) 使用日期格式化工具
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        
+        // 3) 指定日期格式
+        [formatter setDateFormat:@"yyyyMMddHHmmss"];
+        
+        NSString *dateStr = [formatter stringFromDate:date];
+        
+        // 4) 使用系统时间生成一个文件名
+        NSString *fileName = [NSString stringWithFormat:@"%@.jpg", dateStr];
+        
+        [formData appendPartWithFileData:fileData name:@"avatar" fileName:fileName mimeType:@"image/jpg/png/jpeg"];
+        
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+//        NSString *response = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"response string: %@", response);
+        
+        NSError *error;
+        NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        NSString *message = responseDict[@"message"];
+        NSString *resCode = responseDict[@"resCode"];
+        
+        if ([resCode isEqualToString:@"1"]) {
+            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+            [SVProgressHUD showSuccessWithStatus:message];
+            
+        } else {
+            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+            [SVProgressHUD showErrorWithStatus:message];
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"Error: %@", error);
+    }];
 }
 
 #pragma mark - UITableViewDataSource, UITableViewDelegate
@@ -186,33 +443,32 @@
         genderLabel.textAlignment = NSTextAlignmentLeft;
         [cell.contentView addSubview:genderLabel];
         
-        _sexField = [[UITextField alloc] initWithFrame:CGRectMake(genderLabel.frame.origin.x+genderLabel.frame.size.width - 30, 10, screenWidth - (genderLabel.frame.origin.x+genderLabel.frame.size.width - 30) - 10, 30)];
-        _sexField.delegate = self;
+        _sexLabel = [[UILabel alloc] initWithFrame:CGRectMake(genderLabel.frame.origin.x+genderLabel.frame.size.width - 30, 10, screenWidth - (genderLabel.frame.origin.x+genderLabel.frame.size.width - 30) - 10, 30)];
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
         NSString *sex = [defaults objectForKey:@"sex"];
         
         if (sex != nil) {
             
             if ([sex isEqualToString:@"male"]) {
                 
-                _sexField.text = @"男";
+                _sexLabel.text = @"男";
                 
             } else if ([sex isEqualToString:@"female"]) {
             
-                _sexField.text = @"女";
+                _sexLabel.text = @"女";
             }
             
         } else {
         
-            _sexField.text = @"";
+            _sexLabel.text = @"";
         }
         
-        _sexField.textColor = [UIColor lightGrayColor];
-        _sexField.font = [UIFont systemFontOfSize:18.0f];
-        _sexField.textAlignment = NSTextAlignmentRight;
-        [cell.contentView addSubview: _sexField];
+        _sexLabel.textColor = [UIColor lightGrayColor];
+        _sexLabel.font = [UIFont systemFontOfSize:18.0f];
+        _sexLabel.textAlignment = NSTextAlignmentRight;
+        
+        [cell.contentView addSubview: _sexLabel];
     }
     
     return cell;
@@ -221,6 +477,32 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 50.0f;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *sexArray = @[@"男", @"女"];
+    
+    if (indexPath.row == 1) {
+        
+        [ActionSheetStringPicker showPickerWithTitle:@"请选择性别" rows:sexArray initialSelection:0 doneBlock:^(ActionSheetStringPicker *picker, NSInteger selectedIndex, id selectedValue) {
+            
+            _sexLabel.text = selectedValue;
+            
+            if ([selectedValue isEqualToString:@"男"]) {
+                
+                _edited_sex = @"male";
+                
+            } else {
+            
+                _edited_sex = @"female";
+            }
+            
+        } cancelBlock:^(ActionSheetStringPicker *picker) {
+            
+            
+        } origin:self.view];
+    }
 }
 
 #pragma mark - cell contentview
@@ -253,13 +535,33 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     if (textField == _nicknameField) {
+        
         _edited_name = _nicknameField.text;
     }
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
     
-    if (textField == _sexField) {
-        
-        _edited_sex = _sexField.text;
-    }
+    _photoImage = info[UIImagePickerControllerOriginalImage];
+    _imageView.image = _photoImage;
+    _imageView.layer.cornerRadius = 10.0f;
+    _imageView.layer.masksToBounds = YES;
+    _imageView.clipsToBounds = YES;
+    
+    // 上传服务器
+    [self UploadAvatar];
+}
+
+#pragma mark  点击了取消按钮
+
+-(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    
+    // 取消
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {

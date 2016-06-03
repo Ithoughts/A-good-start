@@ -10,15 +10,16 @@
 
 #import "HYLZhiBoListModel.h"
 #import "HYLVideoCommentCell.h"
+#import "HYLCommentCell.h"
 
 #import "HYLSignInViewController.h"
 
-#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
+#import <SDWebImage/UIImageView+WebCache.h>
+
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 #import "HaoYuLeNetworkInterface.h"
-
-#import <SDWebImage/UIImageView+WebCache.h>
 
 // 视频播放
 #import "XLVideoPlayer.h"
@@ -26,27 +27,35 @@
 #import <UMengSocialCOM/UMSocialSnsService.h>
 #import <UMSocialSnsPlatformManager.h>
 
-#import <SVProgressHUD.h>
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <MJRefresh/MJRefresh.h>
+#import "HYLCommentModel.h"
 
-@interface HYLZhiBoInformationViewController ()<UITableViewDelegate, UITableViewDataSource, UMSocialUIDelegate>
+// 评论视图
+#import "HYLSendCommentView.h"
+
+@interface HYLZhiBoInformationViewController ()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIScrollViewDelegate, UMSocialUIDelegate>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
     
     UIImageView *_videoImageView;
-    NSString *_video_url;
+    NSString    *_video_url;
     
     //
     UIButton *_videoDescriptionButton;
     UIButton *_commentButton;
-    UIView *_indicatorView;
+    UIView   *_indicatorView;
+    
+    // 容器 滚动视图
+    UIScrollView *_mainScrollView;
     
     //
     UIScrollView *_decriptionScrollView;
-    NSMutableArray *_dataArray;
+    UITableView  *_commentTableView;
     
-    //
-    UITableView *_commentTableView;
+    // 影片数组
+    NSMutableArray *_dataArray;
     
     //
     UILabel *_titleLabel;
@@ -56,21 +65,23 @@
     UIButton *_shareButton;
     UIButton *_collectButton;
     UIButton *_videoDecripCommentButton;
-    UILabel *_decriptionLabel;
+    UILabel  *_decriptionLabel;
     
     //
     UIImageView *_playVideoImage;
-    NSString *_cover_url;
+    NSString    *_cover_url;
     
     //
-    UIScrollView *_descripScrollView;
-    
-    //
-    UILabel *_commentTipLabel;
+    UILabel     *_commentTipLabel;
     UIImageView *_commentTipImageView;
     
     //
     NSString *_token;
+    NSInteger _page;
+    NSMutableArray *_commentDataArray;
+    
+    // 评论视图
+    HYLSendCommentView *_commentSendView;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -86,18 +97,20 @@
     _token = [defaults objectForKey:@"token"];
 }
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-    _screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    [self HYLZhiBoDetailInfoApiRequest];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token = [defaults objectForKey:@"token"];
     
-    //
     [self prepareZhiBoNavigationBar];
+    
+    _page = 1;
+    [self HYLZhiBoDetailInfoApiRequest];
 }
 
 - (XLVideoPlayer *)player {
@@ -184,28 +197,106 @@
     [_videoImageView sd_setImageWithURL:[NSURL URLWithString:_cover_url] completed:nil];
     [self.view addSubview:_videoImageView];
     
-    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showVideoPlayer:)];
     [_videoImageView addGestureRecognizer:tap];
     
-    // 视频播放图标
+    // 视频播放
     UIImage *image = [UIImage imageNamed:@"playBtn"];
     _playVideoImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
     _playVideoImage.center = CGPointMake(_videoImageView.frame.size.width * 0.5, _videoImageView.frame.size.height * 0.5);
     _playVideoImage.image = image;
     _playVideoImage.userInteractionEnabled = YES;
-    
     [_videoImageView addSubview:_playVideoImage];
     
-    //
+    // 创建 (影片描述、评论) 按钮
     [self createTwoButtons];
     
-    //
-    _descripScrollView = [self createVideoDecriptionView];
+    // 创建 主要 scrollView
+    _mainScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _mainScrollView.pagingEnabled = YES;
+    _mainScrollView.delegate = self;
+    _mainScrollView.contentSize = CGSizeMake(_screenWidth * 2, _mainScrollView.frame.size.height);
+    [self.view addSubview:_mainScrollView];
     
+    // 评论视图
+    _commentSendView = [[HYLSendCommentView alloc] initWithFrame:CGRectMake(0, _screenHeight - 54 - 64, _screenWidth, 54)];
+    _commentSendView.hidden = YES;
+    _commentSendView.userInteractionEnabled = YES;
+    [_commentSendView.sendBtn addTarget:self action:@selector(sendCommentToServer:) forControlEvents:UIControlEventTouchUpInside];
+    _commentSendView.textF.delegate = self;
+    [self.view addSubview:_commentSendView];
+
     //
-    [self.view addSubview:_descripScrollView];
+    [self createVideoDecriptionView];
+    [self createCommentTableView];
 }
+
+#pragma mark - 发表评论
+
+- (void)sendCommentToServer:(UIButton *)sender
+{
+    //    NSLog(@"评论完毕");
+    if (_commentSendView.textF.text == nil || _commentSendView.textF.text.length == 0) {
+        
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+        [SVProgressHUD showErrorWithStatus:@"请输入评论内容"];
+        
+    } else {
+        
+        [self uploadCommentToServer];
+    }
+}
+
+#pragma mark - 上传评论到服务器
+
+- (void)uploadCommentToServer
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:timestamp forKey:@"time"];
+    [dictionary setValue:signature forKey:@"sign"];
+    [dictionary setValue:self.zhiBoTitle forKey:@"title"];
+    [dictionary setValue:_commentSendView.textF.text forKey:@"content"];
+    [dictionary setValue:self.videoId forKey:@"commentable_id"];
+    
+    // HTTP Basic Authorization
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kSendVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"评论返回: %@", reponse);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        NSString *message = responseDic[@"message"];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            [_commentSendView.textF resignFirstResponder];
+            _commentSendView.hidden = YES;
+            
+            [SVProgressHUD showSuccessWithStatus:message];
+            
+        } else {
+            
+            [SVProgressHUD showErrorWithStatus:message];
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+        
+    }];
+}
+
 
 #pragma mark - 按钮
 
@@ -252,43 +343,16 @@
             
         case 1000:
         {
-            if (_commentTableView != nil) {
-                
-                [_commentTableView removeFromSuperview];
-            }
-            
-            if (_commentTipImageView != nil && _commentTipLabel != nil) {
-                [_commentTipImageView removeFromSuperview];
-                [_commentTipLabel     removeFromSuperview];
-            }
-
-//            NSLog(@"影视描述");
-            
-            [self changeIndicatorViewOriginX:0];
-            [_videoDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            
-            // 添加到当前视图
-            _descripScrollView = [self createVideoDecriptionView];
-            [self.view addSubview:_descripScrollView];
+            [self changeDecriptionButtonState];
+            [_mainScrollView scrollRectToVisible:CGRectMake(0, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) animated:YES];
         }
             break;
             
             
         case 1001:
         {
-//            NSLog(@"评论");
-            
-            if (_descripScrollView != nil) {
-                
-                [_descripScrollView removeFromSuperview];
-            }
-            
-            [self changeIndicatorViewOriginX:_screenWidth * 0.5];
-            [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-        
-            [self getZhiBoVideoCommentsRequest];
+            [self changeCommentButtonState];
+            [_mainScrollView scrollRectToVisible:CGRectMake(_mainScrollView.frame.size.width*1, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) animated:YES];
         }
             break;
             
@@ -301,13 +365,13 @@
 
 #pragma mark - 影片描述视图
 
-- (UIScrollView *)createVideoDecriptionView
+- (void)createVideoDecriptionView
 {
      HYLZhiBoListModel *model = _dataArray[0];
     
-    _decriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _decriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height)];
     
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenWidth, _decriptionScrollView.frame.size.height)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _decriptionScrollView.frame.size.width, _decriptionScrollView.frame.size.height)];
     headerView.userInteractionEnabled = YES;
     headerView.backgroundColor = [UIColor clearColor];
     
@@ -327,13 +391,15 @@
     _playLabel.font = [UIFont systemFontOfSize:16.0f];
     [headerView addSubview:_playLabel];
     
-    //
+    // 分享
     _shareButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaishare"] title:@"分享" x:5 tag:100];
     [headerView addSubview:_shareButton];
     
+    // 收藏
     _collectButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"myCollectionIcon"] title:@"收藏" x:_screenWidth * 1 / 3.0 tag:101];
     [headerView addSubview:_collectButton];
     
+    // 评论
     _videoDecripCommentButton = [self createCommonButtonWithImage:[UIImage imageNamed:@"jingcaicomment"] title:@"评论" x:_screenWidth * 2 / 3.0 tag:102];
     [headerView addSubview:_videoDecripCommentButton];
     
@@ -358,7 +424,6 @@
     _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
     _decriptionLabel.numberOfLines = 0;
     _decriptionLabel.textColor = [UIColor lightGrayColor];
-
     [_decriptionLabel sizeThatFits:htmlRect.size];
     
     [headerView addSubview:_decriptionLabel];
@@ -368,30 +433,63 @@
     [_decriptionScrollView addSubview:headerView];
     
     _decriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
-    
-    return _decriptionScrollView;
+    [_mainScrollView addSubview:_decriptionScrollView];
 }
 
 #pragma mark - 评论列表
 
-- (UITableView *)createCommentTableView
+- (void)createCommentTableView
 {
-    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5)) style:UITableViewStylePlain];
+    _commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) style:UITableViewStylePlain];
+    
+    _commentTableView.backgroundColor = [UIColor clearColor];
+    _commentTableView.separatorColor = [UIColor clearColor];
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
     _commentTableView.showsVerticalScrollIndicator = NO;
     _commentTableView.showsHorizontalScrollIndicator = NO;
     _commentTableView.tableFooterView = [[UIView alloc] init];
     
-    return _commentTableView;
+    [_mainScrollView addSubview:_commentTableView];
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    _commentTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewData];
+    }];
 }
 
-#pragma mark - 创建 button
+#pragma mark - 下拉刷新
+
+- (void)loadNewData
+{
+    _page = 1;
+    [_commentDataArray removeAllObjects];
+    [self getZhiBoVideoCommentsRequest];
+}
+
+#pragma mark - 创建 分享、收藏、评论 button
 
 - (UIButton *)createCommonButtonWithImage:(UIImage *)image title:(NSString *)title x:(CGFloat)x tag:(NSUInteger)tag
 {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(x, _playLabel.frame.origin.y + _playLabel.frame.size.height, _screenWidth * 1/3.0, 30);
+    
+    if (tag == 100) {
+        
+        button.frame = CGRectMake(_playLabel.frame.origin.x - 5, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
+    if (tag == 101) {
+        
+        button.frame = CGRectMake(_screenWidth*0.5 - 30, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
+    if (tag == 102) {
+        
+        button.frame = CGRectMake(_screenWidth - 65, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
     button.tag = tag;
     [button setImage:image forState:UIControlStateNormal];
     [button setTitle:title forState:UIControlStateNormal];
@@ -404,7 +502,7 @@
     return button;
 }
 
-#pragma mark - 分享、收藏、评论
+#pragma mark - 分享、收藏、评论 响应
 
 - (void)threeButtonsAction:(UIButton *)sender
 {
@@ -414,8 +512,8 @@
         {
             [UMSocialData defaultData].extConfig.wechatSessionData.url = @"http://baidu.com";
             [UMSocialData defaultData].extConfig.wechatTimelineData.url = @"http://baidu.com";
-            [UMSocialData defaultData].extConfig.wechatSessionData.title = @"微信好友title";
-            [UMSocialData defaultData].extConfig.wechatTimelineData.title = @"微信朋友圈title";
+            [UMSocialData defaultData].extConfig.wechatSessionData.title = self.zhiBoTitle;
+            [UMSocialData defaultData].extConfig.wechatTimelineData.title = self.zhiBoTitle;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeImage;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeText;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeApp;
@@ -423,26 +521,20 @@
             //如果需要分享回调，请将delegate对象设置self，并实现下面的回调方法
             [UMSocialSnsService presentSnsIconSheetView:self
                                                  appKey:@"57396808e0f55a0902001ba4"
-                                              shareText:@"分享到微信"
+                                              shareText:self.zhiBoTitle
                                              shareImage:[UIImage imageNamed:@"icon"]
                                         shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline]
                                                delegate:self];
         }
             break;
             
-            
         case 101:
         {
-//            NSLog(@"收藏");
-            
             if (_token != nil && _token.length > 0) {
                 
                 [self collectVideo];
                 
             } else {
-                
-//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [alert show];
                 
                 HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
                 [self.navigationController pushViewController:loginVC animated:YES];
@@ -453,21 +545,18 @@
             
         case 102:
         {
-//            NSLog(@"评论");
             if (_token != nil && _token.length > 0) {
                 
-//                [self collectVideo];
+                [_commentSendView.textF becomeFirstResponder];
+                _commentSendView.hidden = !_commentSendView.hidden;
                 
             } else {
                 
-//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [alert show];
                 HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
                 [self.navigationController pushViewController:loginVC animated:YES];
             }
         }
             break;
-            
             
         default:
             break;
@@ -499,8 +588,7 @@
     [dictionary setValue:timestamp            forKey:@"time"];
     [dictionary setValue:signature            forKey:@"sign"];
     
-    // HTTP Basic Authorization 认证机制
-//    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
+    // HTTP Basic Authorization
     NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -522,24 +610,18 @@
             
             if ([responseDic[@"message"] isEqualToString:@"目标已被收藏"]) {
                 
-//                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [tip show];
-                
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
                 [SVProgressHUD showErrorWithStatus:@"已经收藏过"];
                 
             } else {
                 
-//                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:@"收藏成功" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [tip show];
-                [SVProgressHUD showSuccessWithStatus:@"收藏成功"];
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showSuccessWithStatus:message];
             }
             
-            
         } else {
-        
-//            UIAlertView *tip = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            [tip show];
             
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
             [SVProgressHUD showErrorWithStatus:message];
         }
         
@@ -575,8 +657,7 @@
     
     [manager POST:kShiPinDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"直播详情: %@", reponse);
         
         NSError *error = nil;
@@ -621,44 +702,87 @@
     
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
-    [dictionary setValue:self.videoId forKey:@"id"];
-    [dictionary setValue:@"1" forKey:@"page"];
+    [dictionary setValue:self.videoId forKey:@"video_id"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", _page] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kGetVideoCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"重温评论列表: %@", reponse);
-        
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
         
+        _commentDataArray = [[NSMutableArray alloc] init];
+        
         if ([responseDic[@"status"]  isEqual: @1]) {
             
-            // 添加到当前视图
-            [self.view addSubview:[self createCommentTableView]];
+            NSArray *dataArray = responseDic[@"data"];
+            
+            if (dataArray.count > 0) {
+                
+                for (NSDictionary *dic in dataArray) {
+                    
+                    HYLCommentModel *model = [[HYLCommentModel alloc] init];
+                
+                    model.content    = dic[@"content"];
+                    model.like_count = dic[@"like_count"];
+                    model.created_at = dic[@"created_at"];
+                    model.comment_id = [NSString stringWithFormat:@"%@", dic[@"id"]];
+                    
+                    NSDictionary *user = dic[@"user"];
+                    
+                    model.name         = user[@"name"];
+                    model.avatar       = user[@"avatar"];
+                    
+                    [_commentDataArray addObject:model];
+                }
+                
+                [self createCommentTableView];
+                [_commentTableView reloadData];
+                
+                // 拿到当前的下拉刷新控件，结束刷新状态
+                [_commentTableView.mj_header endRefreshing];
+                
+                // 拿到当前的上拉刷新控件，结束刷新状态
+                [_commentTableView.mj_footer endRefreshing];
+
+                
+            } else {
+                
+                if (_commentTipImageView != nil) {
+                    
+                    [_commentTipImageView removeFromSuperview];
+                }
+                
+                if (_commentTipLabel != nil) {
+                    
+                    [_commentTipLabel removeFromSuperview];
+                }
+                
+                UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
+                
+                // 背景
+                _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width, 0, backgroundImage.size.width, backgroundImage.size.height)];
+                _commentTipImageView.image = backgroundImage;
+                _commentTipImageView.center = CGPointMake(_mainScrollView.frame.size.width * 1.5, _mainScrollView.frame.size.height *0.5 - 64);
+                [_mainScrollView addSubview:_commentTipImageView];
+                
+                // 标签
+                _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width * 1.5 - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
+                _commentTipLabel.text = @"暂无评论";
+                _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
+                _commentTipLabel.textColor = [UIColor blackColor];
+                _commentTipLabel.textAlignment = NSTextAlignmentCenter;
+                
+                [_mainScrollView addSubview:_commentTipLabel];
+            }
             
         } else {
             
-            UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
-            
-            // 背景
-            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
-            _commentTipImageView.image = backgroundImage;
-            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5+ (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))*0.5 - backgroundImage.size.height * 0.5);
-            [self.view addSubview:_commentTipImageView];
-
-            // 标签
-            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
-            _commentTipLabel.text = @"暂无评论";
-            _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
-            _commentTipLabel.textColor = [UIColor blackColor];
-            _commentTipLabel.textAlignment = NSTextAlignmentCenter;
-            [self.view addSubview:_commentTipLabel];
             
         }
         
@@ -673,34 +797,59 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSUInteger count;
+    
     if (tableView == _commentTableView) {
         
-        return 0;
-        
-    } else {
-        
-        return 0;
+        count =  _commentDataArray.count;
     }
+    
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HYLVideoCommentCell *cell = nil;
+    id commonCell = nil;
     
     if (tableView == _commentTableView) {
         
-        static NSString *CellIdentifier = @"CellIdentifier";
+        static NSString *CellIdentifier = @"commentCell";
         
-        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        HYLCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
-        if (!cell) {
+        if (cell == nil) {
             
-            cell = [[HYLVideoCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell = [[HYLCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
+        
+        HYLCommentModel *model    = _commentDataArray[indexPath.row];
+        
+        cell.titleLabel.text      = model.name;
+        cell.created_atLabel.text = model.created_at;
+        cell.contentLabel.text    = model.content;
+        
+        [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.avatar] placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        
+        if (model.like_count.integerValue > 0) {
+            
+            [cell.like_countButton setImage:[UIImage imageNamed:@"dianzanle"] forState:UIControlStateNormal];
+            
+        } else {
+            
+            [cell.like_countButton setImage:[UIImage imageNamed:@"dianzan"] forState:UIControlStateNormal];
+        }
+        
+        cell.like_countButton.tag = indexPath.row + 1000;
+        cell.like_countButton.userInteractionEnabled = YES;
+        cell.like_countLabel.text = model.like_count;
+        
+        [cell.like_countButton addTarget:self action:@selector(dianzanAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+        commonCell = cell;
     }
     
-    return cell;
+    return commonCell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -709,12 +858,124 @@
     
     if (tableView == _commentTableView) {
         
-        height = 100;
-        
+        height = 90;
     }
     
     return height;
 }
+
+#pragma mark - 点赞请求
+
+- (void)dianzanAction:(UIButton *)sender
+{
+    if (_token != nil && _token.length > 0) {
+        
+        NSInteger buttonTag = sender.tag - 1000;
+        HYLCommentModel *model = _commentDataArray[buttonTag];
+        
+        NSString *comment_id = model.comment_id;
+        
+        //
+        NSString *timestamp = [HYLGetTimestamp getTimestampString];
+        NSString *signature = [HYLGetSignature getSignature:timestamp];
+        
+        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+        
+        [dictionary setValue:timestamp          forKey:@"time"];
+        [dictionary setValue:signature          forKey:@"sign"];
+        [dictionary setValue:comment_id         forKey:@"comment_id"];
+        
+        // HTTP Basic Authorization
+        NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+        
+        [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+            
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"点赞返回: %@", reponse);
+            
+            NSError *error = nil;
+            NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+            
+            NSString *message = responseDic[@"message"];
+            
+            if ([responseDic[@"status"]  isEqual: @1]) {
+                
+                [self loadNewData];
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showSuccessWithStatus:message];
+                
+            } else {
+                
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showErrorWithStatus:message];
+            }
+            
+        } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+            
+            NSLog(@"error: %@", error);
+            
+        }];
+        
+        
+    } else {
+        
+        HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+    }
+}
+
+#pragma mark --- UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    CGPoint offset = scrollView.contentOffset;
+    
+    int numOfPage = offset.x / _screenWidth;
+    
+    if (numOfPage == 0) {
+        
+        [self changeDecriptionButtonState];
+        
+    } else if (numOfPage == 1) {
+        
+        [self changeCommentButtonState];
+    }
+}
+
+#pragma mark --- 改变影片描述按钮的状态
+
+- (void)changeDecriptionButtonState
+{
+    [self changeIndicatorViewOriginX:0];
+    [_videoDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+}
+
+#pragma mark --- 改变评论按钮的状态
+
+- (void)changeCommentButtonState
+{
+    [self getZhiBoVideoCommentsRequest];
+    
+    [self changeIndicatorViewOriginX:_screenWidth * 0.5];
+    [_videoDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if (_commentSendView.hidden == NO) {
+        
+        _commentSendView.hidden = YES;
+        [_commentSendView.textF resignFirstResponder];
+    }
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -10,7 +10,7 @@
 
 @interface HYLCommentModel : NSObject
 
-@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *name;
 
 @property (nonatomic, copy) NSString *created_at;
 
@@ -19,5 +19,7 @@
 @property (nonatomic, copy) NSString *like_count;
 
 @property (nonatomic, copy) NSString *comment_id;
+
+@property (nonatomic, copy) NSString *avatar;
 
 @end

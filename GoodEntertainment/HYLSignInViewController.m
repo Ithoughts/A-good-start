@@ -11,11 +11,13 @@
 #import "HYLRegisterViewController.h"
 
 #import "HaoYuLeNetworkInterface.h"
-#import <AFNetworking.h>
+
+#import <AFNetworking/AFNetworking.h>
 #import "HYLGetSignature.h"
 #import "HYLGetTimestamp.h"
 
-#import <SVProgressHUD.h>
+#import <SVProgressHUD/SVProgressHUD.h>
+#import <MBProgressHUD/MBProgressHUD.h>
 
 #define kLineViewBGColor(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
@@ -225,6 +227,8 @@
 
 - (void)login
 {
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     
     NSString *timestamp = [HYLGetTimestamp getTimestampString];
@@ -266,21 +270,24 @@
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"logined" object:nil];
             
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
             [SVProgressHUD showSuccessWithStatus:message];
             
             [self.navigationController popToRootViewControllerAnimated:YES];
             
         } else {
             
-//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//            [alert show];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
             [SVProgressHUD showErrorWithStatus:message];
         }
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
         NSLog(@"error: %@", error);
-        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     }];
 }
 
@@ -341,7 +348,6 @@
         
         self.passwordImageView.image = [UIImage imageNamed:@"passwordIcon"];
         self.passwordlineView.backgroundColor = [UIColor lightGrayColor];
-        
     }
 }
 

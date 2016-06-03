@@ -16,5 +16,4 @@
 @property (nonatomic, assign) CGFloat imageHeight;
 @property (nonatomic, assign) CGFloat imageWidth;
 
-
 @end

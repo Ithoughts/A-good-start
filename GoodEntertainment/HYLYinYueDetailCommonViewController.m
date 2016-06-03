@@ -11,7 +11,7 @@
 #import "HYLBangDanModel.h"
 #import "HYLSignInViewController.h"
 
-#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
 #import "HaoYuLeNetworkInterface.h"
@@ -30,10 +30,17 @@
 #import "HYLPlayMVListMusicViewController.h"
 
 // 刷新
-#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
 
-@interface HYLYinYueDetailCommonViewController ()<UITableViewDelegate, UITableViewDataSource, UMSocialUIDelegate>
+#import "HYLCommentCell.h"
+#import "HYLCommentModel.h"
+
+// 评论视图
+#import "HYLSendCommentView.h"
+
+@interface HYLYinYueDetailCommonViewController ()<UITableViewDelegate, UITableViewDataSource, UMSocialUIDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 {
     CGFloat _screenWidth;
     CGFloat _screenHeight;
@@ -41,22 +48,25 @@
     UIImageView *_musicImageView;
     UIImageView *_playVideoImage;
     NSString *_music_url;
+    NSString *_cover_url;
     
-    //
+    // MV 描述
     UIButton *_MVDescriptionButton;
+    // 评论按钮
     UIButton *_commentButton;
+    // 艺人 MV
     UIButton *_singerButton;
+    // 指示条
     UIView   *_indicatorView;
+    
+    // 容器
+    UIScrollView *_mainScrollView;
     
     //
     UIScrollView *_MVDecriptionScrollView;
-    NSMutableArray *_dataArray;
-    NSMutableArray *_artistListArray;
-    
-    //
+    // 评论 table
     UITableView *_commentTable;
-    
-    //
+    // 艺人 MV table
     UITableView *_singerTable;
     
     //
@@ -68,14 +78,13 @@
     UIButton *_shareButton;
     UIButton *_collectButton;
     UIButton *_musicCommentButton;
-    UILabel *_decriptionLabel;
+    UILabel  *_decriptionLabel;
     
     // 音乐人 id
     NSString *_artist_id;
     
-    NSString *_cover_url;
-    
-    UILabel *_commentTipLabel;
+    //
+    UILabel     *_commentTipLabel;
     UIImageView *_commentTipImageView;
     
     //
@@ -83,9 +92,17 @@
     CGRect _currentPlayCellRect;
     
     //
-    NSInteger _page;
-    
+    NSInteger _commentPage;
+    NSInteger _singerPage;
     NSString *_token;
+    
+    // 数组
+    NSMutableArray *_dataArray;
+    NSMutableArray *_artistListArray;
+    NSMutableArray *_commentDataArray;
+    
+    // 评论视图
+    HYLSendCommentView *_commentSendView;
 }
 
 @property (nonatomic, strong) XLVideoPlayer *player;
@@ -97,6 +114,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     _token = [defaults objectForKey:@"token"];
 }
@@ -107,11 +125,17 @@
     _screenWidth  = [[UIScreen mainScreen] bounds].size.width;
     _screenHeight = [[UIScreen mainScreen] bounds].size.height;
     
-    _page = 1;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _token = [defaults objectForKey:@"token"];
+    
+    _commentPage = 1;
+    _singerPage = 1;
+    
+    [self prepareYinYueNavigationBar];
+    
     _artistListArray = [[NSMutableArray alloc] init];
     
     [self HYLMusicInfoApiRequest];
-    [self prepareYinYueNavigationBar];
 }
 
 - (XLVideoPlayer *)player {
@@ -207,17 +231,97 @@
     _playVideoImage.center = CGPointMake(_musicImageView.frame.size.width * 0.5, _musicImageView.frame.size.height * 0.5);
     _playVideoImage.image = image;
     _playVideoImage.userInteractionEnabled = YES;
-    
     [_musicImageView addSubview:_playVideoImage];
     
-    //
+    // 创建 (MV描述、评论、 艺人MV) 按钮
     [self createThreeButtons];
     
-    _MVDecriptionScrollView = [self createMVDecriptionView];
+    // 创建 主要 scrollView
+    _mainScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _mainScrollView.pagingEnabled = YES;
+    _mainScrollView.delegate = self;
+    _mainScrollView.contentSize = CGSizeMake(_screenWidth * 3, _mainScrollView.frame.size.height);
+    [self.view addSubview:_mainScrollView];
     
-    // 描述
-    [self.view addSubview:_MVDecriptionScrollView];
+    // 评论视图
+    _commentSendView = [[HYLSendCommentView alloc] initWithFrame:CGRectMake(0, _screenHeight - 54 - 64, _screenWidth, 54)];
+    _commentSendView.hidden = YES;
+    _commentSendView.userInteractionEnabled = YES;
+    [_commentSendView.sendBtn addTarget:self action:@selector(sendCommentToServer:) forControlEvents:UIControlEventTouchUpInside];
+    _commentSendView.textF.delegate = self;
+    [self.view addSubview:_commentSendView];
+    
+
+    [self createMVDecriptionView];
 }
+
+#pragma mark - 发表评论
+
+- (void)sendCommentToServer:(UIButton *)sender
+{
+    //    NSLog(@"评论完毕");
+    if (_commentSendView.textF.text == nil || _commentSendView.textF.text.length == 0) {
+        
+        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+        [SVProgressHUD showErrorWithStatus:@"请输入评论内容"];
+        
+    } else {
+        
+        [self uploadCommentToServer];
+    }
+}
+
+#pragma mark - 上传评论到服务器
+
+- (void)uploadCommentToServer
+{
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
+    NSString *timestamp = [HYLGetTimestamp getTimestampString];
+    NSString *signature = [HYLGetSignature getSignature:timestamp];
+    
+    [dictionary setValue:timestamp forKey:@"time"];
+    [dictionary setValue:signature forKey:@"sign"];
+    [dictionary setValue:self.musicTitle forKey:@"title"];
+    [dictionary setValue:_commentSendView.textF.text forKey:@"content"];
+    [dictionary setValue:self.musicID forKey:@"commentable_id"];
+    
+    // HTTP Basic Authorization
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [manager POST:kMakeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+        
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"评论返回: %@", reponse);
+        
+        NSError *error = nil;
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        NSString *message = responseDic[@"message"];
+        
+        if ([responseDic[@"status"]  isEqual: @1]) {
+            
+            [_commentSendView.textF resignFirstResponder];
+            _commentSendView.hidden = YES;
+            
+            [SVProgressHUD showSuccessWithStatus:message];
+            
+        } else {
+            
+            [SVProgressHUD showErrorWithStatus:message];
+        }
+        
+    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+        
+        NSLog(@"error: %@", error);
+        
+    }];
+}
+
+
 
 #pragma mark - 创建按钮
 
@@ -267,8 +371,7 @@
     [self.view addSubview:_indicatorView];
 }
 
-
-#pragma mark - 分段
+#pragma mark - MV描述、评论、艺人MV 按钮响应
 
 - (void)threeButtonAction:(UIButton *)sender
 {
@@ -276,75 +379,27 @@
             
         case 1000:
         {
-//            NSLog(@"MV描述");
-            if (_commentTable != nil) {
-                [_commentTable removeFromSuperview];
-            }
+            [self changeMVButtonState];
             
-            if (_commentTipImageView != nil && _commentTipLabel != nil) {
-                [_commentTipImageView removeFromSuperview];
-                [_commentTipLabel     removeFromSuperview];
-            }
-            
-            if (_singerTable != nil) {
-                [_singerTable removeFromSuperview];
-            }
-            
-            [self changeIndicatorViewOriginX:0];
-            [_MVDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            [_singerButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            
-            _MVDecriptionScrollView = [self createMVDecriptionView];
-            
-            // 添加到当前视图
-            [self.view addSubview:_MVDecriptionScrollView];
+            [_mainScrollView scrollRectToVisible:CGRectMake(0, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) animated:YES];
         }
             break;
             
         case 1001:
         {
-//            NSLog(@"评论");
-            if (_MVDecriptionScrollView != nil) {
-                [_MVDecriptionScrollView removeFromSuperview];
-            }
-            
-            if (_singerTable != nil) {
-                [_singerTable removeFromSuperview];
-            }
-            
-            [self changeIndicatorViewOriginX:_screenWidth * 1/3.0];
-            [_MVDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            [_singerButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+            [self changeCommentButtonState];
             
             [self HYLMusicCommentListRequest];
+            
+            [_mainScrollView scrollRectToVisible:CGRectMake(_mainScrollView.frame.size.width*1, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) animated:YES];
         }
             break;
             
         case 1002:
         {
-            if (_MVDecriptionScrollView != nil) {
-                [_MVDecriptionScrollView removeFromSuperview];
-            }
+            [self changeSingerMVButtonState];
             
-            if (_commentTable != nil) {
-                [_commentTable removeFromSuperview];
-            }
-            
-            if (_commentTipImageView != nil && _commentTipLabel != nil) {
-                [_commentTipImageView removeFromSuperview];
-                [_commentTipLabel     removeFromSuperview];
-            }
-
-//            NSLog(@"艺人MV");
-            [self changeIndicatorViewOriginX:_screenWidth * 2/3.0];
-            [_MVDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-            [_singerButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
-            
-            // 添加到当前视图
-            [self.view addSubview:[self createSingerTableView]];
+             [_mainScrollView scrollRectToVisible:CGRectMake(_mainScrollView.frame.size.width*2, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) animated:YES];
         }
             break;
 
@@ -357,14 +412,15 @@
 
 - (void)HYLMusicCommentListRequest
 {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    
     NSString *timestamp = [HYLGetTimestamp getTimestampString];
     NSString *signature = [HYLGetSignature getSignature:timestamp];
     
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    
     [dictionary setValue:timestamp      forKey:@"time"];
     [dictionary setValue:signature      forKey:@"sign"];
-    [dictionary setValue:self.musicID   forKey:@"id"];
+    [dictionary setValue:self.musicID   forKey:@"music_id"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", _commentPage] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -377,30 +433,64 @@
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
         
+        _commentDataArray = [[NSMutableArray alloc] init];
+        
         if ([responseDic[@"status"]  isEqual: @1]) {
             
-            // 添加到当前视图
-            [self.view addSubview:[self createCommentTableView]];
-            [_commentTable reloadData];
+            NSArray *dataArray = responseDic[@"data"];
+            
+            if (dataArray.count > 0) {
+                
+                for (NSDictionary *dic in dataArray) {
+                    
+                    HYLCommentModel *model = [[HYLCommentModel alloc] init];
+                
+                    model.content    = dic[@"content"];
+                    model.like_count = dic[@"like_count"];
+                    model.created_at = dic[@"created_at"];
+                    model.comment_id = [NSString stringWithFormat:@"%@", dic[@"id"]];
+                    
+                    NSDictionary *user = dic[@"user"];
+                    
+                    model.name         = user[@"name"];
+                    model.avatar       = user[@"avatar"];
+                    
+                    [_commentDataArray addObject:model];
+                }
+
+                // 添加到当前视图
+                [self createCommentTableView];
+                [_commentTable reloadData];
+                
+            } else {
+                
+                if (_commentTipImageView != nil) {
+                    [_commentTipImageView removeFromSuperview];
+                }
+                
+                if (_commentTipLabel != nil) {
+                    [_commentTipLabel removeFromSuperview];
+                }
+                
+                UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
+                
+                // 背景
+                _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width, 0, backgroundImage.size.width, backgroundImage.size.height)];
+                _commentTipImageView.image = backgroundImage;
+                _commentTipImageView.center = CGPointMake(_mainScrollView.frame.size.width * 0.5 + _mainScrollView.frame.size.width, _mainScrollView.frame.size.height * 0.5 - 64);
+                [_mainScrollView addSubview:_commentTipImageView];
+                
+                // 标签
+                _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width * 0.5 + _mainScrollView.frame.size.width - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
+                _commentTipLabel.text = @"暂无评论";
+                _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
+                _commentTipLabel.textColor = [UIColor blackColor];
+                _commentTipLabel.textAlignment = NSTextAlignmentCenter;
+                [_mainScrollView addSubview:_commentTipLabel];
+            }
             
         } else {
             
-            UIImage *backgroundImage = [UIImage imageNamed:@"tip"];
-            
-            // 背景
-            _commentTipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, backgroundImage.size.width, backgroundImage.size.height)];
-            _commentTipImageView.image = backgroundImage;
-            _commentTipImageView.center = CGPointMake(self.view.frame.size.width * 0.5, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + (_screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5)) * 0.5 - backgroundImage.size.height * 0.5);
-            [self.view addSubview:_commentTipImageView];
-            
-            // 标签
-            _commentTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.5 - 60, _commentTipImageView.frame.origin.y + _commentTipImageView.frame.size.height + 5, 120, 30)];
-            _commentTipLabel.text = @"暂无评论";
-            _commentTipLabel.font = [UIFont systemFontOfSize:16.0f];
-            _commentTipLabel.textColor = [UIColor blackColor];
-            _commentTipLabel.textAlignment = NSTextAlignmentCenter;
-            [self.view addSubview:_commentTipLabel];
-
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
@@ -438,11 +528,11 @@
 
 #pragma mark - 影片简介表
 
-- (UIScrollView *)createMVDecriptionView
+- (void)createMVDecriptionView
 {
     BangDanDetailInfoData *model = _dataArray[0];
     
-    _MVDecriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5))];
+    _MVDecriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height)];
         
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _MVDecriptionScrollView.frame.size.width, _MVDecriptionScrollView.frame.size.height)];
     headerView.userInteractionEnabled = YES;
@@ -453,7 +543,7 @@
     _titleLabel.text = self.musicTitle;
     _titleLabel.textColor = [UIColor blackColor];
     _titleLabel.textAlignment = NSTextAlignmentLeft;
-    _titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    _titleLabel.font = [UIFont systemFontOfSize:15.0f];
     [headerView addSubview:_titleLabel];
     
     //
@@ -503,8 +593,8 @@
         _decriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, line.frame.origin.y + line.frame.size.height + 15, _screenWidth - 20, htmlRect.size.height)];
         _decriptionLabel.attributedText = attributeHtml;
         _decriptionLabel.numberOfLines = 0;
-        _decriptionLabel.textColor = [UIColor lightGrayColor];
-        _decriptionLabel.font = [UIFont systemFontOfSize:16.0f];
+        _decriptionLabel.textColor = [UIColor blackColor];
+        _decriptionLabel.font = [UIFont systemFontOfSize:15.0f];
         
         [headerView addSubview:_decriptionLabel];
         
@@ -513,67 +603,89 @@
         _MVDecriptionScrollView.contentSize = CGSizeMake(_screenWidth, _decriptionLabel.frame.origin.y +_decriptionLabel.frame.size.height);
         
         [_MVDecriptionScrollView addSubview:headerView];
+        
+        [_mainScrollView addSubview:_MVDecriptionScrollView];
     }
-    
-    return _MVDecriptionScrollView;
 }
 
-#pragma mark - 评论 列表
+#pragma mark - 评论 table
 
-- (UITableView *)createCommentTableView
+- (void)createCommentTableView
 {
-    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 5)) style:UITableViewStylePlain];
+    _commentTable = [[UITableView alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) style:UITableViewStylePlain];
+    _commentTable.backgroundColor = [UIColor clearColor];
+    _commentTable.separatorColor = [UIColor clearColor];
     _commentTable.dataSource = self;
     _commentTable.delegate = self;
     _commentTable.showsHorizontalScrollIndicator = NO;
     _commentTable.showsVerticalScrollIndicator = NO;
     _commentTable.tableFooterView = [[UIView alloc] init];
     
-    return _commentTable;
+    [_mainScrollView addSubview:_commentTable];
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    _commentTable.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf loadNewCommentListData];
+    }];
 }
 
-#pragma mark -  艺人MV 列表
+#pragma mark - 评论列表，下拉刷新
 
-- (UITableView *)createSingerTableView
+- (void)loadNewCommentListData
 {
-    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(0, _indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5, _screenWidth, _screenHeight - (_indicatorView.frame.origin.y + _indicatorView.frame.size.height + 0.5 + 64)) style:UITableViewStylePlain];
+    _commentPage = 1;
+    
+    [_commentDataArray removeAllObjects];
+    
+    [self HYLMusicCommentListRequest];
+}
+
+#pragma mark -  艺人MV table
+
+- (void)createSingerTableView
+{
+    _singerTable = [[UITableView alloc] initWithFrame:CGRectMake(_mainScrollView.frame.size.width * 2, 0, _mainScrollView.frame.size.width, _mainScrollView.frame.size.height) style:UITableViewStylePlain];
+    _singerTable.backgroundColor = [UIColor clearColor];
+    _singerTable.separatorColor = [UIColor clearColor];
     _singerTable.dataSource = self;
     _singerTable.delegate = self;
     _singerTable.showsHorizontalScrollIndicator = NO;
     _singerTable.showsVerticalScrollIndicator = NO;
     _singerTable.tableFooterView = [[UIView alloc] init];
     
+    [_mainScrollView addSubview:_singerTable];
+    
     __unsafe_unretained __typeof(self) weakSelf = self;
     
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
     _singerTable.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        [weakSelf loadNewData];
+        [weakSelf loadNewSingerListData];
     }];
     
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
     _singerTable.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-        [weakSelf loadMoreData];
+        [weakSelf loadMoreSingerListData];
     }];
-
-    return _singerTable;
 }
 
-#pragma mark - 下拉刷新
+#pragma mark - 艺人MV，下拉刷新
 
-- (void)loadNewData
+- (void)loadNewSingerListData
 {
-    _page = 1;
+    _singerPage = 1;
     
     [_artistListArray removeAllObjects];
     
     [self HYLMusicListApiRequest:_artist_id];
 }
 
-#pragma mark - 上拉加载更多
+#pragma mark - 艺人MV，上拉加载更多
 
-- (void)loadMoreData
+- (void)loadMoreSingerListData
 {
-    _page ++;
+    _singerPage ++;
     
     [self HYLMusicListApiRequest:_artist_id];
 }
@@ -589,7 +701,22 @@
 - (UIButton *)createCommonButtonWithImage:(UIImage *)image title:(NSString *)title x:(CGFloat)x tag:(NSUInteger)tag
 {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(x, _playLabel.frame.origin.y + _playLabel.frame.size.height, _screenWidth * 1/3.0, 30);
+    
+    if (tag == 100) {
+        
+        button.frame = CGRectMake(_titleLabel.frame.origin.x - 5, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
+    if (tag == 101) {
+        
+        button.frame = CGRectMake(_screenWidth*0.5 - 30, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
+    if (tag == 102) {
+        
+        button.frame = CGRectMake(_screenWidth - 65, _playLabel.frame.origin.y + _playLabel.frame.size.height, 60, 30);
+    }
+    
     button.tag = tag;
     [button setImage:image forState:UIControlStateNormal];
     [button setTitle:title forState:UIControlStateNormal];
@@ -611,8 +738,8 @@
         {
             [UMSocialData defaultData].extConfig.wechatSessionData.url = @"http://baidu.com";
             [UMSocialData defaultData].extConfig.wechatTimelineData.url = @"http://baidu.com";
-            [UMSocialData defaultData].extConfig.wechatSessionData.title = @"微信好友title";
-            [UMSocialData defaultData].extConfig.wechatTimelineData.title = @"微信朋友圈title";
+            [UMSocialData defaultData].extConfig.wechatSessionData.title = self.musicTitle;
+            [UMSocialData defaultData].extConfig.wechatTimelineData.title = self.musicTitle;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeImage;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeText;
             [UMSocialData defaultData].extConfig.wxMessageType = UMSocialWXMessageTypeApp;
@@ -620,26 +747,20 @@
             //如果需要分享回调，请将delegate对象设置self，并实现下面的回调方法
             [UMSocialSnsService presentSnsIconSheetView:self
                                                  appKey:@"57396808e0f55a0902001ba4"
-                                              shareText:@"分享到微信"
+                                              shareText:self.musicTitle
                                              shareImage:[UIImage imageNamed:@"icon"]
                                         shareToSnsNames:@[UMShareToWechatSession, UMShareToWechatTimeline]
                                                delegate:self];
-
         }
             break;
             
         case 101:
         {
-//            NSLog(@"收藏");
-            
             if (_token != nil && _token.length > 0) {
                 
                 [self collectVideo];
                 
             } else {
-                
-//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [alert show];
                 
                 HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
                 [self.navigationController pushViewController:loginVC animated:YES];
@@ -650,21 +771,16 @@
             
         case 102:
         {
-            NSLog(@"评论");
-            
             if (_token != nil && _token.length > 0) {
                 
-//                [self collectVideo];
+                [_commentSendView.textF becomeFirstResponder];
+                _commentSendView.hidden = !_commentSendView.hidden;
                 
             } else {
-                
-//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请先登录" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-//                [alert show];
                 
                 HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
                 [self.navigationController pushViewController:loginVC animated:YES];
             }
-
         }
             break;
             
@@ -681,7 +797,7 @@
     if(response.responseCode == UMSResponseCodeSuccess)
     {
         //得到分享到的微博平台名
-        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
+//        NSLog(@"share to sns name is %@",[[response.data allKeys] objectAtIndex:0]);
     }
 }
 
@@ -698,9 +814,7 @@
     [dictionary setValue:timestamp            forKey:@"time"];
     [dictionary setValue:signature            forKey:@"sign"];
     
-    // HTTP Basic Authorization 认证机制
-//    NSString *authorization = @"Basic MTU4MTU4MzU2NjU6MTIzNDU2";
-    
+    // HTTP Basic Authorization
     NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -709,8 +823,8 @@
     
     [manager POST:kAddFavoriteMusicURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"收藏音乐返回:%@", string);
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"收藏音乐返回:%@", string);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
@@ -722,13 +836,13 @@
             
             if ([responseDic[@"message"] isEqualToString:@"目标已被收藏"]) {
                 
-                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [tip show];
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showErrorWithStatus:message];
                 
             } else {
-                
-                UIAlertView *tip = [[UIAlertView alloc] initWithTitle:@"收藏成功" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [tip show];
+        
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showSuccessWithStatus:message];
             }
         }
         
@@ -757,8 +871,7 @@
     
     [manager POST:kMusicDetailURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"音乐详情: %@", reponse);
         
         NSError *error = nil;
@@ -770,7 +883,6 @@
         if ([responseDic[@"status"]  isEqual: @1]) {
             
             NSDictionary *musicDic = responseDic[@"music"];
-            
             NSDictionary *music_info = musicDic[@"video_info"] ;
             
             BangDanDetailInfoData *model = [[BangDanDetailInfoData alloc] initWithDictionary:musicDic];
@@ -783,7 +895,7 @@
                 _artist_id = dic[@"id"];
             }
             
-            // 获取 艺人MV 
+            // 获取 艺人MV 列表，数据
             [self HYLMusicListApiRequest:_artist_id];
             
             // 音乐地址
@@ -792,17 +904,15 @@
             // 音乐截图
             _cover_url = music_info[@"cover_url"];
             
-            
             [self prepareMVView];
             
-
         } else {
             
         }
 
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-//        NSLog(@"error: %@", error);
+        NSLog(@"error: %@", error);
         
     }];
 }
@@ -819,22 +929,20 @@
     [dictionary setValue:timestamp forKey:@"time"];
     [dictionary setValue:signature forKey:@"sign"];
     [dictionary setValue:artist_id forKey:@"artist_id"];
-    [dictionary setValue:[NSString stringWithFormat:@"%ld", (long)_page] forKey:@"page"];
+    [dictionary setValue:[NSString stringWithFormat:@"%ld", (long)_singerPage] forKey:@"page"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     [manager POST:kSingerMVURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
         
-//        NSString *reponse = [[NSString alloc] initWithData:responseObject
-//                                                  encoding:NSUTF8StringEncoding];
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        NSLog(@"音乐人的音乐列表: %@", reponse);
         
         NSError *error = nil;
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableLeaves
                                                                       error:&error];
-        
         if ([responseDic[@"status"]  isEqual: @1]) {
             
             NSDictionary *firstData = responseDic[@"data"];
@@ -856,11 +964,11 @@
                     [_artistListArray addObject:model];
                 }
                 
+                [self createSingerTableView];
                 [_singerTable reloadData];
                 
                 // 拿到当前的下拉刷新控件，结束刷新状态
                 [_singerTable.mj_header endRefreshing];
-                
                 // 拿到当前的上拉刷新控件，结束刷新状态
                 [_singerTable.mj_footer endRefreshing];
                 
@@ -868,13 +976,10 @@
                 
                 // 刷新表格
                 [_singerTable reloadData];
-                
                 // 拿到当前的上拉刷新控件，变为没有更多数据的状态
                 [_singerTable.mj_footer endRefreshingWithNoMoreData];
-                
                 // 隐藏当前的上拉刷新控件
                 _singerTable.mj_footer.hidden = YES;
-            
             }
             
             } else {
@@ -883,8 +988,7 @@
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
-//        NSLog(@"error: %@", error);
-        
+        NSLog(@"error: %@", error);
     }];
 }
 
@@ -897,55 +1001,237 @@
     if (tableView == _singerTable) {
         
         count = _artistListArray.count;
+        
+    } else if (tableView == _commentTable) {
+        
+        count = _commentDataArray.count;
     }
-    
     return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"MVlist";
+    id commonCell = nil;
     
-    HYLSingerMVCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (tableView == _singerTable) {
+        
+        static NSString *CellIdentifier = @"MVlist";
+        
+        HYLSingerMVCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        
+        if (!cell) {
+            cell = [[HYLSingerMVCell alloc] init];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+        HYLArtistMusicListModel *model = _artistListArray[indexPath.row];
+        
+        [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.cover_url]];
+        cell.titleLabel.text = model.title;
+        cell.authorLabel.text = model.author;
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPlayer:)];
+        
+        [cell.avatar addGestureRecognizer:tap];
+        
+        cell.avatar.tag = indexPath.row + 100;
+        
+        commonCell = cell;
+        
+    } else if (tableView == _commentTable) {
     
-    if (!cell) {
-        cell = [[HYLSingerMVCell alloc] init];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        static NSString *CellIdentifier = @"commentCell";
+        
+        HYLCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        
+        if (cell == nil) {
+            
+            cell = [[HYLCommentCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+        HYLCommentModel *model    = _commentDataArray[indexPath.row];
+        
+        cell.titleLabel.text      = model.name;
+        cell.created_atLabel.text = model.created_at;
+        cell.contentLabel.text    = model.content;
+        
+        [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.avatar] placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        
+        if (model.like_count.integerValue > 0) {
+            
+            [cell.like_countButton setImage:[UIImage imageNamed:@"dianzanle"] forState:UIControlStateNormal];
+            
+        } else {
+            
+            [cell.like_countButton setImage:[UIImage imageNamed:@"dianzan"] forState:UIControlStateNormal];
+        }
+        
+        cell.like_countButton.tag = indexPath.row + 1000;
+        cell.like_countButton.userInteractionEnabled = YES;
+        cell.like_countLabel.text = model.like_count;
+        
+        [cell.like_countButton addTarget:self action:@selector(dianzanAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+        commonCell = cell;
     }
-    
-    HYLArtistMusicListModel *model = _artistListArray[indexPath.row];
-    
-    [cell.avatar sd_setImageWithURL:[NSURL URLWithString:model.cover_url]];
-    cell.titleLabel.text = model.title;
-    cell.authorLabel.text = model.author;
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPlayer:)];
-    
-    [cell.avatar addGestureRecognizer:tap];
-    
-    cell.avatar.tag = indexPath.row + 100;
-    
-    return cell;
+
+    return commonCell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 100.0f;
+    CGFloat height = 0;
+    
+    if (tableView == _commentTable) {
+        
+        height = 90.0f;
+        
+    } else if (tableView == _singerTable) {
+    
+        height = 100.0f;
+    }
+    
+    return height;
 }
 
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HYLArtistMusicListModel *item = _artistListArray[indexPath.row];
-    
-    HYLPlayMVListMusicViewController *videoDetailViewController = [[HYLPlayMVListMusicViewController alloc] init];
-    videoDetailViewController.videoTitle = item.title;
-    videoDetailViewController.mp4_url = item.url;
-    
-    [self.navigationController pushViewController:videoDetailViewController animated:YES];
+    if (tableView == _singerTable) {
+        
+        HYLArtistMusicListModel *item = _artistListArray[indexPath.row];
+        
+        HYLPlayMVListMusicViewController *videoDetailViewController = [[HYLPlayMVListMusicViewController alloc] init];
+        videoDetailViewController.videoTitle = item.title;
+        videoDetailViewController.mp4_url = item.url;
+        
+        [self.navigationController pushViewController:videoDetailViewController animated:YES];
+    }
 }
 
+#pragma mark - 点赞请求
+
+- (void)dianzanAction:(UIButton *)sender
+{
+    if (_token != nil && _token.length > 0) {
+        
+        NSInteger buttonTag = sender.tag - 1000;
+        
+        HYLCommentModel *model = _commentDataArray[buttonTag];
+        NSString *comment_id = model.comment_id;
+        
+        //
+        NSString *timestamp = [HYLGetTimestamp getTimestampString];
+        NSString *signature = [HYLGetSignature getSignature:timestamp];
+        
+        NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+        
+        [dictionary setValue:timestamp          forKey:@"time"];
+        [dictionary setValue:signature          forKey:@"sign"];
+        [dictionary setValue:comment_id         forKey:@"comment_id"];
+        
+        // HTTP Basic Authorization
+        NSString *authorization = [NSString stringWithFormat:@"Basic %@", _token];
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        [manager.requestSerializer setValue:authorization forHTTPHeaderField:@"Authorization"];
+        
+        [manager POST:kLikeCommentURL parameters:dictionary success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+            
+//        NSString *reponse = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"点赞返回: %@", reponse);
+            
+            NSError *error = nil;
+            NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+            
+            NSString *message = responseDic[@"message"];
+            
+            if ([responseDic[@"status"]  isEqual: @1]) {
+                
+                [self loadNewCommentListData];
+                
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showSuccessWithStatus:message];
+                
+            } else {
+                
+                [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+                [SVProgressHUD showErrorWithStatus:message];
+            }
+            
+        } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+            
+            NSLog(@"error: %@", error);
+            
+        }];
+        
+    } else {
+        
+        HYLSignInViewController *loginVC = [[HYLSignInViewController alloc] init];
+        [self.navigationController pushViewController:loginVC animated:YES];
+    }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    CGPoint offset = scrollView.contentOffset;
+    
+    int numOfPage = offset.x / _screenWidth;
+    
+    if (numOfPage == 0) {
+        
+        [self changeMVButtonState];
+        
+    } else if (numOfPage == 1) {
+        
+        [self changeCommentButtonState];
+        
+    } else if (numOfPage == 2) {
+    
+        [self changeSingerMVButtonState];
+    }
+}
+
+#pragma mark - 改变MV描述按钮状态
+
+- (void)changeMVButtonState
+{
+    [self changeIndicatorViewOriginX:0];
+    [_MVDescriptionButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [_singerButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+}
+
+- (void)changeCommentButtonState
+{
+    [self changeIndicatorViewOriginX:_screenWidth * 1/3.0];
+    [_MVDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [_commentButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_singerButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+}
+
+- (void)changeSingerMVButtonState
+{
+    [self changeIndicatorViewOriginX:_screenWidth * 2/3.0];
+    [_MVDescriptionButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [_commentButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [_singerButton setTitleColor:[UIColor colorWithRed:255/255.0f green:199/255.0f blue:3/255.0f alpha:1.0f] forState:UIControlStateNormal];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if (_commentSendView.hidden == NO) {
+        
+        _commentSendView.hidden = YES;
+        [_commentSendView.textF resignFirstResponder];
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

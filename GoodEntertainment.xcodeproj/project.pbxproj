@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		59C7225E079D898BE2BDBD7C /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E0760EB12FDCC02BF111EFC /* libPods.a */; };
+		5047D5B235418A751698EE1B /* Pods_GoodEntertainment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F24AE46DACEF04DC58D749C /* Pods_GoodEntertainment.framework */; };
 		D11C71CC1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D11C71CB1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m */; };
 		D11D67591CE31CEC00612F42 /* HYLCommentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D11D67571CE31CEC00612F42 /* HYLCommentListViewController.m */; };
 		D126D5591C91424C000CD6D8 /* HYLMyCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D126D5581C91424C000CD6D8 /* HYLMyCollectionViewController.m */; };
@@ -36,6 +36,7 @@
 		D177B9781CAA55B4003EEB32 /* HYLZhiBoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B9771CAA55B4003EEB32 /* HYLZhiBoCell.m */; };
 		D177B97B1CAA61C9003EEB32 /* HYLZhiBoListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D177B97A1CAA61C9003EEB32 /* HYLZhiBoListModel.m */; };
 		D17C21521CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */; };
+		D18922F71CFEAEE0000971FF /* HYLClearCaches.m in Sources */ = {isa = PBXBuildFile; fileRef = D18922F61CFEAEE0000971FF /* HYLClearCaches.m */; };
 		D19264C71CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D19264C61CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m */; };
 		D19C984D1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D19C984C1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.m */; };
 		D1BDA0C11C9816ED00D4F9A9 /* HYLGetTimestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = D1BDA0C01C9816ED00D4F9A9 /* HYLGetTimestamp.m */; };
@@ -61,6 +62,7 @@
 		D1DC6F411CAA23850093D735 /* HYLBangDanModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC6F401CAA23850093D735 /* HYLBangDanModel.m */; };
 		D1DC989D1CEEA5B0005FC95C /* HYLCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC989C1CEEA5B0005FC95C /* HYLCommentCell.m */; };
 		D1DC98A01CEEA5CA005FC95C /* HYLCommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1DC989F1CEEA5CA005FC95C /* HYLCommentModel.m */; };
+		D1E4C6651D01FF37006CCAC6 /* HYLSendCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E4C6641D01FF37006CCAC6 /* HYLSendCommentView.m */; };
 		D1E93BA21CBB96D100069DE9 /* HYLVideoCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */; };
 		D1F44C8B1C8D7EAD00B6AA0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8A1C8D7EAD00B6AA0C /* main.m */; };
 		D1F44C8E1C8D7EAD00B6AA0C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D1F44C8D1C8D7EAD00B6AA0C /* AppDelegate.m */; };
@@ -72,9 +74,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0787ECBD8093D4FCDA756C15 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		4E0760EB12FDCC02BF111EFC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A379C59F2A1FB0EFB902213C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		0F24AE46DACEF04DC58D749C /* Pods_GoodEntertainment.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GoodEntertainment.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E0097E5B556591A2DEE9122 /* Pods-GoodEntertainment.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoodEntertainment.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GoodEntertainment/Pods-GoodEntertainment.debug.xcconfig"; sourceTree = "<group>"; };
+		62CDD3D5E70C7F247882A802 /* Pods-GoodEntertainment.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoodEntertainment.release.xcconfig"; path = "Pods/Target Support Files/Pods-GoodEntertainment/Pods-GoodEntertainment.release.xcconfig"; sourceTree = "<group>"; };
 		D11C71CA1CEAC3B4007C7E51 /* HYLArtistMusicListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLArtistMusicListModel.h; sourceTree = "<group>"; };
 		D11C71CB1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLArtistMusicListModel.m; sourceTree = "<group>"; };
 		D11D67561CE31CEC00612F42 /* HYLCommentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentListViewController.h; sourceTree = "<group>"; };
@@ -97,6 +99,8 @@
 		D13F95D21CA267B500F8B069 /* HYLYuanChuangViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLYuanChuangViewController.m; sourceTree = "<group>"; };
 		D14749AA1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLYinYueDetailCommonViewController.h; sourceTree = "<group>"; };
 		D14749AB1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLYinYueDetailCommonViewController.m; sourceTree = "<group>"; };
+		D1484B911CFEBAFC005CBB4B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		D1484B931CFEBC0E005CBB4B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D149E7851C8EDB37006D17A5 /* HYLMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLMenuViewController.h; sourceTree = "<group>"; };
 		D149E7861C8EDB37006D17A5 /* HYLMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLMenuViewController.m; sourceTree = "<group>"; };
 		D14BFB5F1CE0326800936D74 /* TLAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLAttributedLabel.h; sourceTree = "<group>"; };
@@ -131,6 +135,8 @@
 		D177B97A1CAA61C9003EEB32 /* HYLZhiBoListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLZhiBoListModel.m; sourceTree = "<group>"; };
 		D17C214F1CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLHaoYuLeCommonDetailViewController.h; sourceTree = "<group>"; };
 		D17C21501CABBF6B000517D8 /* HYLHaoYuLeCommonDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLHaoYuLeCommonDetailViewController.m; sourceTree = "<group>"; };
+		D18922F51CFEAEE0000971FF /* HYLClearCaches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLClearCaches.h; sourceTree = "<group>"; };
+		D18922F61CFEAEE0000971FF /* HYLClearCaches.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLClearCaches.m; sourceTree = "<group>"; };
 		D19264C51CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLJingCaiDetailedInfoViewController.h; sourceTree = "<group>"; };
 		D19264C61CB65DE400301881 /* HYLJingCaiDetailedInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLJingCaiDetailedInfoViewController.m; sourceTree = "<group>"; };
 		D19C984B1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLHaoYinYueBaseListViewController.h; sourceTree = "<group>"; };
@@ -181,6 +187,8 @@
 		D1DC989C1CEEA5B0005FC95C /* HYLCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentCell.m; sourceTree = "<group>"; };
 		D1DC989E1CEEA5CA005FC95C /* HYLCommentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLCommentModel.h; sourceTree = "<group>"; };
 		D1DC989F1CEEA5CA005FC95C /* HYLCommentModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLCommentModel.m; sourceTree = "<group>"; };
+		D1E4C6631D01FF37006CCAC6 /* HYLSendCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLSendCommentView.h; sourceTree = "<group>"; };
+		D1E4C6641D01FF37006CCAC6 /* HYLSendCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLSendCommentView.m; sourceTree = "<group>"; };
 		D1E93BA01CBB96D100069DE9 /* HYLVideoCommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYLVideoCommentCell.h; sourceTree = "<group>"; };
 		D1E93BA11CBB96D100069DE9 /* HYLVideoCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HYLVideoCommentCell.m; sourceTree = "<group>"; };
 		D1F44C861C8D7EAD00B6AA0C /* GoodEntertainment.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoodEntertainment.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -202,18 +210,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1BEA4C81CB505CC000150E2 /* MediaPlayer.framework in Frameworks */,
-				59C7225E079D898BE2BDBD7C /* libPods.a in Frameworks */,
+				5047D5B235418A751698EE1B /* Pods_GoodEntertainment.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3A18DEF05C18C437D041632B /* Pods */ = {
+		B0A3B57F3A686494DF8F0AA5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0787ECBD8093D4FCDA756C15 /* Pods.debug.xcconfig */,
-				A379C59F2A1FB0EFB902213C /* Pods.release.xcconfig */,
+				3E0097E5B556591A2DEE9122 /* Pods-GoodEntertainment.debug.xcconfig */,
+				62CDD3D5E70C7F247882A802 /* Pods-GoodEntertainment.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -363,6 +371,8 @@
 			children = (
 				D126D55D1C915A02000CD6D8 /* HYLSettingViewController.h */,
 				D126D55E1C915A02000CD6D8 /* HYLSettingViewController.m */,
+				D18922F51CFEAEE0000971FF /* HYLClearCaches.h */,
+				D18922F61CFEAEE0000971FF /* HYLClearCaches.m */,
 			);
 			name = Setting;
 			sourceTree = "<group>";
@@ -428,8 +438,8 @@
 			children = (
 				D1BE0C4F1C8EB02100C79A5D /* HYLHaoYuLeListContainerViewController.h */,
 				D1BE0C501C8EB02100C79A5D /* HYLHaoYuLeListContainerViewController.m */,
-				D13F95D41CA26B9900F8B069 /* HaoYuLeListViewControllers */,
 				D102A4A51CB3A26600E14C2C /* HaoYuLeDetailedViewController */,
+				D13F95D41CA26B9900F8B069 /* HaoYuLeListViewControllers */,
 			);
 			name = HaoYuLe;
 			sourceTree = "<group>";
@@ -564,8 +574,8 @@
 			children = (
 				D1F44C881C8D7EAD00B6AA0C /* GoodEntertainment */,
 				D1F44C871C8D7EAD00B6AA0C /* Products */,
-				3A18DEF05C18C437D041632B /* Pods */,
 				F6A4E437A0F7E5E20A250DE2 /* Frameworks */,
+				B0A3B57F3A686494DF8F0AA5 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -582,6 +592,8 @@
 			children = (
 				D1D7C2F51CE1C5DC00D8F818 /* UIViewExt.h */,
 				D1D7C2F61CE1C5DC00D8F818 /* UIViewExt.m */,
+				D1E4C6631D01FF37006CCAC6 /* HYLSendCommentView.h */,
+				D1E4C6641D01FF37006CCAC6 /* HYLSendCommentView.m */,
 				D1DC6F431CAA23B40093D735 /* BaseModel */,
 				D166C17B1C99502400E20F0A /* SignatureAndTimestamp */,
 				D166C17C1C99505B00E20F0A /* TitleView */,
@@ -619,8 +631,10 @@
 		F6A4E437A0F7E5E20A250DE2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D1484B931CFEBC0E005CBB4B /* Security.framework */,
+				D1484B911CFEBAFC005CBB4B /* SystemConfiguration.framework */,
 				D1BEA4C71CB505CC000150E2 /* MediaPlayer.framework */,
-				4E0760EB12FDCC02BF111EFC /* libPods.a */,
+				0F24AE46DACEF04DC58D749C /* Pods_GoodEntertainment.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -632,11 +646,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D1F44C9D1C8D7EAE00B6AA0C /* Build configuration list for PBXNativeTarget "GoodEntertainment" */;
 			buildPhases = (
-				7F044B4B36D3BEA3394FD34A /* Check Pods Manifest.lock */,
+				1F476E21B3613A084B8DCC79 /* 📦 Check Pods Manifest.lock */,
 				D1F44C821C8D7EAD00B6AA0C /* Sources */,
 				D1F44C831C8D7EAD00B6AA0C /* Frameworks */,
 				D1F44C841C8D7EAD00B6AA0C /* Resources */,
-				A9B99265E78CE567B4F29FB3 /* Copy Pods Resources */,
+				16944F0960469BF796B318CB /* 📦 Embed Pods Frameworks */,
+				F74B720505F5864918D9A939 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -670,6 +685,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = D1F44C7D1C8D7EAD00B6AA0C;
 			productRefGroup = D1F44C871C8D7EAD00B6AA0C /* Products */;
@@ -696,14 +712,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7F044B4B36D3BEA3394FD34A /* Check Pods Manifest.lock */ = {
+		16944F0960469BF796B318CB /* 📦 Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GoodEntertainment/Pods-GoodEntertainment-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1F476E21B3613A084B8DCC79 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -711,19 +742,19 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		A9B99265E78CE567B4F29FB3 /* Copy Pods Resources */ = {
+		F74B720505F5864918D9A939 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GoodEntertainment/Pods-GoodEntertainment-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -748,6 +779,7 @@
 				D1D6CA901CEAEB190078D185 /* HYLPlayMVListMusicViewController.m in Sources */,
 				D19C984D1C90020F00BDAEC8 /* HYLHaoYinYueBaseListViewController.m in Sources */,
 				D1C613471C96946600C32974 /* HYLForgetPasswordViewController.m in Sources */,
+				D18922F71CFEAEE0000971FF /* HYLClearCaches.m in Sources */,
 				D1BDA0C91C98192300D4F9A9 /* HYLGetSignature.m in Sources */,
 				D1D7C2EF1CE1948F00D8F818 /* XLSlider.m in Sources */,
 				D11C71CC1CEAC3B4007C7E51 /* HYLArtistMusicListModel.m in Sources */,
@@ -782,6 +814,7 @@
 				D1BDA0C11C9816ED00D4F9A9 /* HYLGetTimestamp.m in Sources */,
 				D14BFB731CE032C500936D74 /* NSMutableAttributedString+Picture.m in Sources */,
 				D14BFB671CE0328600936D74 /* TLAttributedImage.m in Sources */,
+				D1E4C6651D01FF37006CCAC6 /* HYLSendCommentView.m in Sources */,
 				D14749AC1CB7B6570033A154 /* HYLYinYueDetailCommonViewController.m in Sources */,
 				D13EDE1D1CA90CC200BE4887 /* HYLJSONModel.m in Sources */,
 				D1DC6F381CAA1F730093D735 /* HYLShowViewController.m in Sources */,
@@ -898,7 +931,7 @@
 		};
 		D1F44C9E1C8D7EAE00B6AA0C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0787ECBD8093D4FCDA756C15 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 3E0097E5B556591A2DEE9122 /* Pods-GoodEntertainment.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -908,6 +941,10 @@
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GoodEntertainment/UMSocial_Sdk_5.2.1",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cn.goodEntertainment.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "50c997d9-5510-4d53-a9c2-615e9b424a7f";
@@ -916,7 +953,7 @@
 		};
 		D1F44C9F1C8D7EAE00B6AA0C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A379C59F2A1FB0EFB902213C /* Pods.release.xcconfig */;
+			baseConfigurationReference = 62CDD3D5E70C7F247882A802 /* Pods-GoodEntertainment.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -926,6 +963,10 @@
 				INFOPLIST_FILE = GoodEntertainment/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GoodEntertainment/UMSocial_Sdk_5.2.1",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cn.goodEntertainment.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "50c997d9-5510-4d53-a9c2-615e9b424a7f";

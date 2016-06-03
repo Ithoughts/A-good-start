@@ -17,7 +17,7 @@
 #import "HYLZhiBoListModel.h"
 
 // 网络请求
-#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 
 // 图片缓存
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -31,7 +31,7 @@
 // 接口
 #import "HaoYuLeNetworkInterface.h"
 
-#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
 
 #define   KTITLEVIEWRGB(r, g, b)   [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0]
 
@@ -221,12 +221,23 @@
             
         } else {
             
+            // 拿到当前的下拉刷新控件，结束刷新状态
+            [self.tableView.mj_header endRefreshing];
+            
+            // 拿到当前的上拉刷新控件，结束刷新状态
+            [self.tableView.mj_footer endRefreshing];
+            
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
         NSLog(@"error:%@", error);
         
+        // 拿到当前的下拉刷新控件，结束刷新状态
+        [self.tableView.mj_header endRefreshing];
+        
+        // 拿到当前的上拉刷新控件，结束刷新状态
+        [self.tableView.mj_footer endRefreshing];
     }];
 }
 

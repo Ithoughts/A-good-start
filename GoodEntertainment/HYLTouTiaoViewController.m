@@ -23,11 +23,13 @@
 
 #import "HYLGetTimestamp.h"
 #import "HYLGetSignature.h"
-#import <AFNetworking.h>
+//#import <AFNetworking.h>
+#import <AFNetworking/AFNetworking.h>
 #import "HaoYuLeNetworkInterface.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
-#import <MJRefresh.h>
+//#import <MJRefresh.h>
+#import <MJRefresh/MJRefresh.h>
 
 @interface HYLTouTiaoViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
@@ -163,11 +165,22 @@
             
         } else {
             
+            // 拿到当前的下拉刷新控件，结束刷新状态
+            [self.tableView.mj_header endRefreshing];
+            
+            // 拿到当前的上拉刷新控件，结束刷新状态
+            [self.tableView.mj_footer endRefreshing];
         }
         
     } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
         
         NSLog(@"error: %@", error);
+        
+        // 拿到当前的下拉刷新控件，结束刷新状态
+        [self.tableView.mj_header endRefreshing];
+        
+        // 拿到当前的上拉刷新控件，结束刷新状态
+        [self.tableView.mj_footer endRefreshing];
         
     }];
 }
@@ -234,8 +247,7 @@
     //
     HYLZhiBoListModel *model = _dataArray[indexPath.row];
     
-    NSInteger videoId = model.videoId;
-    
+    NSInteger videoId   = model.videoId;
     CGFloat imageHeight = model.video_info.cover_height.floatValue;
     CGFloat imageWidth  = model.video_info.cover_width.floatValue;
     
